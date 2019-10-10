@@ -108,7 +108,7 @@ def in_arg_by_lang( t, arg_keys ):
 
 
 def in_any_arg( t, definitions ):
-    for k, defs in defs.items():
+    for k, defs in definitions.items():
         for a in t.args():
             yield from check( a, defs )
 
