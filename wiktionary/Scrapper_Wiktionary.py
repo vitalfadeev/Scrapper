@@ -15,11 +15,10 @@ from wiktionary import Scrapper_Wiktionary_RemoteAPI
 log = logging.getLogger(__name__)
 
 DB_NAME         = "wiktionary.db"
-#if os.path.isfile(DB_NAME):
-#    os.remove(DB_NAME)
 DBWikictionary  = sqlite3.connect(DB_NAME, isolation_level=None)
 DBWikictionary.execute( "PRAGMA journal_mode = OFF" )
 DBWikictionary.executescript(WikictionaryItem.Meta.DB_INIT)
+
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 MULTIPROCESSING = True
 #MULTIPROCESSING = False
@@ -227,7 +226,8 @@ def convert_explanation_raw_to_text( label, explanation_text ):
 
 
 def scrap_test(lang="en", label="cat"):
-    #convert_explanation_raw_to_text( label, "" )
+    result = DBDeleteLangRecords( lang )
+
     id_   = 0
     ns    = 0
     text  = get_test_file_content(lang, label)
