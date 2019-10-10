@@ -1,0 +1,9 @@
+blist
+#pySmartDL
+#file-downloader
+ctdl
+#wget
+lxml
+#mlconjug
+more-itertools
+# https://github.com/kmcnaught/python-verb-conjugator.git

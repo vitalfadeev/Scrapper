@@ -1,0 +1,1 @@
+from .Scrapper_Wiktionary_EN import *
