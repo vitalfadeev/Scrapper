@@ -34,10 +34,10 @@ def create_storage(folder_name: str):
 
 class Page:
     def __init__(self, id_, ns, label, text):
-        self.id_   = copy.copy( id_ )   # copy for using  with multiprocessing. we need object for each process
-        self.ns    = copy.copy( ns )
-        self.label = copy.copy( label )
-        self.text  = copy.copy( text )
+        self.id_   = id_
+        self.ns    = ns
+        self.label = label
+        self.text  = text
 
     def clean(self):
         text = self.text
