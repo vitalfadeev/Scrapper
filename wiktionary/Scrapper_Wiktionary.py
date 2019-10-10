@@ -1,7 +1,6 @@
 import os
 import logging
 import sqlite3
-import multiprocessing
 import bz2
 import copy
 import importlib
@@ -245,17 +244,31 @@ def scrap_one(lang, page):
         Scrapper.DBWrite( DBWikictionary, item )
 
 
+def scrap_one_wrapper(args):
+    scrap_one( *args )
+
+
 def scrap(lang="en", workers=1):
     result = DBDeleteLangRecords( lang )
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
     if workers > 1:
-        import concurrent.futures
-        import itertools
+        if 0: # multiprocessing alternative
+            import concurrent.futures
+            import itertools
 
-        with concurrent.futures.ProcessPoolExecutor( max_workers=workers ) as executor:
-            for scrap_result in executor.map( scrap_one, itertools.repeat( lang ), reader ):
-                print( scrap_result )
+            with concurrent.futures.ProcessPoolExecutor( max_workers=workers ) as executor:
+                for scrap_result in executor.map( scrap_one, itertools.repeat( lang ), reader ):
+                    pass
+        else:
+            import multiprocessing
+            import itertools
+
+            pool = multiprocessing.Pool( workers )
+            for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
+                pass
+            pool.close()
+            pool.join()
 
     else: # single process
         for page in reader:
