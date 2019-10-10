@@ -20,9 +20,6 @@ DBWikictionary.execute( "PRAGMA journal_mode = OFF" )
 DBWikictionary.executescript(WikictionaryItem.Meta.DB_INIT)
 
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
-MULTIPROCESSING = True
-#MULTIPROCESSING = False
-WORKERS         = 10        # N worker processes
 
 
 def create_storage(folder_name: str):
@@ -248,15 +245,15 @@ def scrap_one(lang, page):
         Scrapper.DBWrite( DBWikictionary, item )
 
 
-def scrap(lang="en"):
+def scrap(lang="en", workers=1):
     result = DBDeleteLangRecords( lang )
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
-    if MULTIPROCESSING:
+    if workers > 1:
         import concurrent.futures
         import itertools
 
-        with concurrent.futures.ProcessPoolExecutor( max_workers=WORKERS ) as executor:
+        with concurrent.futures.ProcessPoolExecutor( max_workers=workers ) as executor:
             for scrap_result in executor.map( scrap_one, itertools.repeat( lang ), reader ):
                 print( scrap_result )
 
