@@ -679,7 +679,7 @@ def scrap(page: Scrapper_Wiktionary.Page) -> List[WikictionaryItem]:
 
 
     items = convert_raw_to_txt( page.label, items )
-    #items = attach_translations( items )
+    items = attach_translations( items )
 
     # clean, unique
     for item in items:

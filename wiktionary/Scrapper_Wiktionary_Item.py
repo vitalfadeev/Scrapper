@@ -67,7 +67,8 @@ class WikictionaryItem:
                     DescriptionWikipediaLinks  TEXT NULL,
                     Categories              TEXT NULL,
                     Cognates                TEXT NULL,
-                    Mentions                TEXT NULL
+                    Mentions                TEXT NULL,
+                    VerbConjugaisonAdded    INTEGER NULL
             );
             
             CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);
@@ -129,6 +130,7 @@ class WikictionaryItem:
         self.Categories                 = []
         self.Cognates                   = {}
         self.Mentions                   = {}
+        self.VerbConjugaisonAdded       = None
 
 
     def merge( self, item: "WikictionaryItem"):

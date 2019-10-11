@@ -10,15 +10,14 @@ from . import Scrapper_Wiktionary_WikitextParser
 from . Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 
-
-log = logging.getLogger(__name__)
-
 DB_NAME         = "wiktionary.db"
 DBWikictionary  = sqlite3.connect(DB_NAME, isolation_level=None)
 DBWikictionary.execute( "PRAGMA journal_mode = OFF" )
 DBWikictionary.executescript(WikictionaryItem.Meta.DB_INIT)
 
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
+
+log = logging.getLogger(__name__)
 
 
 def create_storage(folder_name: str):
