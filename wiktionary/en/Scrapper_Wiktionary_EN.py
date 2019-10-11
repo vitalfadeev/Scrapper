@@ -415,7 +415,7 @@ def find_translations_in_sections_in_trans_see(node: TocNode) -> WikictionaryIte
 
                         # scrap translations
                         for trnode in toc.find_all( recursive=True ):
-                            scrap_translations( trnode )
+                            scrap_translations( trnode, with_trans_seee=False )
 
                         # merge translations
                         for trnode in toc.find_all( recursive=True ):
@@ -425,16 +425,21 @@ def find_translations_in_sections_in_trans_see(node: TocNode) -> WikictionaryIte
     return item
 
 
-def scrap_translations(node: TocNode):
+def scrap_translations(node: TocNode, with_trans_seee=True):
+    """
+    :param node:
+    :param with_trans_seee:  for prevent recursion
+    :return:
+    """
     for sec in node:
         if sec.title.lower().strip() in VALUED_SECTIONS[ ws.TRANSLATIONS ]:
             translations  = find_translations_in_sections_in_trans_top( sec )
-            item          = find_translations_in_sections_in_trans_see( sec )
-
             node.item.TranslationsBySentence = translations
-            node.item.TranslationsBySentence.update( item.TranslationsBySentence )
 
-            node.item.TranslationsByLang     = item.TranslationsByLang
+            if with_trans_seee:
+                item = find_translations_in_sections_in_trans_see( sec )
+                node.item.TranslationsBySentence.update( item.TranslationsBySentence )
+                node.item.TranslationsByLang = item.TranslationsByLang
 
 
 #

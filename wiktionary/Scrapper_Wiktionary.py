@@ -245,7 +245,10 @@ def scrap_one(lang, page):
 
 
 def scrap_one_wrapper(args):
-    scrap_one( *args )
+    try:
+        scrap_one( *args )
+    except Exception as e:
+        log.error( "%s", args, exc_info=True )
 
 
 def scrap(lang="en", workers=1):
