@@ -123,7 +123,7 @@ class TocNode(list):
         return item
 
 
-    def update_index_in_toc(self, level=0, prefix=""):
+    def update_index_in_toc(self, level=0, prefix="", index_pos=''):
         # text counter
         # list counter
         # header counter
@@ -142,28 +142,35 @@ class TocNode(list):
             if node.is_header:
                 i += 1
                 node.index_in_toc = prefix + str( i ) + '.'
+
             elif node.is_explanation_root:
                 node.index_in_toc = prefix + 'ex.'
+
             elif node.is_text:
                 # skip i. add 'text' + text_index
                 counter[ 'text' ] += 1
                 node.index_in_toc = prefix + '"' + str( counter[ 'text' ] ) + '.'
+
             elif node.is_list:
                 #
                 counter[ 'list' ] += 1
                 node.index_in_toc = prefix + '[' + str( counter['list'] ) + '].'
+
             elif node.is_example:
                 #
                 counter[ ':' ] += 1
                 node.index_in_toc = prefix + ':' + str( counter[':'] ) + '.'
+
             elif node.is_li and not node.is_explanation:
                 #
                 counter[ '*' ] += 1
                 node.index_in_toc = prefix + '*' + str( counter['*'] ) + '.'
+
             elif node.is_li:
                 #
                 counter[ 'li' ] += 1
                 node.index_in_toc = prefix + str( counter['li'] ) + '.'
+
             elif node.is_trans_top:
                 #
                 counter[ 'trans_top' ] += 1
@@ -171,8 +178,14 @@ class TocNode(list):
             else:
                 print ( node, node.is_li )
 
+            # index_in_pos
+            if node.is_pos:
+                node.index_pos = node.index_in_toc
+            else:
+                node.index_pos = index_pos
+
             # recursive
-            node.update_index_in_toc(level+1, node.index_in_toc)
+            node.update_index_in_toc(level+1, node.index_in_toc, node.index_pos)
 
         return self
 
@@ -908,25 +921,25 @@ def make_lists_same_length( a: list, b: list ):
         a.extend( itertools.repeat( '', len(b) - len(a) ) )
 
 
-def convert_items_raw_to_txt( page_title: str, items: list ) -> list:
-    raws = [ ]
-
-    for item in items:
-        raws.append( item.ExplainationRaw )
-        raws.append( item.ExplainationExamplesRaw )
-
-    converted = Scrapper_Wiktionary_RemoteAPI.expand_templates( page_title, raws )
-    itreaator = iter( converted )
-
-    for item in items:
-        item.ExplainationTxt = next( itreaator )
-        item.ExplainationExamplesTxt = next( itreaator )
-
-        # beautify
-        item.ExplainationTxt = item.ExplainationTxt.lstrip( '#*: ' )
-        item.ExplainationExamplesTxt = item.ExplainationExamplesTxt.lstrip( '#*: ' )
-
-    return items
+# def convert_items_raw_to_txt( page_title: str, items: list ) -> list:
+#     raws = [ ]
+#
+#     for item in items:
+#         raws.append( item.ExplainationRaw )
+#         raws.append( item.ExplainationExamplesRaw )
+#
+#     converted = Scrapper_Wiktionary_RemoteAPI.expand_templates( page_title, raws )
+#     itreaator = iter( converted )
+#
+#     for item in items:
+#         item.ExplainationTxt = next( itreaator )
+#         item.ExplainationExamplesTxt = next( itreaator )
+#
+#         # beautify
+#         item.ExplainationTxt = item.ExplainationTxt.lstrip( '#*: ' )
+#         item.ExplainationExamplesTxt = item.ExplainationExamplesTxt.lstrip( '#*: ' )
+#
+#     return items
 
 
 def convert_raw_to_txt( page_title: str, raws: dict ) -> dict:
@@ -1079,9 +1092,11 @@ def scrap(page: Scrapper_Wiktionary.Page) -> List[WikictionaryItem]:
             node.sense_txt = converted[ node.index_in_toc ].lstrip("#*: ")
             # update explanation-txt
             if node.is_explanation:
+                node.item.ExplainationRaw = node.sense_raw
                 node.item.ExplainationTxt = converted[ node.index_in_toc ].lstrip("#*: ")
             # update explanation-example-txt
             if node.is_example:
+                node.item.ExplainationExamplesTxt = node.sense_raw
                 node.item.ExplainationExamplesTxt = converted[ node.index_in_toc ].lstrip("#*: ")
 
 
@@ -1204,6 +1219,9 @@ def scrap(page: Scrapper_Wiktionary.Page) -> List[WikictionaryItem]:
                                 # get sense
                                 syn_sense_nodes[ node.sense_txt ] = node
 
+                    pprint.pprint( list( explanation_nodes.keys() ) )
+                    pprint.pprint( list( syn_sense_nodes.keys() ) )
+
                     # call matcher API
                     pairs = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS(
                         list( explanation_nodes.keys() ),
@@ -1271,12 +1289,13 @@ def scrap(page: Scrapper_Wiktionary.Page) -> List[WikictionaryItem]:
                     item.Type              = PART_OF_SPEECH_SECTIONS_INDEX[part_of_speech_node.title.lower().strip()]
 
                     # Explanation
-                    item.ExplainationRaw   = explain.raw
-                    item.ExplainationTxt   = explain.get_text()
+                    #item.ExplainationRaw   = explain.raw
+                    #item.ExplainationTxt   = explain.get_text()
 
                     # Example
                     for example_node in explanations_node.find_examples():
-                        item.ExplainationExamplesRaw = example_node.lexems[0].raw
+                        item.ExplainationExamplesRaw = example_node.sense_raw
+                        item.ExplainationExamplesTxt = example_node.sense_txt
                         break  # first only
 
                     # LabelType
@@ -1355,3 +1374,18 @@ def scrap(page: Scrapper_Wiktionary.Page) -> List[WikictionaryItem]:
 # .. where {{syn}} exists ?
 #
 
+
+# matcher
+# explanations
+#   # explanation
+#   # explanation
+#   # explanation
+# ==section===
+# * (sentence) [[word]]
+# * (sentence) [[word]]
+# * (sentence) [[word]]
+#
+# match_pks( explanations_block, section_block )
+# match_pks( explanations_node, synonyms_node )
+# match_pks( explanations_node, hyponyms_node )
+# match_pks( explanations_node, translations_node )
