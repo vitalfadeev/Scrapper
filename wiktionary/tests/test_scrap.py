@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 def get_test_file_content(lang, label):
     log.warning( "Current directory: " + os.getcwd() )
 
-    with open(lang + "/" + label + ".txt", encoding="utf-8") as f:
+    with open(os.path.join('wiktionary', 'tests', lang , label + ".txt"), encoding="utf-8") as f:
         return f.read()
 
 
@@ -27,6 +27,7 @@ def scrap_one_test(lang="en", label="cat"):
 class MyTestCase(unittest.TestCase):
     def setUp(self):
         # db
+        Scrapper_Wiktionary.DBWikictionary.close()
         DB_NAME = "test_wiktionary.db"
         if os.path.isfile( DB_NAME ):
             os.remove( DB_NAME )
