@@ -71,6 +71,7 @@
 
 import html
 from collections.abc import Iterable
+from typing import List, Any, Iterator
 from itertools import islice
 import logging
 import typing
@@ -269,6 +270,16 @@ class Container:
                     for (lang, term) in t.find_terms(lang_keys, term_keys):
                         yield (lang, term)
 
+
+    def find_lexem(self, recursive=True) -> Iterator[ "Container" ]:
+        # return node lexem and node lexem childs
+        for lexem in self.childs:
+            yield lexem
+
+            if recursive:
+                yield from lexem.find_all( recursive )
+
+
     def __repr__(self):
         return "Container()"
 
@@ -335,6 +346,35 @@ class Template(Container):
         
         else:
             assert 0, "unsupported"
+
+
+    def arg_links_or_text(self, pos):
+        # find arg
+        if pos is None:
+            pass
+
+        elif isinstance(pos, int):
+            # positional arg
+            a = next( islice( self.positional_args(), pos, None ), None )
+
+        elif isinstance(pos, str):
+            # named arg
+            a = next( filter(lambda a: a.name == pos, self.args()), None )
+
+        else:
+            assert 0, "unsupported"
+
+        # check links
+        # if have
+        #   take links
+        # else
+        #   take raw
+        if a is not None:
+            if a.has_object( Link, recursive=False ):
+                yield from map( Link.get_text, a.find_objects( Link, recursive=False ) )
+            else:
+                yield a.raw
+
 
     def get_text(self):
         # extract template
@@ -1278,10 +1318,12 @@ def read_template_arg(text, spos):
         try: 
             if c == '|': # next arg 
                 epos = i
+                arg.raw = text[spos:epos]
                 return (epos, arg) # OK
                 
             elif text.startswith('}}', i): # end
                 epos = i
+                arg.raw = text[spos:epos]
                 return (epos, arg) # OK
                 
             elif text.startswith("<!--", i):
@@ -1423,8 +1465,7 @@ def read_link_arg(text, spos):
     l = len(text)
     
     arg = Arg()
-    cdata = []
-    
+
     while i < l:
         c = text[i]
         

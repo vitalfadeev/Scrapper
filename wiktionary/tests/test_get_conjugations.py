@@ -1,5 +1,5 @@
 import unittest
-from wiktionary.Scrapper_Wiktionary_Conjugations import  check_connection, get_conjugations, VERBIX_URL
+from conjugator.Scrapper_Wiktionary_Conjugations import  check_connection, get_conjugations
 
 
 class MyTestCase(unittest.TestCase):
@@ -15,5 +15,9 @@ class MyTestCase(unittest.TestCase):
         lang = 'eng'
         verb = 'do'
         words = get_conjugations( lang, verb )
-        print( words )
+        for word in words:
+            print( word )
+        print( len(words) )
+        self.assertIsInstance( words, list )
+        self.assertEqual( len(words), 66 )
 

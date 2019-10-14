@@ -11,16 +11,58 @@ def check( context, definition ):
         yield from func( context, args )
 
 
-def in_section( context, snames: dict ):
-    for c in context:
-        beauty_title = c.title.lower().strip()
-        if beauty_title in snames:
-            yield from check( c, snames[ beauty_title ] )
+def in_section( context, definitions: dict ):
+    # check current section name or find parent section
+    is_section_found = False
+    next_checkers = None
+    node = context
+
+    while node is not None:
+        if node.title_norm:
+            if node.title_norm in definitions:
+                is_section_found = True
+                next_checkers = definitions[ node.title_norm ]
+                break  # one time check context only
+        node = node.parent
+
+    if is_section_found:
+        yield from check( context, next_checkers )
 
 
-def in_section_pos( context, defs=None ):
-    pass
+def in_trans_top( context, definitions ):
+    # get translations
+    # {{trans-top|...}}
+    # *Abkhaz: {{t | ab | ацгә}}
+    # *Acehnese: {{t | ace | mië}}
+    # *Adyghe: {{t | ady | кӏэтыу}}
 
+    node = context
+    expect_langs = definitions.keys()
+
+    if node.is_trans_top:
+        for li in node.lexems:
+            if isinstance( li, Li ):
+                # try:
+                    language_raw = li.childs[0].raw
+                    language = language_raw.strip( ': \n' ).lower()
+
+                    if language in expect_langs:
+                        # if in arg [[...]]
+                        #   take ...
+                        # else
+                        #   take arg text
+
+                        result = list( check( li, definitions[ language ] ) )
+                        yield from result
+
+                        #yield from check( li, definitions[ language ] )
+
+                # except AttributeError:
+                #     pass
+                # except KeyError:
+                #     pass
+                # except IndexError:
+                #     pass
 
 """
 def in_example( context, defs):
@@ -53,11 +95,11 @@ def text_contain( context, definitions ):
             yield True
 
 
-def in_template( context, tnames: dict ):
+def in_template( context, definitions: dict ):
     for t in context.find_lexem( recursive=True ):
         if isinstance(t, Template):
-            if t.name in tnames:
-                yield from check( t, tnames[ t.name ] )
+            if t.name in definitions:
+                yield from check( t, definitions[ t.name ] )
 
 
 def in_template_trans_top( context, defs=None ):
@@ -78,14 +120,19 @@ def with_lang( t, definitions ):
         yield from check( t, definitions[ lang ] )
 
 
-def in_arg( t, arg_keys ):
+def in_arg( context, definitions ):
+    t = context
+    arg_keys = definitions
+
     if isinstance(arg_keys, set):
         for k in arg_keys:
-            yield t.arg( k )
+            yield from t.arg_links_or_text( k )
+
     elif isinstance( arg_keys, dict ):
         for k, definitions in arg_keys.items():
             a = t.arg( k )
             yield from check( a, definitions )
+
     else:
         raise Exception("unsupported")
 
@@ -115,6 +162,12 @@ def in_any_arg( t, definitions ):
 
 def in_all_positional_args( t: Template, defs ):
     for a in t.positional_args():
+        yield a.get_text()
+
+
+def in_all_positional_args_except_lang( t: Template, defs ):
+    args = list( t.positional_args() )
+    for a in args[1:]:
         yield a.get_text()
 
 
@@ -154,10 +207,20 @@ def en_adj( context, defs ):
 
 
 def check_node( node, lm ):
+    # 1. get from language module all vars. it is definitions
+    # 2. in each definition take function and arguments. it is checker and arguments.
+    # 3. recursive
+    # 4 .run function with arguments. return words
     for name in filter( lambda s: s[0].isupper(), vars( node.item ) ):
+        # if name == 'Synonymy':
+        #     pass
+        # else:
+        #     continue
+
         if hasattr(lm, name):
             definitions = getattr( lm, name )
-            generator = check( node, definitions )
+            definitions = detuple_dfinition_keys( definitions )
+            generator = filter( None, check( node, definitions ) )
 
             store = getattr( node.item, name )
 
@@ -182,3 +245,25 @@ def check_node( node, lm ):
                 raise Exception( "unsupported: " + str( type( store ) ) )
 
 
+def detuple_dfinition_keys( defs ):
+    to_append = {}
+    to_remove = []
+
+    #
+    for k, v in defs.items():
+        if isinstance(k, tuple):
+            to_remove.append( k )
+            to_append.update( dict.fromkeys(k, v) )
+
+        if isinstance( v, dict ):
+            detuple_dfinition_keys( v )
+
+    # remove tupled keys
+    for r in to_remove:
+        defs.pop( r )
+
+    # add un-tupled keys
+    if to_append:
+        defs.update( to_append )
+
+    return defs

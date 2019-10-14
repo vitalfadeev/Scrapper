@@ -31,11 +31,10 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: list, translation_sentences: 
         'translations': translation_sentences,
     }
 
-    response = requests.post(url, json=data, timeout=(3.05, 27))
+    response = requests.post(url, json=data, timeout=(11, 33))
 
     if response.status_code == 200:
         try:
-            import json
             result = json.loads(response.content, encoding='UTF-8')
             #result = response.json( encoding='UTF-8' )
             pairs = result['result']

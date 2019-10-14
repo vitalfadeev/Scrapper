@@ -5,19 +5,19 @@ import bz2
 import copy
 import importlib
 # from typing import List, Set, Dict, Tuple, Optional
-import Scrapper
+from Scrapper import DBExecute, DBExecuteScript, DBWrite
 from . import Scrapper_Wiktionary_WikitextParser
 from . Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 
 DB_NAME         = "wiktionary.db"
 DBWikictionary  = sqlite3.connect(DB_NAME, isolation_level=None)
-DBWikictionary.execute( "PRAGMA journal_mode = OFF" )
-DBWikictionary.executescript(WikictionaryItem.Meta.DB_INIT)
-
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
+log             = logging.getLogger(__name__)
 
-log = logging.getLogger(__name__)
+# init DB
+DBExecute( DBWikictionary, "PRAGMA journal_mode = OFF" )
+DBExecuteScript( DBWikictionary, WikictionaryItem.Meta.DB_INIT )
 
 
 def create_storage(folder_name: str):
@@ -122,7 +122,7 @@ def filterPageProblems(page: Page):
 def DBDeleteLangRecords(lang):
     """ Remove old lang data """
     log.info("deleting old '%s' records...", lang)
-    return Scrapper.DBExecute(DBWikictionary, "DELETE FROM wiktionary WHERE LanguageCode = ?", lang)
+    return DBExecute(DBWikictionary, "DELETE FROM wiktionary WHERE LanguageCode = ?", lang)
 
 
 class Dump:
@@ -204,11 +204,6 @@ def XmlStreamReader(infile):
             elem.clear()
 
 
-def get_test_file_content(lang, label):
-    with open("wiktionary/tests/" + lang + "/" + label + ".txt", encoding="utf-8") as f:
-        return f.read()
-
-
 def convert_explanation_raw_to_text( label, explanation_text ):
     label = label
 
@@ -220,27 +215,18 @@ def convert_explanation_raw_to_text( label, explanation_text ):
     return text
 
 
-def scrap_test(lang="en", label="cat"):
-    result = DBDeleteLangRecords( lang )
-
-    id_   = 0
-    ns    = 0
-    text  = get_test_file_content(lang, label)
-
-    page  = Page(id_, ns, label, text)
-
-    scrap_one( lang, page )
-
-
 def scrap_one(lang, page):
     log.warning( "(%s, %s)", lang, page )
 
     lm    = importlib.import_module("wiktionary." + lang)
     items = lm.scrap( page )
 
+    item: WikictionaryItem
     for item in items:
         item.dump()
-        Scrapper.DBWrite( DBWikictionary, item )
+        DBWrite( DBWikictionary, item )
+
+    return  items
 
 
 def scrap_one_wrapper(args):
@@ -255,22 +241,14 @@ def scrap(lang="en", workers=1):
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
     if workers > 1:
-        if 0: # multiprocessing alternative
-            import concurrent.futures
-            import itertools
+        import multiprocessing
+        import itertools
 
-            with concurrent.futures.ProcessPoolExecutor( max_workers=workers ) as executor:
-                for scrap_result in executor.map( scrap_one, itertools.repeat( lang ), reader ):
-                    pass
-        else:
-            import multiprocessing
-            import itertools
-
-            pool = multiprocessing.Pool( workers )
-            for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
-                pass
-            pool.close()
-            pool.join()
+        pool = multiprocessing.Pool( workers )
+        for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
+            pass
+        pool.close()
+        pool.join()
 
     else: # single process
         for page in reader:

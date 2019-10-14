@@ -1,6 +1,15 @@
+# fast hashed storage.
 blist
+# probgess bar wwhen downloaded dump
 ctdl
+# dump parse
 lxml
+# group explanations
 more-itertools
+# wiki remote api return xml. conjugator api return html
 bs4
 html5lib
+# wikidata dump in json
+ijson
+# fetch content from Wikipedia
+wikipedia

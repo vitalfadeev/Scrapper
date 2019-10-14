@@ -5,6 +5,7 @@ import logging
 from collections.abc import Iterable
 from Scrapper_Helpers import remove_comments, extract_from_link, filterWodsProblems
 
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -65,13 +66,22 @@ class WikictionaryItem:
                     TranslationsPairs       TEXT NULL,
                     DescriptionWiktionaryLinks TEXT NULL,
                     DescriptionWikipediaLinks  TEXT NULL,
+                    Labels                  TEXT NULL,
                     Categories              TEXT NULL,
                     Cognates                TEXT NULL,
                     Mentions                TEXT NULL,
-                    VerbConjugaisonAdded    INTEGER NULL
+                    VerbConjugaisonAdded    INTEGER NULL,
+                    SenseRaw                TEXT NULL,
+                    Sense                   TEXT NULL,
+                    SenseFromSynonyms       TEXT NULL,
+                    SenseFromTranslations   TEXT NULL,
+                    SeeAlso                 TEXT NULL,
+                    Accent                  TEXT NULL,
+                    Qualifier               TEXT NULL,
+                    ExternalLinks           TEXT NULL
             );
             
-            CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);
+            -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);
         """
 
     def __init__(self):
@@ -127,10 +137,19 @@ class WikictionaryItem:
         self.TranslationsPairs          = []
         self.DescriptionWiktionaryLinks = []
         self.DescriptionWikipediaLinks  = []
+        self.Labels                     = []
         self.Categories                 = []
         self.Cognates                   = {}
         self.Mentions                   = {}
         self.VerbConjugaisonAdded       = None
+        self.SenseRaw                   = ""
+        self.Sense                      = ""
+        self.SenseFromSynonyms          = ""
+        self.SenseFromTranslations      = ""
+        self.SeeAlso                    = []
+        self.Accent                     = []
+        self.Qualifier                  = []
+        self.ExternalLinks              = []
 
 
     def merge( self, item: "WikictionaryItem"):
@@ -421,8 +440,7 @@ class WikictionaryItem:
                         if len(s) >= 1:
                             break
                 header.append(s.rjust(2))
-            #log.info(" ".join(header))
-            print(" ".join(header))
+            log.info(" ".join(header))
 
         row = []
         for a in attrs:
@@ -437,8 +455,7 @@ class WikictionaryItem:
                 else:
                     s = '-'
             row.append(s.rjust(2))
-        #log.info(" ".join(row) + " " + self.PrimaryKey)
-        print(" ".join(row) + " " + self.PrimaryKey)
+        log.info(" ".join(row) + " " + self.PrimaryKey)
 
 
     def dumps(self, print_header=False):

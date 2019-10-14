@@ -34,15 +34,15 @@ def parse( title, text ):
         print( 'response.text', response.text )
 
 
-def expand_templates( title: str, wikitexts: list ) -> list:
+def expand_templates( title: str, raws: dict ) -> dict:
     to_send = []
     result = []
 
     # prepare text. wrap with <span>
-    for i, wiki in enumerate( wikitexts ):
+    for key, raw in raws.items():
         # wrap with <div>
-        s = wiki if wiki else ''
-        to_send.append( "<span class=\"data-ixioo-id\" id=\"" + str( i ) + "\">" + s + "</span>" )
+        s = raw if raw else ''
+        to_send.append( "<span class=\"data-ixioo-id\" id=\'" + key + "\'>" + s + "</span>" )
 
     text = "<span>" + "\n" + "\n".join( to_send ) + "\n" + "</span>"
 
@@ -55,15 +55,11 @@ def expand_templates( title: str, wikitexts: list ) -> list:
     soup = BeautifulSoup( parsed_text, 'lxml' )
 
     # fetch id
-    expanded = { }
+    txts = { }
     for e in soup.find_all( 'span', class_="data-ixioo-id" ):
-        expanded[ int( e.get( 'id' ) ) ] = e.text
+        txts[ e.get( 'id' ) ] = e.text
 
-    # sort result
-    for i, txt in enumerate( wikitexts ):
-        result.append( expanded[ i ] )
-
-    return result
+    return txts
 
 
 def get_wikitext( title=None ):

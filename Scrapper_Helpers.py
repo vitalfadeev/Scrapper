@@ -242,7 +242,8 @@ def add_template(s, t):
         
     # update counter
     Store.counter += 1
-        
+
+
 def save():
     js = json.dumps(Store.templates, sort_keys=False, indent=4, ensure_ascii=False)
     put_contents("templates.json", js)
@@ -250,10 +251,17 @@ def save():
     js = json.dumps(Store.sections, sort_keys=False, indent=4, ensure_ascii=False)
     put_contents("sections.json", js)
 
+
+def save_to_json( obj, filename ):
+    js = json.dumps( obj, sort_keys=False, indent=4, ensure_ascii=False )
+    put_contents( filename, js )
+
+
 def merge_two_dicts(x, y):
     z = x.copy()   # start with x's keys and values
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
+
 
 def check_flag(s, flags):
     for flag in flags:

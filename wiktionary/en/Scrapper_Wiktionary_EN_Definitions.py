@@ -91,14 +91,20 @@ Synonymy = {
                 ('syn', 'synonyms'): {
                     with_lang: {
                         'en': {
-                            in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                            in_all_positional_args_except_lang: {}
                         },
                     },
                 },
                 'taxlink': {
                     in_arg: { 0 }
                 },
-                ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia'): {
+                'vern': {
+                    in_arg: { 0 }
+                },
+                ('ws', 'ws link'): {
+                    in_arg: { 0 }
+                },
+                ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia', 'synonym of', 'alter'): {
                     with_lang: {
                         'en': {
                             in_arg: { 1 }
@@ -106,24 +112,17 @@ Synonymy = {
                     },
                 },
             },
-            in_link: 1,
+            in_link: {},
         }
     },
     in_template: {
         ('syn', 'synonyms'): {
             with_lang: {
                 'en': {
-                    in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                    in_all_positional_args_except_lang: { }
                 },
             },
         },
-        'wikipedia': {
-            with_lang: {
-                'en': {
-                    in_arg: { 1 }
-                }
-            }
-        }
     },
 }
 
@@ -132,7 +131,7 @@ Antonymy = {
         ('antonyms', 'ant'): {
             with_lang: {
                 'en': {
-                    in_arg: { 1,2,3,4,5,6,7 }
+                    in_all_positional_args_except_lang: { }
                 },
             },
         },
@@ -147,6 +146,12 @@ Antonymy = {
                         },
                     },
                 },
+                'taxlink': {
+                    in_arg: { 0 }
+                },
+                'vern': {
+                    in_arg: { 0 }
+                },
             },
             in_link: {},
         }
@@ -158,7 +163,7 @@ Hypernymy = {
         'hypernyms': {
             with_lang: {
                 'en': {
-                    in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                    in_all_positional_args_except_lang: { }
                 }
             }
         }
@@ -173,6 +178,12 @@ Hypernymy = {
                         },
                     },
                 },
+                'taxlink': {
+                    in_arg: { 0 }
+                },
+                'vern'   : {
+                    in_arg: { 0 }
+                },
             },
             in_link: {},
         }
@@ -184,7 +195,7 @@ Hyponymy = {
         'hyponyms': {
             with_lang: {
                 'en': {
-                    in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                    in_all_positional_args_except_lang: { }
                 }
             }
         }
@@ -199,6 +210,12 @@ Hyponymy = {
                         },
                     },
                 },
+                'taxlink': {
+                    in_arg: { 0 }
+                },
+                'vern'   : {
+                    in_arg: { 0 }
+                },
             },
             in_link: {},
         }
@@ -210,7 +227,7 @@ Meronymy = {
         'meronyms': {
             with_lang: {
                 'en': {
-                    in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                    in_all_positional_args_except_lang: { }
                 }
             }
         }
@@ -225,6 +242,12 @@ Meronymy = {
                         },
                     },
                 },
+                'taxlink': {
+                    in_arg: { 0 }
+                },
+                'vern'   : {
+                    in_arg: { 0 }
+                },
             },
             in_link: {},
         }
@@ -236,7 +259,7 @@ Holonymy = {
         'holonyms': {
             with_lang: {
                 'en': {
-                    in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                    in_all_positional_args_except_lang: { }
                 }
             }
         }
@@ -251,6 +274,12 @@ Holonymy = {
                         },
                     },
                 },
+                'taxlink': {
+                    in_arg: { 0 }
+                },
+                'vern'   : {
+                    in_arg: { 0 }
+                },
             },
             in_link: {},
         }
@@ -262,7 +291,7 @@ Troponymy = {
         'troponyms': {
             with_lang: {
                 'en': {
-                    in_arg: { 1, 2, 3, 4, 5, 6, 7 }
+                    in_all_positional_args_except_lang: { }
                 }
             }
         }
@@ -276,6 +305,12 @@ Troponymy = {
                             in_arg: { 1 }
                         },
                     },
+                },
+                'taxlink': {
+                    in_arg: { 0 }
+                },
+                'vern'   : {
+                    in_arg: { 0 }
                 },
             },
             in_link: {},
@@ -340,7 +375,7 @@ Coordinate = {
     in_section: {
         'coordinate terms': {
             in_template: {
-                ('lb', 'lb', 'label', 'm', 'mention', 'l', 'link'): {
+                ('lb', 'lbl', 'label', 'm', 'mention', 'l', 'link'): {
                     with_lang: {
                         'en': {
                             in_arg: { 1 }
@@ -352,12 +387,165 @@ Coordinate = {
     }
 }
 
-Categories = {
+Translation_EN = {}
+
+Translation_FR = {
+    in_trans_top: {
+        'french': {
+            in_template: {
+                't': {
+                    with_lang: {
+                        'fr': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+                't+': {
+                    with_lang: {
+                        'fr': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+            }
+        }
+    }
+}
+
+Translation_DE = {
+    in_trans_top: {
+        'german': {
+            in_template: {
+                't' : {
+                    with_lang: {
+                        'de': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+                't+': {
+                    with_lang: {
+                        'de': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+            }
+        }
+    }
+}
+
+Translation_IT = {
+    in_trans_top: {
+        'italian': {
+            in_template: {
+                't': {
+                    with_lang: {
+                        'it': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+                't+': {
+                    with_lang: {
+                        'it': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+            }
+        }
+    }
+}
+
+Translation_ES = {
+    in_trans_top: {
+        'spanish': {
+            in_template: {
+                't': {
+                    with_lang: {
+                        'es': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+                't+': {
+                    with_lang: {
+                        'es': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+            }
+        }
+    }
+}
+
+Translation_RU = {
+    in_trans_top: {
+        'russian': {
+            in_template: {
+                't': {
+                    with_lang: {
+                        'ru': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+                't+': {
+                    with_lang: {
+                        'ru': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+            }
+        }
+    }
+
+}
+
+Translation_PT = {
+    in_trans_top: {
+        'portuguese': {
+            in_template: {
+                't': {
+                    with_lang: {
+                        'pt': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+                't+': {
+                    with_lang: {
+                        'pt': {
+                            in_arg: { 1 }
+                        }
+                    }
+                },
+            }
+        }
+    }
+}
+
+Labels = {
     in_template: {
         ('lb', 'lbl', 'label'): {
             with_lang: {
                 'en': {
-                    in_arg: { 1 }
+                    in_arg: { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+                }
+            }
+        }
+    },
+}
+
+Categories = {
+    in_template: {
+        ('top', 'topic', 'topics', 'categorize'): {
+            with_lang: {
+                'en': {
+                    in_arg: { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
                 }
             }
         }
@@ -376,116 +564,52 @@ Mentions = {
     },
 }
 
-def _redefine( var ):
-    to_append = {}
-    to_remove = []
-
-    for k ,v in var.items():
-        if isinstance(k, tuple):
-            to_append.update( dict.fromkeys(k, v) )
-            to_remove.append( k )
-        elif isinstance( v, dict ):
-            _redefine( v )
-
-    if to_remove:
-        for r in to_remove:
-            var.pop( r )
-        var.update( to_append )
-
-
-def redefine():
-    """ Replace tuple() keys in vars with each element from tuple """
-    for varname, var in globals().items():
-        if varname[0].isupper():
-            if isinstance(var, dict):
-                _redefine( var )
-
-redefine()
-
-_syn_templates = {
-    'syn',
-    'synonyms',
-    'synonym of',
-}
-_other_templates = {
-    'taxlink',  #
-    'C', 'topics', 'top', 'c',  #
-    'IPAchar',
-    'R:American Heritage Dictionary', 'R:AHD',
-    'R:Dictionary.com',
-    'R:OCD2',
-    'R:ODS online',
-    'R:RHCD',
-    'a', 'accent',
-    'alter',
-    'attention',
-    'categorize',
-    'catlangname', 'cln',
-    'checksense',
-    'cite-web',  #
-    'g',
-    'gl-noun',
-    'gloss',
-    'head',
-    'synonym of', 'syn of',  #
-    'vern',  #
+SeeAlso = {
+    in_template: {
+        ('lb', 'lbl', 'label', 'm', 'mention', 'l', 'link',): {
+            with_lang: {
+                'en': {
+                    in_arg: { 1 }
+                }
+            }
+        },
+        ('see', 'also', 'see also'): {
+            in_arg: { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+        }
+    }
 }
 
-_other = [
-    "hu-case",
-    "i",
-    "it-noun",
-    "ja-l",
-    "ja-r",
-    "jump",
-    "ko-l",
-    "l",
-    "l-nb",
-    "l/hu",
-    "l/sh/Latn",
-    "la-i-j",
-    "label",
-    "lang",
-    "lb",
-    "link",
-    "m",
-    "nn-inf",
-    "pedialite",
-    "pedlink",
-    "plural of",
-    "projectlink",
-    "q",
-    "qf",
-    "qual",
-    "qualifier",
-    "rfc",
-    "s",
-    "see",
-    "see also",
-    "seeSynonyms",
-    "sense",
-    "soplink",
-    "syn",
-    "syndiff",
-    "synonym of",
-    "taxlink",
-    "tbot entry",
-    "th-l",
-    "top",
-    "top2",
-    "top3",
-    "top4",
-    "topic",
-    "topics",
-    "vern",
-    "vi-l",
-    "w",
-    "wikipedia",
-    "wikisaurus:movement",
-    "wikispecies",
-    "ws",
-    "ws link",
-    "zh-cat",
-    "zh-dial",
-    "zh-l",
-]
+Accent = {
+    in_template: {
+        ('a', 'accent'): {
+            in_arg: { 0, 1, 2, 3, 4, 5 }
+        }
+    }
+}
+
+Qualifier = {
+    in_template: {
+        ('q','qf',  'i', 'qual', 'qualifier'): {
+            in_arg: { 0, 1, 2, 3, 4 }
+        }
+    }
+}
+
+SenseRaw = {
+    in_template: {
+        ('s','sense'): {
+            in_arg: { 0 }
+        }
+    }
+}
+
+ExternalLinks = {
+    in_template: {
+        'soplink': {
+            in_all_positional_args: { }
+        },
+        ('w', 'wikipedia'): {
+            in_arg: { 0 }
+        }
+    }
+}

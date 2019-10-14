@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 import json
 import itertools
 import sqlite3
@@ -7,9 +9,20 @@ def DBExecute( DB, sql, *args ):
     DB.execute( sql, args )
 
 
-def DBRead(DB, id=None, where=None):
-    item = object()
-    return item
+def DBExecuteScript( DB, sql, *args ):
+    DB.executescript( sql )
+
+
+def DBRead( DB, table, id=None, where=None, args=tuple ):
+    if where is None:
+        sql = "SELECT * FROM `{}`".format( table )
+    else:
+        sql = "SELECT * FROM `{}` WHERE ".format( table ) + where
+
+    DB.execute( sql, args )
+
+    item = []
+    yield from item
 
 
 def DBWrite(DB, item):
