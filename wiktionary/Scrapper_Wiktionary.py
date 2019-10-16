@@ -36,6 +36,12 @@ class Page:
         self.ns    = ns
         self.label = label
         self.text  = text
+        #
+        self.lexems = []
+        self.toc = None
+        self.explanations = []
+        self.text_by_raw = {}
+        self.explanation_by_sense = {}
 
     def clean(self):
         text = self.text

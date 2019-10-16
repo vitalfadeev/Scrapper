@@ -15,6 +15,9 @@ class WikictionaryItem:
         DB_INIT = """
             CREATE TABLE IF NOT EXISTS wiktionary (
                     PrimaryKey              VARCHAR(255) NOT NULL PRIMARY KEY,
+                    IndexinPage				INTEGER NULL,
+                    IndexPartOfSpeech		VARCHAR(255) NULL,
+                    IndexinToc 				VARCHAR(255) NULL,
                     SelfUrl                 VARCHAR(255),
                     LabelName               VARCHAR(255),
                     LabelType               VARCHAR(255),
@@ -57,9 +60,6 @@ class WikictionaryItem:
                     Translation_ES          TEXT NULL,
                     Translation_RU          TEXT NULL,
                     Translation_PT          TEXT NULL,
-                    IndexinPage				INTEGER NULL,
-                    IndexinToc 				VARCHAR(255) NULL,
-                    IndexPartOfSpeech		VARCHAR(255) NULL,
                     TranslationsBySentence  TEXT NULL,
                     TranslationSentence     TEXT NULL,
                     TranslationsByLang      TEXT NULL,

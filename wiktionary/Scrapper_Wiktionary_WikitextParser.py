@@ -330,16 +330,28 @@ class Template(Container):
     def positional_args(self) -> list:
         yield from filter(lambda a: a.name is None, self.args())
 
-    def arg(self, pos):
+    def arg(self, pos, raw=False):
         if isinstance(pos, int):
             # positional arg
             a = next( islice( self.positional_args(), pos, None ), None )
-            return a.get_value() if a else None
+            if a:
+                if raw is False:
+                    return a.get_value()
+                else:
+                    return a.raw
+            else:
+                return None
 
         elif isinstance(pos, str):
             # named arg
             a = next( filter(lambda a: a.name == pos, self.args()), None )
-            return a.get_value() if a else None
+            if a:
+                if raw is False:
+                    return a.get_value()
+                else:
+                    return a.raw
+            else:
+                return None
 
         elif pos is None:
             return None

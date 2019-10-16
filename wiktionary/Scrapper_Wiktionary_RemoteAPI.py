@@ -34,15 +34,15 @@ def parse( title, text ):
         print( 'response.text', response.text )
 
 
-def expand_templates( title: str, raws: dict ) -> dict:
+def expand_templates( title: str, raws: list ) -> list:
     to_send = []
     result = []
 
     # prepare text. wrap with <span>
-    for key, raw in raws.items():
+    for i, raw in enumerate( raws ):
         # wrap with <div>
         s = raw if raw else ''
-        to_send.append( "<span class=\"data-ixioo-id\" id=\'" + key + "\'>" + s + "</span>" )
+        to_send.append( "<span class=\"data-ixioo-id\" id=\"" + str(i) + "\">" + s + "</span>" )
 
     text = "<span>" + "\n" + "\n".join( to_send ) + "\n" + "</span>"
 
@@ -55,9 +55,10 @@ def expand_templates( title: str, raws: dict ) -> dict:
     soup = BeautifulSoup( parsed_text, 'lxml' )
 
     # fetch id
-    txts = { }
+    txts = []
     for e in soup.find_all( 'span', class_="data-ixioo-id" ):
-        txts[ e.get( 'id' ) ] = e.text
+        id_ = e.get( 'id' )
+        txts.append( e.text )
 
     return txts
 

@@ -35,8 +35,7 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: list, translation_sentences: 
 
     if response.status_code == 200:
         try:
-            result = json.loads(response.content, encoding='UTF-8')
-            #result = response.json( encoding='UTF-8' )
+            result = json.loads( response.content, encoding='UTF-8' )
             pairs = result['result']
             return pairs
 
