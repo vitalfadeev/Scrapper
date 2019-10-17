@@ -4,6 +4,8 @@ import more_itertools
 import Scrapper_IxiooAPI
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Section, Header, Template, Li, Link, String, Container
 from wiktionary.en import Scrapper_Wiktionary_EN_Templates
+from wiktionary.en.Scrapper_Wiktionary_EN_Defs2 import Explanation, ExplanationExample
+from .en import Scrapper_Wiktionary_EN
 from Scrapper_Helpers import filterWodsProblems
 
 
@@ -33,27 +35,12 @@ def in_section( page, explanation, context, definitions ):
     # check each title
     # definitions[ 'synonyms' ] = {}
     for title, defs in definitions.items():
-        section = node.sections.get( title, None )
+        section = node.sections_by_name.get( title, None )
 
         if section is not None:
             # do next check
             yield from check( page, explanation, section, defs )
 
-
-# read block from {{trans-top}} to {{trans-bottom}}
-def trans_top_reader( lexems, start_element ):
-    reader = iter( lexems )
-    for e in lexems:
-        if e is reader:
-            break
-
-    next( reader, None )
-
-    for e in reader:
-        if isinstance( e, Template ) and e.name == 'trans-bottom':
-            break
-        else:
-            yield e
 
 def in_trans_top_by_sense( page, explanation, context, definitions ):
     # get translations
@@ -129,6 +116,10 @@ def in_trans_top_by_sense( page, explanation, context, definitions ):
                 # if no senses
                 section.sense_matches = { }
 
+        else:
+            # if no senses
+            section.sense_matches = { }
+
         matched_lexemes_container = None
 
         # 4. get matched sense. and related container
@@ -148,7 +139,7 @@ def in_trans_top_by_sense( page, explanation, context, definitions ):
         #matched_lexemes_container = next( filter( lambda x: isinstance(x, Template) and x.name == 'trans-top', section.lexems ), None )
         if matched_lexemes_container:
             # extract words
-            for li in trans_top_reader( section.lexems, matched_lexemes_container ):
+            for li in Scrapper_Wiktionary_EN.trans_top_reader( section.lexems, matched_lexemes_container ):
                 if isinstance( li, Li ):
                     # get first word. it is language
                     language_raw = li.childs[ 0 ].raw
@@ -316,7 +307,7 @@ def in_all_parent_sections( page, explanation, context, definitions ):
     parent = context
 
     while parent is not None:
-        if parent.is_explanation is False:
+        if not isinstance( parent, Explanation ):
             yield from check( page, explanation, parent, definitions )
 
         parent = parent.parent
@@ -324,7 +315,7 @@ def in_all_parent_sections( page, explanation, context, definitions ):
 
 def in_examples( page, explanation, context, definitions ):
     for child in context:
-        if child.is_example:
+        if isinstance(child, ExplanationExample):
             yield from check( page, explanation, child, definitions )
 
 
@@ -333,7 +324,7 @@ def get_li_senses_en( page, section ):
     search: * {{sense|...}}
     return [ ('sentence1', lexemes_container1), ('sentence2', lexemes_container2),) ]
     """
-    for lexem in section.lexems:
+    for lexem in section.lexemes:
         if isinstance( lexem, Li ):
             li = lexem
             for t in lexem.find_objects( Template, recursive=False ):
@@ -377,7 +368,7 @@ def in_li_by_sense_en( page, explanation, context, definitions ):
     # if many explanations
     elif len( page.explanations ) > 1:
         # check cached
-        if section.sense_matches is None:
+        if not hasattr(section, 'section.sense_matches') or section.sense_matches is None:
             # extract senses
             section.by_sense = dict( get_li_senses_en( page, section ) )
             # we have all senses!

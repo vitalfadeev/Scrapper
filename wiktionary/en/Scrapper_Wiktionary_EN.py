@@ -11,10 +11,14 @@ from wiktionary import Scrapper_Wiktionary_RemoteAPI
 from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary.Scrapper_Wiktionary_ValuableSections import VALUABLE_SECTIONS as ws
 from wiktionary import Scrapper_Wiktionary_WikitextParser
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Section, Header, Template, Li, Dl, Link, String, Container
+from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Dl, Link, String, Container
 from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX, VALUED_SECTIONS
 from ..Scrapper_Wiktionary_Checkers import check_node
 from Scrapper_Helpers import unique, filterWodsProblems
+from wiktionary.en.Scrapper_Wiktionary_EN_Defs2 import \
+    Section, Root, Lang, PartOfSpeech, Explanations, section_map, Explanation, ExplanationExample, Translations, \
+    ExplanationLi
+
 
 # EN = 'en'
 # DE = 'de'
@@ -215,7 +219,7 @@ class TocNode(list):
             return self.title
 
 
-def make_tree( lexems: list ) -> TocNode:
+def make_tree_( lexems: list ) -> TocNode:
     root = TocNode()
     last = root
 
@@ -293,6 +297,99 @@ def make_tree( lexems: list ) -> TocNode:
     return root
 
 
+
+def make_tree( lexemes: list ) -> Root:
+    root = Root()
+    last = root
+
+    # 1. scan each lexem
+    # 2. get Headers
+    # 3. make tree
+    # group lexems by class
+    for lexem in lexemes:
+        if isinstance( lexem, Header ):
+            header = lexem
+
+            # flags
+            beauty_name = header.name.lower().strip()
+            if header.level < 4 and beauty_name in LANG_SECTIONS_INDEX:
+                # Language
+                node = Lang()
+                node.title = header.name
+                node.title_norm = LANG_SECTIONS_INDEX[ beauty_name ]
+                node.level = header.level
+                node.lexemes.append( header )
+
+            elif beauty_name in PART_OF_SPEECH_SECTIONS_INDEX:
+                # Part of speech
+                node = PartOfSpeech()
+                node.title = header.name
+                node.title_norm = PART_OF_SPEECH_SECTIONS_INDEX[ beauty_name ]
+                node.level = header.level
+                node.lexemes.append( header )
+
+            elif beauty_name in VALUED_SECTIONS_INDEX:
+                # Synonyms, Antonyms, Translations
+                cls = section_map.get( beauty_name, Section )
+                node = cls()
+                node.title = header.name
+                node.title_norm = VALUED_SECTIONS_INDEX[ beauty_name ]
+                node.level = header.level
+                node.lexemes.append( header )
+
+            else:
+                # Any other section
+                node = Section()
+                node.title = header.name
+                node.title_norm = beauty_name
+                node.level = header.level
+                node.lexemes.append( header )
+
+            # hierarchy
+            if last is root:
+                # top-level node
+                parent = last
+                parent.append(node)
+                last = node
+
+            elif header.level > last.level:
+                # child node
+                parent = last
+                parent.append(node)
+                last = node
+
+            elif header.level == last.level:
+                # same level node
+                parent = last.parent
+                parent.append(node)
+                last = node
+
+            else:
+                # parent node
+                # find parent
+                parent = last
+
+                while parent is not root:
+                    if header.level > parent.level:
+                        break
+                    else:
+                        parent = parent.parent
+
+                parent.append(node)
+                last = node
+
+            # index by name
+            parent.sections_by_name[ beauty_name ] = node
+
+        else:
+            # text block
+            last.lexemes.append( lexem )
+            # index by class
+            last.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
+
+    return root
+
+
 def mark_explanations( toc: TocNode ):
     # find POS node
     # find 1st list in childs
@@ -322,7 +419,7 @@ def mark_explanations( toc: TocNode ):
                     break # stop. and go to next POS
 
 
-def extract_raw_text( toc ) -> list:
+def extract_raw_text( toc: Root ) -> list:
     #     extract sense raw-text
     #       nodes for convert raw to text
     #       explanation
@@ -333,20 +430,19 @@ def extract_raw_text( toc ) -> list:
 
     raws = []
 
-    for node in toc.find_all( recursive=True ):
-        if node.is_explanation:
+    for node in toc.find_all( Section, recursive=True ):
+        if isinstance( node, Explanation ):
             # explanation.raw-text
-            li = node.lexems[0]
+            li = node.lexemes[0]
             raws.append( li.raw )
-        elif node.is_example:
+        elif isinstance( node, ExplanationExample ):
             # explanation example.raw-text
-            li = node.lexems[0]
+            li = node.lexemes[0]
             raws.append( li.raw )
         else:
             # templates
-            for lexem in node.find_lexem( recursive= True ):
-                if isinstance( lexem, Template):
-                    t = lexem
+            for t in node.find_lexem( recursive=True ):
+                if isinstance( t, Template ):
                     if t.name == 'sense':
                         raw = t.arg(0, raw=True)
                         raws.append( raw )
@@ -501,13 +597,13 @@ def extract_explanations(root: TocNode) -> tuple:
     return (explanations, lexems2)
 
 
-def make_explanations_tree( lexems: list ) -> TocNode:
+def make_explanations_tree( lexemes: list ) -> Explanations:
     # make toc
     # Add childs to parents
     # Add examples to explanations
-    def is_a_contain_b( a: TocNode, b: TocNode ) -> bool:
-        a_base = a.lexems[0].base
-        b_base = b.lexems[0].base
+    def is_a_contain_b( a: Section, b: Section ) -> bool:
+        a_base = a.lexemes[0].base
+        b_base = b.lexemes[0].base
 
         if b_base.startswith( a_base ):
             if b_base == a_base:
@@ -517,24 +613,32 @@ def make_explanations_tree( lexems: list ) -> TocNode:
         else:
             return False
 
-    root = TocNode()
+    root = Explanations()
     root.title = 'Explanations'
-    root.is_explanation_root = True
     last = root
 
-    for li in lexems:
-        node = TocNode()
-        node.title = li.raw
-        node.is_explanation_node = True
-        node.is_li = True
-        node.lexems.append( li )
-
+    for li in lexemes:
         if li.base.endswith('#'):
-            node.is_explanation = True
+            node = Explanation()
+            node.title = li.raw
+            node.lexemes.append( li )
 
-        if li.base.endswith(':'):
-            node.is_example = True
+        elif li.base.endswith(':'):
+            node = ExplanationExample()
+            node.title = li.raw
+            node.lexemes.append( li )
 
+        elif li.base.endswith('*'):
+            node = ExplanationLi()
+            node.title = li.raw
+            node.lexemes.append( li )
+
+        else:
+            node = Explanation()
+            node.title = li.raw
+            node.lexemes.append( li )
+
+        #
         if last is root:
             root.append( node )
             last = node
@@ -830,10 +934,10 @@ def convert_lists_to_tree( root : TocNode ) -> TocNode:
     return root
 
 
-def get_leaf_explanation_nodes( root: TocNode ) -> list:
+def get_leaf_explanation_nodes( root: Section ) -> list:
     leaf_explanations = []
 
-    for node in root:
+    for node in root.find_explanation_sections():
         if node.is_leaf_explanation:
             leaf_explanations.append( node )
 
@@ -843,16 +947,15 @@ def get_leaf_explanation_nodes( root: TocNode ) -> list:
     return leaf_explanations
 
 
-def add_explanations( toc: TocNode ):
-    for node in toc.find_part_of_speech_section():
-        (explanations, lexems2) = extract_explanations( node )
+def add_explanations( toc: Root ):
+    for node in toc.find_part_of_speech_sections():
+        (explanations, lexems2) = node.extract_explanations()
 
         node.lexems = lexems2
 
-        extree = make_explanations_tree( explanations )
-        node.explanations = extree
+        ex_tree = make_explanations_tree( explanations )
 
-        node.append( extree )
+        node.append( ex_tree )
 
 
 def make_lists_same_length( a: list, b: list ):
@@ -972,7 +1075,7 @@ def attach_synonyms( pos_node: TocNode ) -> list:
     return pos_node
 
 
-def mark_leaf_explanation_nodes( root: TocNode ):
+def mark_leaf_explanation_nodes( root: Root ):
     has_childs_with_explanation = False
 
     # recursive
@@ -982,7 +1085,7 @@ def mark_leaf_explanation_nodes( root: TocNode ):
             has_childs_with_explanation = True
 
     # check
-    if root.is_explanation:
+    if isinstance( root, Explanation ):
         if has_childs_with_explanation is False:
             root.is_leaf_explanation = True
         return True
@@ -990,7 +1093,7 @@ def mark_leaf_explanation_nodes( root: TocNode ):
         return has_childs_with_explanation
 
 
-def update_index_in_toc( root, level=0, prefix="", index_pos=''  ):
+def update_index_in_toc( root: Section, level=0, prefix="", index_pos=''  ):
     # text counter
     # list counter
     # header counter
@@ -1004,50 +1107,27 @@ def update_index_in_toc( root, level=0, prefix="", index_pos=''  ):
     counter[':'] = 0
     # counter['trans_top'] = 0
 
-    node: TocNode
+    node: Section
     for node in root:
-        if node.is_header:
-            i += 1
-            node.index_in_toc = prefix + str( i ) + '.'
-
-        elif node.is_explanation_root:
+        if isinstance( node, Explanations ):
             node.index_in_toc = prefix + 'ex.'
 
-        elif node.is_text:
-            # skip i. add 'text' + text_index
-            counter[ 'text' ] += 1
-            node.index_in_toc = prefix + '"' + str( counter[ 'text' ] ) + '.'
-
-        elif node.is_list:
-            #
-            counter[ 'list' ] += 1
-            node.index_in_toc = prefix + '[' + str( counter['list'] ) + '].'
-
-        elif node.is_example:
+        elif isinstance( node, ExplanationExample ):
             #
             counter[ ':' ] += 1
             node.index_in_toc = prefix + ':' + str( counter[':'] ) + '.'
 
-        elif node.is_li and not node.is_explanation:
+        elif isinstance( node, Explanation ):
             #
             counter[ '*' ] += 1
             node.index_in_toc = prefix + '*' + str( counter['*'] ) + '.'
 
-        elif node.is_li:
-            #
-            counter[ 'li' ] += 1
-            node.index_in_toc = prefix + str( counter['li'] ) + '.'
-
-        elif node.is_trans_top:
-            #
-            counter[ 'trans_top' ] += 1
-            node.index_in_toc = prefix + '.trans_top-' + str( counter['trans_top'] ) + '.'
         else:
-            #print ( node, node.is_li )
-            pass
+            i += 1
+            node.index_in_toc = prefix + str( i ) + '.'
 
         # index_in_pos
-        if node.is_pos:
+        if isinstance( node, PartOfSpeech ):
             node.index_pos = node.index_in_toc
         else:
             node.index_pos = index_pos
@@ -1056,20 +1136,21 @@ def update_index_in_toc( root, level=0, prefix="", index_pos=''  ):
         update_index_in_toc( node, level+1, node.index_in_toc, node.index_pos )
 
 
-def remove_other_langs( toc: TocNode ):
+def remove_other_langs( toc: Root ):
     to_remove = []
     to_keep = []
 
     # find current lang
     # get root node
     # remove all other sections
-    for node in toc.find_all( recursive=True ):
-        if node.is_lang and node.title_norm in LANG_SECTIONS_INDEX:
+    for node in toc.find_all( Section, recursive=True ):
+        if node.title_norm in LANG_SECTIONS_INDEX:
             to_keep.append( node )
 
-    # collect nodes tor remove
+    # collect nodes for remove
     if to_keep:
         for lang in to_keep:
+            # take lang-same-level nodes
             for node in lang.parent:
                 if node is lang:
                     pass
@@ -1081,24 +1162,22 @@ def remove_other_langs( toc: TocNode ):
                 lang.parent.remove( node )
 
 
-def trans_see_finder( toc ):
-    for node in toc.find_all( recursive=True ):
-        for t in node.find_lexem( recursive=True ):
-            if isinstance( t, Template):
-                if t.name == 'trans-see':
-                    print(node.title, (node, t), t.raw)
-                    yield (node, t)
+def trans_see_finder( toc: Root ):
+    for node in toc.find_all( Translations, recursive=True ):
+        for t in node.lexemes_by_class[ Template ][ 'trans-see' ]:
+            print(node.title, (node, t), t.raw)
+            yield (node, t)
 
-def add_translations_from_trans_see( page, toc: TocNode ):
+def add_translations_from_trans_see( page, toc: Root ):
     # 1. find all {{trans-see|...}}
     # 2. request page via wiktionary API
     # 3. parse page -> lexemes + toc
     # 4. make search index:  dict[ English ][ Noun ][ Translations ] = node
     # 5. check: dict[ English ][ Noun ] == current_node.part_of_speech
-    # 6. get trarnslations. add to node =Translations=
+    # 6. get trarnslation lexemes. add to node =Translations=
 
     # 1. find all {{trans-see|...}}
-    node: TocNode
+    node: Section
     for node, t in trans_see_finder( toc ):
         # found
         full_url = t.arg( 1 )
@@ -1119,6 +1198,7 @@ def add_translations_from_trans_see( page, toc: TocNode ):
         # 3. parse page -> lexemes + toc
         ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
         ts_toc = make_tree( ts_lexemes )
+        update_index_in_toc( ts_toc )
         ts_toc.dump()
 
         # 4. make search index:  dict[ English ][ Noun ][ Translations ] = (node, t)
@@ -1130,16 +1210,15 @@ def add_translations_from_trans_see( page, toc: TocNode ):
         #      Verb
         d = {}
         # find =Translations=
-        for nd in ts_toc.find_all( recursive=True ):
-            if nd.title_norm in VALUED_SECTIONS[ ws.TRANSLATIONS ]:
-                ts = nd
-                pos = ts.get_parent_pos_node()
-                lang = pos.get_parent_lang_node()
-                # dict[ English ][ Noun ][ Translations ] = node
-                d \
-                    .setdefault( lang.title_norm, {} ) \
-                    .setdefault( pos.title_norm, {} ) \
-                    .setdefault( ts.title_norm, nd )
+        for nd in ts_toc.find_all( Translations, recursive=True ):
+            ts = nd
+            pos = ts.get_parent_pos_node()
+            lang = pos.get_parent_lang_node()
+            # dict[ English ][ Noun ][ Translations ] = node
+            d \
+                .setdefault( lang.title_norm, {} ) \
+                .setdefault( pos.title_norm, {} ) \
+                .setdefault( ts.title_norm, nd )
 
         # 5. check:
         #    dict[ English ][ Noun ][ Translations ]
@@ -1160,7 +1239,12 @@ def add_translations_from_trans_see( page, toc: TocNode ):
         # 6. get all from =Trarnslations=. add to node =Translations=
         if ts_translations_node is not None:
             # append lexemes
-            node.lexems.extend( ts_translations_node.lexems )
+            node.lexemes.extend( ts_translations_node.lexemes )
+            # update index
+            # index by class
+            for lexem in ts_translations_node.lexemes:
+                node.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
+
 
 
 def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
@@ -1182,15 +1266,18 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     # add explanations
     add_explanations( toc )
     mark_leaf_explanation_nodes( toc )
+
+    # get all lead explanations
     explanaions = get_leaf_explanation_nodes( toc )
     page.explanations = explanaions
+    pprint.pprint(explanaions)
 
     # add translations from {{trans-see|...}}
     add_translations_from_trans_see( page, toc )
 
     # add toc-numbers
     update_index_in_toc( toc )
-    #toc.dump( with_lexems=False )
+    #toc.dump()
 
     # '{{...}}' -> 'Text'
     # 1. collect all valued raw-text:
@@ -1223,9 +1310,12 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     # 3. save
     page.text_by_raw = dict( zip( raws, txts ) )
 
+    # group sensed lexems to .by_sense
+    #group_sensed_lexems( toc )
+
     # update explanation raw, txt
     for node in page.explanations:
-        node.sense_raw = node.lexems[ 0 ].raw
+        node.sense_raw = node.lexemes[ 0 ].raw
         node.sense_txt = page.text_by_raw[ node.sense_raw ]
 
     # Prepare for scrap
@@ -1269,13 +1359,13 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         item.ExplainationTxt = node.sense_txt
 
         # Example
-        for example_node in node.find_examples():
-            item.ExplainationExamplesRaw = example_node.lexems[0].raw
+        for example_node in node.find_example_sections():
+            item.ExplainationExamplesRaw = example_node.lexemes[0].raw
             item.ExplainationExamplesTxt =  page.text_by_raw[ item.ExplainationExamplesRaw ]
             break  # first only
 
         # LabelType
-        item.LabelType = get_label_type( node.lexems[0], item )
+        item.LabelType = get_label_type( node.lexemes[0], item )
 
         # PrimaryKey
         label_type = item.LabelType if item.LabelType else ""
@@ -1488,4 +1578,29 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
 
 # parse_translations():
 #   return translations, sense, container
+
+# When "Simple page":
+# --------------------------------------------------
+# Section( English )
+#   Section( Noun )
+#     Section( Translations )
+#       senses = {
+#           "sense 1": ...,
+#           "sense 2": ...,
+#       }
+#
+# When {{trans-see|sense-trans-see|label}} expanded:
+# --------------------------------------------------
+# Section( English )
+#   Section( Noun )
+#     Section( Translations )
+#       senses = {
+#           "sense 1": ...,
+#           "sense 2": ...,
+#           "sense-trans-see": ...,  <--  from 'catfish'/English/Noun/Translations/"sense-trans-see"/...
+#
+#           "type of fish": ...,  <--  from 'catfish'/English/Noun/Translations/<all senses>/<all languages>
+#              all translations, from deep pages also
+#           "fish of the genus Silurus": ...,  <---  it sense from  deep page
+#       }
 
