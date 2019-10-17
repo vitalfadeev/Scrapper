@@ -10,18 +10,19 @@ from wiktionary import Scrapper_Wiktionary
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary.Scrapper_Wiktionary_ValuableSections import VALUABLE_SECTIONS as ws
+from wiktionary import Scrapper_Wiktionary_WikitextParser
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Section, Header, Template, Li, Dl, Link, String, Container
 from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX, VALUED_SECTIONS
 from ..Scrapper_Wiktionary_Checkers import check_node
 from Scrapper_Helpers import unique, filterWodsProblems
 
-EN = 'en'
-DE = 'de'
-PT = 'pt'
-FR = 'fr'
-IT = 'it'
-ES = 'es'
-RU = 'ru'
+# EN = 'en'
+# DE = 'de'
+# PT = 'pt'
+# FR = 'fr'
+# IT = 'it'
+# ES = 'es'
+# RU = 'ru'
 
 
 class TocNode(list):
@@ -99,13 +100,28 @@ class TocNode(list):
         yield from filter( lambda node: node.is_example, self.find_all( recursive=True ) )
 
 
-    def get_parent_pos_node( self ):
+    def get_parent_lang_node( self ) -> "TocNode":
         node = self.parent
 
-        while node.is_pos is False:
-            node = node.parent
+        while node is not None:
+            if node.is_lang is True:
+                return node
+            else:
+                node = node.parent
 
-        return node
+        return None
+
+
+    def get_parent_pos_node( self ) -> "TocNode":
+        node = self.parent
+
+        while node is not None:
+            if node.is_pos is True:
+                return node
+            else:
+                node = node.parent
+
+        return None
 
 
     def merge_with_parents( self ) -> WikictionaryItem:
@@ -306,7 +322,7 @@ def mark_explanations( toc: TocNode ):
                     break # stop. and go to next POS
 
 
-def extract_sense_raw_text( toc ) -> list:
+def extract_raw_text( toc ) -> list:
     #     extract sense raw-text
     #       nodes for convert raw to text
     #       explanation
@@ -339,8 +355,65 @@ def extract_sense_raw_text( toc ) -> list:
                         raw = t.arg(0, raw=True)
                         raws.append( raw )
 
+                    elif t.name == 'trans-see':
+                        raw = t.arg(0, raw=True)
+                        raws.append( raw )
+
                     elif t.name == 'ws sense':
                         raw = t.arg(0, raw=True)
+                        raws.append( raw )
+
+                    elif t.name in {
+                        'en-noun',
+                        'en-verb,',
+                        'en-adj',
+                        'en-adv',
+                        'en-prep',
+                        'en-inter',
+                        'en-symbol',
+                        'en-punctuationmark',
+                        'en-proverb',
+                        'en-propn',
+                        'en-propernoun',
+                        'en-proper-noun',
+                        'en-prop',
+                        'en-pron',
+                        'en-pronoun',
+                        'en-prepphrase',
+                        'en-phrase',
+                        'en-prepositionalphrase',
+                        'en-preposition',
+                        'en-pp',
+                        'en-prep',
+                        'en-prefix',
+                        'en-suffix',
+                        'en-pluralnoun',
+                        'en-plural-noun',
+                        'en-pastof',
+                        'en-particle',
+                        'en-part',
+                        'en-intj',
+                        'en-interjection',
+                        'en-inter',
+                        'en-interj',
+                        'en-initialism',
+                        'en-ingformof',
+                        'en-det',
+                        'en-decades',
+                        'en-contraction',
+                        'en-cont',
+                        'en-conjunction',
+                        'en-conj',
+                        'en-conj-simple',
+                        'en-con',
+                        'en-comparativeof',
+                        'en-cat',
+                        'en-adverb',
+                        'en-adv',
+                        'en-adj',
+                        'en-abbr',
+                    }:
+                        raw = t.raw
                         raws.append( raw )
 
     return raws
@@ -817,50 +890,50 @@ def convert_raw_to_txt( page_title: str, raws: list ) -> list:
     return converted
 
 
-def attach_translations( items: list ) -> list:
-    # attach translations
-    # group items by IndexPartOfSpeech
-    groups = [ (k, list( g )) for k, g in itertools.groupby( items, key=lambda item: item.IndexPartOfSpeech) ]
-
-    # get lists
-    for k, group in groups:
-        # make package
-        explanations = []
-        tr_sentences = []
-
-        for item in group:
-            explanations.append( item.ExplainationTxt )
-            tr_sentences.extend( item.TranslationsBySentence.keys() )
-
-        # unique
-        tr_sentences = list( set( tr_sentences ) )
-
-        # if has translations only
-        if tr_sentences:
-            # make same length
-            #make_lists_same_length( explanations, tr_sentences )
-
-            # request to api
-            pairs = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( explanations, tr_sentences )
-
-            # attach
-            for item, (e, t) in zip(group, pairs):
-                item.TranslationSentence = t
-                item.TranslationsPairs   = pairs
-                try:
-                    by_lang = item.TranslationsBySentence[ t ]
-                    item.Translation_EN.extend( by_lang.get( EN, [] ) )
-                    item.Translation_FR.extend( by_lang.get( FR, [] ) )
-                    item.Translation_DE.extend( by_lang.get( DE, [] ) )
-                    item.Translation_ES.extend( by_lang.get( ES, [] ) )
-                    item.Translation_IT.extend( by_lang.get( IT, [] ) )
-                    item.Translation_PT.extend( by_lang.get( PT, [] ) )
-                    item.Translation_RU.extend( by_lang.get( RU, [] ) )
-
-                except KeyError:
-                    pass
-
-    return items
+# def attach_translations( items: list ) -> list:
+#     # attach translations
+#     # group items by IndexPartOfSpeech
+#     groups = [ (k, list( g )) for k, g in itertools.groupby( items, key=lambda item: item.IndexPartOfSpeech) ]
+#
+#     # get lists
+#     for k, group in groups:
+#         # make package
+#         explanations = []
+#         tr_sentences = []
+#
+#         for item in group:
+#             explanations.append( item.ExplainationTxt )
+#             tr_sentences.extend( item.TranslationsBySentence.keys() )
+#
+#         # unique
+#         tr_sentences = list( set( tr_sentences ) )
+#
+#         # if has translations only
+#         if tr_sentences:
+#             # make same length
+#             #make_lists_same_length( explanations, tr_sentences )
+#
+#             # request to api
+#             pairs = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( explanations, tr_sentences )
+#
+#             # attach
+#             for item, (e, t) in zip(group, pairs):
+#                 item.TranslationSentence = t
+#                 item.TranslationsPairs   = pairs
+#                 try:
+#                     by_lang = item.TranslationsBySentence[ t ]
+#                     item.Translation_EN.extend( by_lang.get( EN, [] ) )
+#                     item.Translation_FR.extend( by_lang.get( FR, [] ) )
+#                     item.Translation_DE.extend( by_lang.get( DE, [] ) )
+#                     item.Translation_ES.extend( by_lang.get( ES, [] ) )
+#                     item.Translation_IT.extend( by_lang.get( IT, [] ) )
+#                     item.Translation_PT.extend( by_lang.get( PT, [] ) )
+#                     item.Translation_RU.extend( by_lang.get( RU, [] ) )
+#
+#                 except KeyError:
+#                     pass
+#
+#     return items
 
 
 def get_synonyms_by_sentences( node: TocNode ) -> list:
@@ -1008,24 +1081,114 @@ def remove_other_langs( toc: TocNode ):
                 lang.parent.remove( node )
 
 
+def trans_see_finder( toc ):
+    for node in toc.find_all( recursive=True ):
+        for t in node.find_lexem( recursive=True ):
+            if isinstance( t, Template):
+                if t.name == 'trans-see':
+                    print(node.title, (node, t), t.raw)
+                    yield (node, t)
+
+def add_translations_from_trans_see( page, toc: TocNode ):
+    # 1. find all {{trans-see|...}}
+    # 2. request page via wiktionary API
+    # 3. parse page -> lexemes + toc
+    # 4. make search index:  dict[ English ][ Noun ][ Translations ] = node
+    # 5. check: dict[ English ][ Noun ] == current_node.part_of_speech
+    # 6. get trarnslations. add to node =Translations=
+
+    # 1. find all {{trans-see|...}}
+    node: TocNode
+    for node, t in trans_see_finder( toc ):
+        # found
+        full_url = t.arg( 1 )
+
+        if full_url is None:
+            continue
+
+        # split cat/translations#Noun  ->  (cat/translations, Noun)
+        page_url = full_url.split('#')[0]
+
+        # skip self
+        if page_url == page.label:
+            continue
+
+        # 2. request to wiktionary API
+        raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( page_url )
+
+        # 3. parse page -> lexemes + toc
+        ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
+        ts_toc = make_tree( ts_lexemes )
+        ts_toc.dump()
+
+        # 4. make search index:  dict[ English ][ Noun ][ Translations ] = (node, t)
+        # example:
+        #    English
+        #      Noun
+        #        Translations
+        #          {{trans-top}}
+        #      Verb
+        d = {}
+        # find =Translations=
+        for nd in ts_toc.find_all( recursive=True ):
+            if nd.title_norm in VALUED_SECTIONS[ ws.TRANSLATIONS ]:
+                ts = nd
+                pos = ts.get_parent_pos_node()
+                lang = pos.get_parent_lang_node()
+                # dict[ English ][ Noun ][ Translations ] = node
+                d \
+                    .setdefault( lang.title_norm, {} ) \
+                    .setdefault( pos.title_norm, {} ) \
+                    .setdefault( ts.title_norm, nd )
+
+        # 5. check:
+        #    dict[ English ][ Noun ][ Translations ]
+        #    dict[ English ][ Translations ]
+        #    dict[ Translations ]
+        #    dict[ English ][ Noun ]
+        #    dict[ Noun ]
+        #    dict[ English ]
+        #    {{trans-top}}
+        current_ts = node
+        current_pos = current_ts.get_parent_pos_node()
+        current_lang = current_pos.get_parent_lang_node()
+        try:
+            ts_translations_node = d[ current_lang.title_norm ][ current_pos.title_norm ][ current_ts.title_norm ]
+        except KeyError:
+            ts_translations_node = None
+
+        # 6. get all from =Trarnslations=. add to node =Translations=
+        if ts_translations_node is not None:
+            # append lexemes
+            node.lexems.extend( ts_translations_node.lexems )
+
+
 def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     # 1. get Page: id, ns, title, raw-text
     # 2. parse raw-text -> take lexemes
     # 3. keep lexemes. make table-of-contents (toc). toc structure is tree. each branch is header. each node hold lexemes
     # 4. take tree. find part-of-speech nodes. take lexemes. find li. convert li to nodes. it is explanations
     # 5. take each node. take lexemes. convert lists to tree, wrap text text block with node.
-
     items  = []
 
     lexems = page.to_lexems()
     page.lexems = lexems
+
+    # make table-of-contents (toc)
     toc = make_tree( lexems )
     page.toc = toc
     remove_other_langs( toc )
+
+    # add explanations
     add_explanations( toc )
     mark_leaf_explanation_nodes( toc )
     explanaions = get_leaf_explanation_nodes( toc )
     page.explanations = explanaions
+
+    # add translations from {{trans-see|...}}
+    add_translations_from_trans_see( page, toc )
+
+    # add toc-numbers
     update_index_in_toc( toc )
     #toc.dump( with_lexems=False )
 
@@ -1043,7 +1206,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     #    page.raw_txt = saved
 
     # 1. collect
-    raws = extract_sense_raw_text( toc )
+    raws = extract_raw_text( toc )
 
     # 2. convert raw to txt
     txts = convert_raw_to_txt( page.label, raws )
@@ -1121,197 +1284,6 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         items.append( item )
 
     return  items
-
-
-
-
-
-
-
-    # merge
-    # 0. find leaf explanation-nodes
-    #    example:
-    #      # A person:                                   <- [FAIL] not leaf
-    #        ## (offensive) A spiteful or angry woman.   <- [ OK ]  is leaf
-    #        ## An enthusiast or player of jazz          <- [ OK ]  is leaf
-    #
-    # 1. trans-top
-    #      if match sense -> explanation txt
-    #        merge
-    #
-    # 2. example
-    #    example -> parent explanations
-    #
-    # 3. synonyms
-    #      if match sense -> explanation txt
-    #        merge
-
-    # 1. trans-top
-    trans_top_nodes = {}
-    explanation_nodes = {}
-
-    # prepare
-    # take translation senses. for matching
-    for lang_node in toc.find_lang_section():
-        for node in lang_node.find_all( recursive=True ):
-            # in trans-top
-            if node.is_trans_top:
-                if node.sense_txt:
-                    trans_top_nodes[ node.sense_txt ] =  node
-
-    # take explanation senses. for matching
-    for lang_node in toc.find_lang_section():
-        for node in lang_node.find_all( recursive=True ):
-            # in explanation
-            if node.is_leaf_explanation:
-                if node.sense_txt:
-                    explanation_nodes[ node.sense_txt ] =  node
-                    # dump explanations:
-                    # print( node.index_in_toc, node.sense_txt )
-
-    # find mattch.
-    # request to match API
-    pairs = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS(
-        list( explanation_nodes.keys() ),
-        list( trans_top_nodes.keys() )
-    )
-
-    # attach
-    for e_sense, t_sense in pairs:
-        # if not null
-        if e_sense and t_sense:
-            # get node
-            e_node = explanation_nodes[ e_sense ]
-            t_node = trans_top_nodes[ t_sense ]
-            # merge
-            e_node.item.merge( t_node.item )
-            # save translation sense
-            e_node.item.SenseFromTranslations = t_sense
-
-    # 2. leaf node
-    #     - merge with all parents ( before this each parent was merged with valued childs )
-    #     - merge with all child examples
-    for lang_node in toc.find_lang_section():
-        for node in lang_node.find_all( recursive=True ):
-            if node.is_leaf_explanation:
-                # merge with all parents
-                pass
-
-                # merge with child examples
-                for c in node.find_all( recursive=True ):
-                    if c.is_example:
-                        node.item.merge( c.item )
-
-    # 3. synonyms
-    #    find section 'synonyms' under part-of-speech section.
-    #      get senses
-    #      call matcher API
-    #      if match sense -> explanation txt
-    #        merge
-    for lang_node in toc.find_lang_section():
-        for pos_node in lang_node.find_part_of_speech_section():
-            for synonyms_node in pos_node.find_all( recursive=True ):
-                # find section 'synonyms'
-                if synonyms_node.title_norm == ws.SYNONYMS:
-                    syn_sense_nodes = {}
-
-                    # take all li nodes under section =synonyms=
-                    for node in synonyms_node.find_all( recursive=True ):
-                        if node.is_li:
-                            if node.sense_txt:
-                                # get sense
-                                syn_sense_nodes[ node.sense_txt ] = node
-
-                    pprint.pprint( list( explanation_nodes.keys() ) )
-                    pprint.pprint( list( syn_sense_nodes.keys() ) )
-
-                    # call matcher API
-                    pairs = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS(
-                        list( explanation_nodes.keys() ),
-                        list( syn_sense_nodes.keys() )
-                    )
-
-                    # dump syn matched pairs
-                    # for ex, sy in pairs:
-                    #     print("e:", ex)
-                    #     print("s:", sy)
-                    #pprint.pprint( pairs, width=80, depth=2 )
-
-                    # attach
-                    for e_sense, s_sense in pairs:
-                        # if not null
-                        if e_sense and s_sense:
-                            # get node
-                            e_node = explanation_nodes[ e_sense ]
-                            s_node = syn_sense_nodes[ s_sense ]
-                            # merge
-                            e_node.item.merge( s_node.item )
-                            # save synonym sense
-                            e_node.item.SenseFromSynonyms = s_sense
-
-    # take explanations only
-    # items2 = []
-    # for lang_node in toc.find_lang_section():
-    #     for pos_node in lang_node.find_part_of_speech_section():
-    #         for explanation_node in pos_node.find_explanations():
-    #             if explanation_node.is_leaf_explanation:
-    #                 items2.append( explanation_node.item )
-
-    items = []
-
-    # lang
-    for lang_node in toc.find_lang_section():
-        # part of speech
-        for part_of_speech_node in lang_node.find_part_of_speech_section():
-            pos_item = part_of_speech_node.merge_with_parents()
-
-            # explanations
-            for explanations_node in part_of_speech_node.find_explanations():
-                if explanations_node.is_leaf_explanation:
-                    explain = explanations_node.lexems[0]
-
-                    # we have lang, type, explain
-                    # print( lang_section.header.name, part_of_speech_section.header.name, explain )
-
-                    #item = explanations_node.merge_with_childs()
-                    #item.merge( pos_item )
-                    item = explanations_node.item
-
-                    # base attributes
-                    item.LabelName         = page.label
-                    item.LanguageCode      = 'en'
-                    item.SelfUrl           = "https://en.wiktionary.org/wiki/" + page.label
-
-                    # Index
-                    indexInPage += 1
-                    item.IndexinPage       = indexInPage
-                    item.IndexinToc        = explanations_node.index_in_toc
-                    item.IndexPartOfSpeech = explanations_node.index_pos
-
-                    # type
-                    item.Type              = PART_OF_SPEECH_SECTIONS_INDEX[part_of_speech_node.title.lower().strip()]
-
-                    # Explanation
-                    #item.ExplainationRaw   = explain.raw
-                    #item.ExplainationTxt   = explain.get_text()
-
-                    # Example
-                    for example_node in explanations_node.find_examples():
-                        item.ExplainationExamplesRaw = example_node.sense_raw
-                        item.ExplainationExamplesTxt = example_node.sense_txt
-                        break  # first only
-
-                    # LabelType
-                    item.LabelType         = get_label_type( explain, item )
-
-                    # PrimaryKey
-                    label_type             = item.LabelType if item.LabelType else ""
-                    item.PrimaryKey        = item.LanguageCode + "-" + item.LabelName + "§" + label_type + "-" + str(item.IndexinPage)
-
-                    items.append(item)
-
-
-    return items
 
 
 # Explanation
@@ -1507,4 +1479,13 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
 #   toc / lang / etymology / pos
 #     sections          # <- check title for 'synonyms'. sections is {}
 
+
+# translations[ sense ] = Container
+# synonyms[ sense ] = Container
+# hyponyms[ sense ] = Container
+
+# translations[ * ] = Container
+
+# parse_translations():
+#   return translations, sense, container
 

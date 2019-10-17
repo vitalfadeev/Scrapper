@@ -35,16 +35,6 @@ class Page:
         self.id_   = id_
         self.ns    = ns
         self.label = label
-        self.text  = text
-        #
-        self.lexems = []
-        self.toc = None
-        self.explanations = []
-        self.text_by_raw = {}
-        self.explanation_by_sense = {}
-
-    def clean(self):
-        text = self.text
 
         # prepare text
         # remove BOM
@@ -52,10 +42,16 @@ class Page:
             text = text[1:]
 
         # add lead \n
-        # for detection '\n=='
+        # for detection header at begin of file: '\n=='
         text = "\n" + text + "\n"
+        self.text  = text
 
-        return self
+        #
+        self.lexems = []
+        self.toc = None
+        self.explanations = []
+        self.text_by_raw = {}
+        self.explanation_by_sense = {}
 
 
     def to_lexems(self):

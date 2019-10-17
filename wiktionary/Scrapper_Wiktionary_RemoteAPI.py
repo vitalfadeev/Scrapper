@@ -1,3 +1,4 @@
+from functools import lru_cache
 import requests
 from bs4 import BeautifulSoup
 
@@ -10,6 +11,7 @@ def set_domain( lang: str ):
     DOMAIN = "https://{}.wiktionary.org".format( lang )
 
 
+@lru_cache(maxsize=32)
 def parse( title, text ):
     # wiki-text wrapped by xml
     params = {
@@ -63,6 +65,7 @@ def expand_templates( title: str, raws: list ) -> list:
     return txts
 
 
+@lru_cache(maxsize=32)
 def get_wikitext( title=None ):
     # wiki-text wrapped by xml
     params = {

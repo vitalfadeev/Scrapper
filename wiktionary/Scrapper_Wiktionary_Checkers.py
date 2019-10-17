@@ -1,8 +1,10 @@
+import itertools
 from collections import defaultdict
 import more_itertools
 import Scrapper_IxiooAPI
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Section, Header, Template, Li, Link, String, Container
 from wiktionary.en import Scrapper_Wiktionary_EN_Templates
+from Scrapper_Helpers import filterWodsProblems
 
 
 
@@ -176,7 +178,7 @@ def if_explanation( page, explanation, context, definitions ):
 
 def text_contain( page, explanation, context, definitions ):
     for text in definitions:
-        if repr(context).find( text ) != -1:
+        if context.sense_txt.find( text ) != -1:
             yield True
 
 
@@ -532,7 +534,9 @@ def check_node( page, node, lm ):
             store = getattr( node.item, name )
 
             if isinstance( store, list ):
-                store.extend( generator )
+                filtered = filter( filterWodsProblems, generator )
+                cleaned = map( str.strip, filtered )
+                store.extend( cleaned )
             elif isinstance( store, dict ):
                 store.update( generator )
             elif isinstance( store, bool ) or store is bool:

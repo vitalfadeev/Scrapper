@@ -1594,7 +1594,7 @@ def read_header(text, spos):
     i = spos
     l = len(text)
     
-    if text.startswith("\n=", i):        
+    if text.startswith("\n=", i):
         i += len("\n")
         (epos, level) = read_header_level(text, i)
 
@@ -2019,7 +2019,7 @@ def tagizer(text, spos=0) -> tuple:
             else:
                 root.append(String(c))
         else:
-            root.append(c)
+            root.append(String(c))
 
     while i < l:
         c = text[i]

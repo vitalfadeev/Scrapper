@@ -317,12 +317,8 @@ def filterWodsProblems(s: str, context=None) -> str:
 
     # skip words contains :
     if s.find(':') != -1:
-        splits = s.split(':', 1)
-        if splits[0] == 'Thesaurus':
-            return splits[1]
-        else:
-            log.warning("    filter: %s: %s: find(':'): [SKIP]", context, s)
-            return None
+        log.warning("    filter: %s: %s: find(':'): [SKIP]", context, s)
+        return None
 
     # skip more than 3 spaces
     if s.count(' ') > 3:
