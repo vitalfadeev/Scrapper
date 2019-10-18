@@ -1,0 +1,533 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wiktionary.Scrapper_Wiktionary &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>wiktionary.Scrapper_Wiktionary</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wiktionary.Scrapper_Wiktionary</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Main Wiktionary module.</span>
+
+<span class="sd">The Goal: read dump, get pages, parse, find words, save to database</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">bz2</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">Scrapper</span> <span class="k">import</span> <span class="n">DBExecute</span><span class="p">,</span> <span class="n">DBExecuteScript</span><span class="p">,</span> <span class="n">DBWrite</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">Scrapper_Wiktionary_WikitextParser</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">Scrapper_Wiktionary_Item</span> <span class="kn">import</span> <span class="nn">WikictionaryItem</span>
+<span class="kn">from</span> <span class="nn">wiktionary</span> <span class="k">import</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span>
+
+<span class="n">DB_NAME</span>         <span class="o">=</span> <span class="s2">&quot;wiktionary.db&quot;</span>
+<span class="n">DBWikictionary</span>  <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">DB_NAME</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">CACHE_FOLDER</span>    <span class="o">=</span> <span class="s2">&quot;cached&quot;</span>  <span class="c1"># folder where stored downloadad dumps</span>
+<span class="n">log</span>             <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># init DB</span>
+<span class="n">DBExecute</span><span class="p">(</span> <span class="n">DBWikictionary</span><span class="p">,</span> <span class="s2">&quot;PRAGMA journal_mode = OFF&quot;</span> <span class="p">)</span>
+<span class="n">DBExecuteScript</span><span class="p">(</span> <span class="n">DBWikictionary</span><span class="p">,</span> <span class="n">WikictionaryItem</span><span class="o">.</span><span class="n">Meta</span><span class="o">.</span><span class="n">DB_INIT</span> <span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_storage"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.create_storage">[docs]</a><span class="k">def</span> <span class="nf">create_storage</span><span class="p">(</span><span class="n">folder_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create folders recusively.</span>
+<span class="sd">    All folders in path created recursively.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        folder_name (str):  Storage folder name</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        create_storage(&quot;./cached&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder_name</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder_name</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.Page">[docs]</a><span class="k">class</span> <span class="nc">Page</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to hold page data: raw-text, label, lexemes, explanations, table-of-contents, text-by-raw</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_</span>   <span class="o">=</span> <span class="n">id_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns</span>    <span class="o">=</span> <span class="n">ns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+
+        <span class="c1"># prepare text</span>
+        <span class="c1"># remove BOM</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">and</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\uFEFF</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="c1"># add lead \n</span>
+        <span class="c1"># for detection header at begin of file: &#39;\n==&#39;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span>  <span class="o">=</span> <span class="n">text</span>
+
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lexems</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explanations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_by_raw</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explanation_by_sense</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="Page.to_lexems"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.Page.to_lexems">[docs]</a>    <span class="k">def</span> <span class="nf">to_lexems</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare extracted text. Make object representation of article: ==English== -&gt; Header(English), {{en-noun}} -&gt; Template(en-noun)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (list)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;to_lexems()&quot;</span><span class="p">)</span>
+
+        <span class="c1"># parse</span>
+        <span class="n">lexems</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_WikitextParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lexems</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;(&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s2">&quot;)&quot;</span></div>
+
+
+<div class="viewcode-block" id="filterPageProblems"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.filterPageProblems">[docs]</a><span class="k">def</span> <span class="nf">filterPageProblems</span><span class="p">(</span><span class="n">page</span><span class="p">:</span> <span class="n">Page</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter page. If not correct retirn None</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        page:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Page | None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#log.warning( &quot;(%s, %s)&quot;, page.ns, page )</span>
+
+    <span class="c1"># skip None</span>
+    <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># log.warn(&quot;is None: [SKIP]&quot;)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip special namespaces. keep terms only</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: ns:</span><span class="si">%s</span><span class="s2"> != 0: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip #REDIRECT</span>
+    <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#REDIRECT &quot;</span><span class="p">):</span>
+        <span class="n">label_to</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;#REDIRECT &quot;</span><span class="p">):]</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;REDIRECT </span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">... [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">label_to</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip single symbols</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: len() == 1: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip words contains more than 3 symbol of two dots (ABBR?)</span>
+    <span class="c1"># if page.label.count(&#39;.&#39;) &gt; 3:</span>
+    <span class="c1">#    log.warn(&quot;    filter: %s: count(&#39;.&#39;) &gt; 3: [SKIP]&quot;, page.label)</span>
+    <span class="c1">#    return None</span>
+
+    <span class="c1"># skip words contains :</span>
+    <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: find(&#39;:&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip more than 3 spaces</span>
+    <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: count(&#39; &#39;) &gt; 3: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip #</span>
+    <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: find(&#39;#&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">page</span></div>
+
+
+<div class="viewcode-block" id="DBDeleteLangRecords"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.DBDeleteLangRecords">[docs]</a><span class="k">def</span> <span class="nf">DBDeleteLangRecords</span><span class="p">(</span> <span class="n">lang</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove old lang data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lang (str): Lang. One of: en, de, it, es, pt, fr</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Deleting old &#39;</span><span class="si">%s</span><span class="s2">&#39; records...&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DBExecute</span><span class="p">(</span><span class="n">DBWikictionary</span><span class="p">,</span> <span class="s2">&quot;DELETE FROM wiktionary WHERE LanguageCode = ?&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dump"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.Dump">[docs]</a><span class="k">class</span> <span class="nc">Dump</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create dump processor instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lang (str): Lang.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="n">lang</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://dumps.wikimedia.org/&quot;</span> <span class="o">+</span> <span class="n">lang</span> <span class="o">+</span> <span class="s2">&quot;wiktionary/latest/&quot;</span> <span class="o">+</span> <span class="n">lang</span> <span class="o">+</span> <span class="s2">&quot;wiktionary-latest-pages-articles.xml.bz2&quot;</span>
+        <span class="n">create_storage</span><span class="p">(</span><span class="n">CACHE_FOLDER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CACHE_FOLDER</span><span class="p">,</span> <span class="n">lang</span> <span class="o">+</span> <span class="s2">&quot;wiktionary-latest-pages-articles.xml.bz2&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Dump.download"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.Dump.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download dump</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            Dump( &#39;en&#39; ).download()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">Scrapper_Downloader</span> <span class="k">import</span> <span class="n">download_with_resume</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s2">&quot;Downloading: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span> <span class="p">)</span>
+            <span class="n">download_with_resume</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">dest</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Dump.getReader"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.Dump.getReader">[docs]</a>    <span class="k">def</span> <span class="nf">getReader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return reader. Read .xml.bz2 dump and return pages. See also: XmlStreamReader</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            reader = Dump(lang).download().getReader()</span>
+<span class="sd">            for page in reader:</span>
+<span class="sd">                scrap_one( lang, page )</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">bz2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">xml_stream</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">XmlStreamReader</span><span class="p">(</span><span class="n">xml_stream</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="XmlStreamReader"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.XmlStreamReader">[docs]</a><span class="k">def</span> <span class="nf">XmlStreamReader</span><span class="p">(</span> <span class="n">infile</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create reader for read `infile ` stream and return `Page()` objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        infile (file): Stream</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Iterator[ Page ]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">lxml</span> <span class="k">import</span> <span class="n">etree</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">huge_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">))</span>
+
+    <span class="c1"># read xmlns</span>
+    <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span> <span class="ow">and</span> <span class="n">etree</span><span class="o">.</span><span class="n">QName</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span><span class="o">.</span><span class="n">localname</span> <span class="o">==</span> <span class="s2">&quot;mediawiki&quot;</span><span class="p">:</span>
+            <span class="n">xmlns</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">nsmap</span><span class="p">[</span><span class="n">elem</span><span class="o">.</span><span class="n">prefix</span><span class="p">]</span>
+            <span class="n">page_tag</span>     <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">xmlns</span><span class="o">+</span><span class="s2">&quot;}&quot;</span><span class="o">+</span><span class="s2">&quot;page&quot;</span>
+            <span class="n">id_tag</span>       <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">xmlns</span><span class="o">+</span><span class="s2">&quot;}&quot;</span><span class="o">+</span><span class="s2">&quot;id&quot;</span>
+            <span class="n">ns_tag</span>       <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">xmlns</span><span class="o">+</span><span class="s2">&quot;}&quot;</span><span class="o">+</span><span class="s2">&quot;ns&quot;</span>
+            <span class="n">title_tag</span>    <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">xmlns</span><span class="o">+</span><span class="s2">&quot;}&quot;</span><span class="o">+</span><span class="s2">&quot;title&quot;</span>
+            <span class="n">revision_tag</span> <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">xmlns</span><span class="o">+</span><span class="s2">&quot;}&quot;</span><span class="o">+</span><span class="s2">&quot;revision&quot;</span>
+            <span class="n">text_tag</span>     <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="o">+</span><span class="n">xmlns</span><span class="o">+</span><span class="s2">&quot;}&quot;</span><span class="o">+</span><span class="s2">&quot;text&quot;</span>
+            <span class="k">break</span>
+
+    <span class="c1"># read pages</span>
+    <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&quot;end&quot;</span> <span class="ow">and</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">page_tag</span><span class="p">:</span>
+            <span class="n">page</span>     <span class="o">=</span> <span class="n">elem</span>
+
+            <span class="n">id_</span>      <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="n">id_tag</span>      <span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>    <span class="c1"># page/id</span>
+            <span class="n">ns</span>       <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="n">ns_tag</span>      <span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>    <span class="c1"># page/bs</span>
+            <span class="n">label</span>    <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="n">title_tag</span>   <span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>    <span class="c1"># page/title</span>
+            <span class="n">revision</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">revision_tag</span><span class="p">)</span>                    <span class="c1"># page/revision</span>
+            <span class="n">text</span>     <span class="o">=</span> <span class="n">revision</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="n">text_tag</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>    <span class="c1"># page/text</span>
+
+            <span class="k">yield</span> <span class="n">Page</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+            <span class="n">elem</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="convert_explanation_raw_to_text"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.convert_explanation_raw_to_text">[docs]</a><span class="k">def</span> <span class="nf">convert_explanation_raw_to_text</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">explanation_text</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It send `explanation_text` and `label` to Wiktionary API. Then parse response, and return plain human-readable text.</span>
+
+<span class="sd">    It make HTTP request via `Scrapper_Wiktionary_RemoteAPI`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        label (str):            Wiktionary page title. Example: &#39;cat&#39;</span>
+<span class="sd">        explanation_text (str): raw-text. Example: {{en-noun|s}}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Readable text. Example: &#39;cat (plural: cats)&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+
+    <span class="n">html</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">explanation_text</span> <span class="p">)</span>
+    <span class="n">lexems</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_WikitextParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span> <span class="n">html</span> <span class="p">)</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">l</span><span class="o">.</span><span class="n">to_text</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lexems</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+<div class="viewcode-block" id="scrap_one"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.scrap_one">[docs]</a><span class="k">def</span> <span class="nf">scrap_one</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scrap one page.</span>
+
+<span class="sd">    It load language module and scrap data from page. Then save to DB.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lang (str):     Language. Example: &#39;en&#39;</span>
+<span class="sd">        page (Page):    Page instance.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list of WiktionaryItem  - it items with scrapped info</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">page</span> <span class="p">)</span>
+
+    <span class="n">lm</span>    <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;wiktionary.&quot;</span> <span class="o">+</span> <span class="n">lang</span><span class="p">)</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">lm</span><span class="o">.</span><span class="n">scrap</span><span class="p">(</span> <span class="n">page</span> <span class="p">)</span>
+
+    <span class="n">item</span><span class="p">:</span> <span class="n">WikictionaryItem</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+        <span class="n">DBWrite</span><span class="p">(</span> <span class="n">DBWikictionary</span><span class="p">,</span> <span class="n">item</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">items</span></div>
+
+
+<div class="viewcode-block" id="scrap_one_wrapper"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.scrap_one_wrapper">[docs]</a><span class="k">def</span> <span class="nf">scrap_one_wrapper</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It used with multiprocessing. Because multiprocessing callback pass arguments as tuple. This wrapper help expand tuple.</span>
+
+<span class="sd">    it call `scrap_one()` with `args`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        args (tuple):  Args</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">scrap_one</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span> <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scrap"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.scrap">[docs]</a><span class="k">def</span> <span class="nf">scrap</span><span class="p">(</span> <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The main function in Scrapper.</span>
+<span class="sd">    Here run multiprocessing, create .bz2 reader, read dump, read pages.</span>
+
+<span class="sd">    :param lang:        str     The language code. One of: &#39;en&#39;, &#39;it&#39;, &#39;fr&#39;, &#39;de&#39;, &#39;pt&#39;, &#39;ru&#39;, &#39;es&#39;. See also: Wiktionary languages.</span>
+<span class="sd">    :param workers:     int     Number of workers in multiprocessing. If workers=1, then run in single process.</span>
+<span class="sd">                                Recommendation: workers = 10 (for parallel network requests)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">DBDeleteLangRecords</span><span class="p">(</span> <span class="n">lang</span> <span class="p">)</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span> <span class="n">filterPageProblems</span><span class="p">,</span> <span class="n">Dump</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">()</span><span class="o">.</span><span class="n">getReader</span><span class="p">()</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">workers</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">multiprocessing</span>
+        <span class="kn">import</span> <span class="nn">itertools</span>
+
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span> <span class="n">workers</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span> <span class="n">scrap_one_wrapper</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">itertools</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span> <span class="n">lang</span> <span class="p">),</span> <span class="n">reader</span> <span class="p">)</span> <span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># single process</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span> <span class="n">page</span> <span class="p">)</span>
+            <span class="n">scrap_one</span><span class="p">(</span> <span class="n">lang</span><span class="p">,</span> <span class="n">page</span> <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

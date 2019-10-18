@@ -1,3 +1,9 @@
+"""
+Main Wiktionary module.
+
+The Goal: read dump, get pages, parse, find words, save to database
+
+"""
 import os
 import logging
 import sqlite3
@@ -21,14 +27,23 @@ DBExecuteScript( DBWikictionary, WikictionaryItem.Meta.DB_INIT )
 def create_storage(folder_name: str):
     """
     Create folders recusively.
+    All folders in path created recursively.
 
-    :param: str folder_name: Storage folder name
+    Args:
+        folder_name (str):  Storage folder name
+
+    ::
+
+        create_storage("./cached")
     """
     if (not os.path.exists(folder_name)):
         os.makedirs(folder_name, exist_ok=True)
 
 
 class Page:
+    """
+    Class to hold page data: raw-text, label, lexemes, explanations, table-of-contents, text-by-raw
+    """
     def __init__(self, id_, ns, label, text):
         self.id_   = id_
         self.ns    = ns
@@ -52,8 +67,13 @@ class Page:
         self.explanation_by_sense = {}
 
 
-    def to_lexems(self):
-        """ Prepare extracted text. Make object representation of article: ==English== -> Header(English), {{en-noun}} -> Template(en-noun) """
+    def to_lexems( self ) -> list:
+        """
+        Prepare extracted text. Make object representation of article: ==English== -> Header(English), {{en-noun}} -> Template(en-noun)
+
+        Returns:
+            (list)
+        """
         log.debug("to_lexems()")
 
         # parse
@@ -70,8 +90,11 @@ def filterPageProblems(page: Page):
     """
     Filter page. If not correct retirn None
 
-    in:  Page
-    out: Page | None
+    Args:
+        page:
+
+    Returns:
+        Page | None
     """
     #log.warning( "(%s, %s)", page.ns, page )
 
@@ -119,14 +142,25 @@ def filterPageProblems(page: Page):
     return page
 
 
-def DBDeleteLangRecords(lang):
-    """ Remove old lang data """
+def DBDeleteLangRecords( lang ):
+    """
+    Remove old lang data
+
+    Args:
+        lang (str): Lang. One of: en, de, it, es, pt, fr
+    """
     log.info("Deleting old '%s' records...", lang)
     return DBExecute(DBWikictionary, "DELETE FROM wiktionary WHERE LanguageCode = ?", lang)
 
 
 class Dump:
     def __init__(self, lang):
+        """
+        Create dump processor instance.
+
+        Args:
+            lang (str): Lang.
+        """
         self.lang = lang
         self.url = "https://dumps.wikimedia.org/" + lang + "wiktionary/latest/" + lang + "wiktionary-latest-pages-articles.xml.bz2"
         create_storage(CACHE_FOLDER)
@@ -134,7 +168,14 @@ class Dump:
 
 
     def download(self):
-        """ Download dump """
+        """
+        Download dump
+
+        ::
+
+            Dump( 'en' ).download()
+
+        """
         url = self.url
         dest = self.path
 
@@ -149,11 +190,30 @@ class Dump:
 
 
     def getReader(self):
+        """
+        Return reader. Read .xml.bz2 dump and return pages. See also: XmlStreamReader
+
+        ::
+
+            reader = Dump(lang).download().getReader()
+            for page in reader:
+                scrap_one( lang, page )
+
+        """
         with bz2.open(self.path, "r") as xml_stream:
             yield from XmlStreamReader(xml_stream)
 
 
-def XmlStreamReader(infile):
+def XmlStreamReader( infile ):
+    """
+    Create reader for read `infile ` stream and return `Page()` objects.
+
+    Args:
+        infile (file): Stream
+
+    Returns:
+        Iterator[ Page ]
+    """
     from lxml import etree
 
     context = etree.iterparse(infile, huge_tree=True, events=('start', 'end'))
@@ -187,6 +247,19 @@ def XmlStreamReader(infile):
 
 
 def convert_explanation_raw_to_text( label, explanation_text ):
+    """
+    It send `explanation_text` and `label` to Wiktionary API. Then parse response, and return plain human-readable text.
+
+    It make HTTP request via `Scrapper_Wiktionary_RemoteAPI`.
+
+    Args:
+        label (str):            Wiktionary page title. Example: 'cat'
+        explanation_text (str): raw-text. Example: {{en-noun|s}}
+
+    Returns:
+        Readable text. Example: 'cat (plural: cats)'
+
+    """
     label = label
 
     html = Scrapper_Wiktionary_RemoteAPI.parse( label, explanation_text )
@@ -198,6 +271,18 @@ def convert_explanation_raw_to_text( label, explanation_text ):
 
 
 def scrap_one(lang, page):
+    """
+    Scrap one page.
+
+    It load language module and scrap data from page. Then save to DB.
+
+    Args:
+        lang (str):     Language. Example: 'en'
+        page (Page):    Page instance.
+
+    Returns:
+        list of WiktionaryItem  - it items with scrapped info
+    """
     log.info( "(%s, %s)", lang, page )
 
     lm    = importlib.import_module("wiktionary." + lang)
@@ -208,10 +293,18 @@ def scrap_one(lang, page):
         item.dump()
         DBWrite( DBWikictionary, item )
 
-    return  items
+    return items
 
 
 def scrap_one_wrapper(args):
+    """
+    It used with multiprocessing. Because multiprocessing callback pass arguments as tuple. This wrapper help expand tuple.
+
+    it call `scrap_one()` with `args`.
+
+    Args:
+        args (tuple):  Args
+    """
     try:
         scrap_one( *args )
     except Exception as e:

@@ -1,0 +1,552 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scrapper_Helpers &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>Scrapper_Helpers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Scrapper_Helpers</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_storage"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.create_storage">[docs]</a><span class="k">def</span> <span class="nf">create_storage</span><span class="p">(</span><span class="n">folder_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create folders recusively.</span>
+
+<span class="sd">    In:</span>
+<span class="sd">      folder_name: Storage folder name</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder_name</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder_name</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sanitize_filename"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.sanitize_filename">[docs]</a><span class="k">def</span> <span class="nf">sanitize_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove from string &#39;filename&#39; all nonascii chars and  punctuations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;_&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="c1"># fixes</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;con&quot;</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;reserved_con&quot;</span>
+
+    <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;aux&quot;</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;reserved_aux&quot;</span>
+
+    <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;prn&quot;</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;reserved_prn&quot;</span>
+
+    <span class="k">return</span> <span class="n">filename</span></div>
+
+
+<div class="viewcode-block" id="unique"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.unique">[docs]</a><span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+    <span class="n">qniqued</span> <span class="o">=</span> <span class="nb">list</span> <span class="p">(</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span> <span class="n">lst</span> <span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">qniqued</span></div>
+
+
+<div class="viewcode-block" id="get_contents"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_contents">[docs]</a><span class="k">def</span> <span class="nf">get_contents</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read the file &#39;filename&#39; and return content.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="put_contents"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.put_contents">[docs]</a><span class="k">def</span> <span class="nf">put_contents</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save &#39;content&#39; to the file &#39;filename&#39;. UTF-8.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="save_to_pickle"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.save_to_pickle">[docs]</a><span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="n">treemap</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save Treemap to the &#39;filename&#39; in Pickle format.</span>
+
+<span class="sd">    In:</span>
+<span class="sd">        treemap</span>
+<span class="sd">        filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">create_storage</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">treemap</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_from_pickle"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.load_from_pickle">[docs]</a><span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load Treemap from the file &#39;filename&#39;. File must be in Pickle format.</span>
+
+<span class="sd">    In:</span>
+<span class="sd">        filename</span>
+<span class="sd">    Out:</span>
+<span class="sd">        sorteddict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="proper"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.proper">[docs]</a><span class="k">def</span> <span class="nf">proper</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="deduplicate"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.deduplicate">[docs]</a><span class="k">def</span> <span class="nf">deduplicate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">char</span><span class="o">=</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    in:  &quot;abc__def&quot;</span>
+<span class="sd">    out: &quot;abc_def&quot;</span>
+
+<span class="sd">    in:  &quot;abc_def&quot;</span>
+<span class="sd">    out: &quot;abc_def&quot;</span>
+
+<span class="sd">    in:  &quot;abc_____def&quot;</span>
+<span class="sd">    out: &quot;abc_def&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dup</span> <span class="o">=</span> <span class="n">char</span> <span class="o">+</span> <span class="n">char</span>
+
+    <span class="k">while</span> <span class="n">dup</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">dup</span><span class="p">,</span> <span class="n">char</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="get_number"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_number">[docs]</a><span class="k">def</span> <span class="nf">get_number</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    in:  1a</span>
+<span class="sd">    out: 1</span>
+<span class="sd">    </span>
+<span class="sd">    in:  10a</span>
+<span class="sd">    out: 10</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+            
+    <span class="k">return</span> <span class="n">result</span></div>
+    
+
+<div class="viewcode-block" id="convert_to_alnum"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.convert_to_alnum">[docs]</a><span class="k">def</span> <span class="nf">convert_to_alnum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">replace_char</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="n">replace_char</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span> <span class="p">)</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_lognest_word"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_lognest_word">[docs]</a><span class="k">def</span> <span class="nf">get_lognest_word</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+    <span class="n">longest</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">maxlen</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">maxlen</span><span class="p">:</span>
+            <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="n">longest</span> <span class="o">=</span> <span class="n">w</span>
+
+    <span class="k">return</span> <span class="n">longest</span></div>
+
+
+<div class="viewcode-block" id="remove_comments"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.remove_comments">[docs]</a><span class="k">def</span> <span class="nf">remove_comments</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">startpos</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;&lt;!--&quot;</span><span class="p">,</span> <span class="n">startpos</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">cs</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">ce</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;--&gt;&quot;</span><span class="p">,</span> <span class="n">cs</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;&lt;!--&quot;</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="n">ce</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">cleaned</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">cs</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">ce</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;--&gt;&quot;</span><span class="p">):]</span>
+            <span class="k">return</span> <span class="n">remove_comments</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">s</span></div>
+    
+<div class="viewcode-block" id="extract_from_link"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.extract_from_link">[docs]</a><span class="k">def</span> <span class="nf">extract_from_link</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">startpos</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="n">startpos</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">cs</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">ce</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="n">cs</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="n">ce</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">cleaned</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">cs</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">cs</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">):</span><span class="n">ce</span><span class="p">]</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="n">ce</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">):]</span>
+            <span class="k">return</span> <span class="n">extract_from_link</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="iterable_to_stream"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.iterable_to_stream">[docs]</a><span class="k">def</span> <span class="nf">iterable_to_stream</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="n">io</span><span class="o">.</span><span class="n">DEFAULT_BUFFER_SIZE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lets you use an iterable (e.g. a generator) that yields bytestrings as a read-only</span>
+<span class="sd">    input stream.</span>
+
+<span class="sd">    The stream implements Python 3&#39;s newer I/O API (available in Python 2&#39;s io module).</span>
+<span class="sd">    For efficiency, the stream is buffered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">IterStream</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">RawIOBase</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leftover</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">def</span> <span class="nf">readable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">def</span> <span class="nf">readinto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>  <span class="c1"># We&#39;re supposed to return at most this much</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leftover</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+                <span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">leftover</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[:</span><span class="n">l</span><span class="p">],</span> <span class="n">chunk</span><span class="p">[</span><span class="n">l</span><span class="p">:]</span>
+                <span class="n">b</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)]</span> <span class="o">=</span> <span class="n">output</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>    <span class="c1"># indicate EOF</span>
+    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">(</span><span class="n">IterStream</span><span class="p">(),</span> <span class="n">buffer_size</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_ascii"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.is_ascii">[docs]</a><span class="k">def</span> <span class="nf">is_ascii</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">128</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Store"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.Store">[docs]</a><span class="k">class</span> <span class="nc">Store</span><span class="p">:</span>
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">sections</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span></div>
+    
+<div class="viewcode-block" id="add_template"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.add_template">[docs]</a><span class="k">def</span> <span class="nf">add_template</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="c1"># add template</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lst</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Store</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lst</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">lst</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        
+    <span class="c1"># add section</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">templates</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lst</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Store</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lst</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">lst</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    
+    <span class="c1"># periodically save</span>
+    <span class="k">if</span> <span class="n">Store</span><span class="o">.</span><span class="n">counter</span> <span class="o">&gt;</span> <span class="mi">100000</span><span class="p">:</span>
+        <span class="n">save</span><span class="p">()</span>
+        <span class="n">Store</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        
+    <span class="c1"># update counter</span>
+    <span class="n">Store</span><span class="o">.</span><span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">():</span>
+    <span class="n">js</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">templates</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">put_contents</span><span class="p">(</span><span class="s2">&quot;templates.json&quot;</span><span class="p">,</span> <span class="n">js</span><span class="p">)</span>
+    
+    <span class="n">js</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">sections</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">put_contents</span><span class="p">(</span><span class="s2">&quot;sections.json&quot;</span><span class="p">,</span> <span class="n">js</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_to_json"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.save_to_json">[docs]</a><span class="k">def</span> <span class="nf">save_to_json</span><span class="p">(</span> <span class="n">obj</span><span class="p">,</span> <span class="n">filename</span> <span class="p">):</span>
+    <span class="n">js</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span> <span class="n">obj</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
+    <span class="n">put_contents</span><span class="p">(</span> <span class="n">filename</span><span class="p">,</span> <span class="n">js</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="merge_two_dicts"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.merge_two_dicts">[docs]</a><span class="k">def</span> <span class="nf">merge_two_dicts</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>   <span class="c1"># start with x&#39;s keys and values</span>
+    <span class="n">z</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>    <span class="c1"># modifies z with y&#39;s keys and values &amp; returns None</span>
+    <span class="k">return</span> <span class="n">z</span></div>
+
+
+<div class="viewcode-block" id="check_flag"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.check_flag">[docs]</a><span class="k">def</span> <span class="nf">check_flag</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+    
+    
+<div class="viewcode-block" id="first_true"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.first_true">[docs]</a><span class="k">def</span> <span class="nf">first_true</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pred</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the first true value in the iterable.</span>
+
+<span class="sd">    If no true value is found, returns *default*</span>
+
+<span class="sd">    If *pred* is not None, returns the first item</span>
+<span class="sd">    for which pred(item) is true.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># first_true([a,b,c], x) --&gt; a or b or c or x</span>
+    <span class="c1"># first_true([a,b], x, f) --&gt; a if f(a) else b if f(b) else x</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">iterable</span><span class="p">),</span> <span class="n">default</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="func_name"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.func_name">[docs]</a><span class="k">def</span> <span class="nf">func_name</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :return: name of caller</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span></div>
+    
+    
+
+<div class="viewcode-block" id="filterWodsProblems"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.filterWodsProblems">[docs]</a><span class="k">def</span> <span class="nf">filterWodsProblems</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter word. If not correct retirn None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">func_name</span><span class="p">()</span>
+
+    <span class="c1"># skip None</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1">#log.warning((&quot;is None: [SKIP]&quot;)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip single symbols</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">: len() == 1: [SKIP]&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip words contains more than 3 symbol of two dots (ABBR?)</span>
+    <span class="c1">#if s.count(&#39;.&#39;) &gt; 3:</span>
+    <span class="c1">#    log.warning((&quot;    filter: %s: %s: count(&#39;.&#39;) &gt; 3: [SKIP]&quot;, context, s)</span>
+    <span class="c1">#    return None</span>
+
+    <span class="c1"># skip words contains :</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">: find(&#39;:&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip more than 3 spaces</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">: count(&#39; &#39;) &gt; 3: [SKIP]&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip #</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">: find(&#39;#&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="clean_surrogates"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.clean_surrogates">[docs]</a><span class="k">def</span> <span class="nf">clean_surrogates</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-16&#39;</span><span class="p">,</span> <span class="s1">&#39;surrogatepass&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-16&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="pprint"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.pprint">[docs]</a><span class="k">def</span> <span class="nf">pprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">PrettyPrinter</span>
+    <span class="k">return</span> <span class="n">PrettyPrinter</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dict_merge"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.dict_merge">[docs]</a><span class="k">def</span> <span class="nf">dict_merge</span><span class="p">(</span> <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">merge_dct</span><span class="p">:</span> <span class="nb">dict</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Recursive dict merge. Inspired by :meth:``dict.update()``, instead of</span>
+<span class="sd">    updating only top-level keys, dict_merge recurses down into dicts nested</span>
+<span class="sd">    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into</span>
+<span class="sd">    ``dct``.</span>
+<span class="sd">    :param dct: dict onto which the merge is executed</span>
+<span class="sd">    :param merge_dct: dct merged into dct</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">merge_dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">dct</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">],</span> <span class="nb">dict</span> <span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">merge_dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">],</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span> <span class="p">)):</span>
+            <span class="n">dict_merge</span><span class="p">(</span> <span class="n">dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">],</span> <span class="n">merge_dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="o">=</span> <span class="n">merge_dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

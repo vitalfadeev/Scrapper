@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wiktionary.tests.test_wiktionary_api &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>wiktionary.tests.test_wiktionary_api</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wiktionary.tests.test_wiktionary_api</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">wiktionary</span> <span class="k">import</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span>
+
+
+<div class="viewcode-block" id="MyTestCase"><a class="viewcode-back" href="../../../docstring/wiktionary.tests.html#wiktionary.tests.test_wiktionary_api.MyTestCase">[docs]</a><span class="k">class</span> <span class="nc">MyTestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="MyTestCase.setUp"><a class="viewcode-back" href="../../../docstring/wiktionary.tests.html#wiktionary.tests.test_wiktionary_api.MyTestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="MyTestCase.test_1_parse"><a class="viewcode-back" href="../../../docstring/wiktionary.tests.html#wiktionary.tests.test_wiktionary_api.MyTestCase.test_1_parse">[docs]</a>    <span class="k">def</span> <span class="nf">test_1_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;cat&#39;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;# An animal of the family [[Felidae]]:&quot;</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="s1">&#39;&lt;div class=&quot;mw-parser-output&quot;&gt;&lt;ol&gt;&lt;li&gt;An animal of the family &lt;a href=&quot;/wiki/Felidae&quot; title=&quot;Felidae&quot;&gt;Felidae&lt;/a&gt;:&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;&#39;</span>
+
+        <span class="n">parsed_text</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span> <span class="n">title</span><span class="p">,</span> <span class="n">text</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">parsed_text</span><span class="p">,</span> <span class="n">expected</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MyTestCase.test_2_expand_templates"><a class="viewcode-back" href="../../../docstring/wiktionary.tests.html#wiktionary.tests.test_wiktionary_api.MyTestCase.test_2_expand_templates">[docs]</a>    <span class="k">def</span> <span class="nf">test_2_expand_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;cat&#39;</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;# An animal of the family [[Felidae]]:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#: {{syn|en|felid}}&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;# An animal of the family Felidae:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#* 2011,  Karl Kruszelnicki,  Brain Food, →ISBN, page 53:Mammals need two genes to make the taste receptor for sugar. Studies in various cats (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#: Synonym: felid&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">converted</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span><span class="o">.</span><span class="n">expand_templates</span><span class="p">(</span> <span class="n">title</span><span class="p">,</span> <span class="n">templates</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertListEqual</span><span class="p">(</span> <span class="n">converted</span><span class="p">,</span> <span class="n">expected</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MyTestCase.test_3_get_wikitext"><a class="viewcode-back" href="../../../docstring/wiktionary.tests.html#wiktionary.tests.test_wiktionary_api.MyTestCase.test_3_get_wikitext">[docs]</a>    <span class="k">def</span> <span class="nf">test_3_get_wikitext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;cat&#39;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span><span class="o">.</span><span class="n">get_wikitext</span><span class="p">(</span> <span class="n">title</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="nb">str</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="s1">&#39;==English==&#39;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="s1">&#39;===Noun===&#39;</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MyTestCase.test_4_get_wikitext_2"><a class="viewcode-back" href="../../../docstring/wiktionary.tests.html#wiktionary.tests.test_wiktionary_api.MyTestCase.test_4_get_wikitext_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_4_get_wikitext_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;cat/translations&#39;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span><span class="o">.</span><span class="n">get_wikitext</span><span class="p">(</span> <span class="n">title</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="nb">str</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="s1">&#39;==English==&#39;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="s1">&#39;===Noun===&#39;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertRegex</span><span class="p">(</span> <span class="n">text</span><span class="p">,</span> <span class="s1">&#39;====Translations====&#39;</span> <span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

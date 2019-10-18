@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wiktionary.tests package &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../index.html"/>
+        <link rel="up" title="wiktionary package" href="wiktionary.html"/>
+        <link rel="prev" title="wiktionary.en package" href="wiktionary.en.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Scrapper</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Scrapper.html">Scrapper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_Downloader.html">Scrapper_Downloader module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_Helpers.html">Scrapper_Helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="wiktionary.html">wiktionary package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="wiktionary.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="wiktionary.en.html">wiktionary.en package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">wiktionary.tests package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary">wiktionary.Scrapper_Wiktionary module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_Checkers">wiktionary.Scrapper_Wiktionary_Checkers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_Item">wiktionary.Scrapper_Wiktionary_Item module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_Matcher">wiktionary.Scrapper_Wiktionary_Matcher module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_RemoteAPI">wiktionary.Scrapper_Wiktionary_RemoteAPI module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_ValuableSections">wiktionary.Scrapper_Wiktionary_ValuableSections module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_WikitextParser">wiktionary.Scrapper_Wiktionary_WikitextParser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_WordTypes">wiktionary.Scrapper_Wiktionary_WordTypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">Scrapper</a> &raquo;</li>
+      
+          <li><a href="wiktionary.html">wiktionary package</a> &raquo;</li>
+      
+    <li>wiktionary.tests package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/docstring/wiktionary.tests.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="wiktionary-tests-package">
+<h1>wiktionary.tests package<a class="headerlink" href="#wiktionary-tests-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-wiktionary.tests.test_get_conjugations">
+<span id="wiktionary-tests-test-get-conjugations-module"></span><h2>wiktionary.tests.test_get_conjugations module<a class="headerlink" href="#module-wiktionary.tests.test_get_conjugations" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wiktionary.tests.test_get_conjugations.MyTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">wiktionary.tests.test_get_conjugations.</code><code class="sig-name descname">MyTestCase</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_get_conjugations.html#MyTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_get_conjugations.MyTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="wiktionary.tests.test_get_conjugations.MyTestCase.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_get_conjugations.html#MyTestCase.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_get_conjugations.MyTestCase.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_get_conjugations.MyTestCase.test_1_check_coonnection">
+<code class="sig-name descname">test_1_check_coonnection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_get_conjugations.html#MyTestCase.test_1_check_coonnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_get_conjugations.MyTestCase.test_1_check_coonnection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_get_conjugations.MyTestCase.test_2_get_conjugations">
+<code class="sig-name descname">test_2_get_conjugations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_get_conjugations.html#MyTestCase.test_2_get_conjugations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_get_conjugations.MyTestCase.test_2_get_conjugations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-wiktionary.tests.test_scrap">
+<span id="wiktionary-tests-test-scrap-module"></span><h2>wiktionary.tests.test_scrap module<a class="headerlink" href="#module-wiktionary.tests.test_scrap" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wiktionary.tests.test_scrap.MyTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">wiktionary.tests.test_scrap.</code><code class="sig-name descname">MyTestCase</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_scrap.html#MyTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_scrap.MyTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="wiktionary.tests.test_scrap.MyTestCase.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_scrap.html#MyTestCase.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_scrap.MyTestCase.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_scrap.MyTestCase.test_1_init">
+<code class="sig-name descname">test_1_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_scrap.html#MyTestCase.test_1_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_scrap.MyTestCase.test_1_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_scrap.MyTestCase.test_2_en_cat">
+<code class="sig-name descname">test_2_en_cat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_scrap.html#MyTestCase.test_2_en_cat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_scrap.MyTestCase.test_2_en_cat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wiktionary.tests.test_scrap.get_test_file_content">
+<code class="sig-prename descclassname">wiktionary.tests.test_scrap.</code><code class="sig-name descname">get_test_file_content</code><span class="sig-paren">(</span><em class="sig-param">lang</em>, <em class="sig-param">label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_scrap.html#get_test_file_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_scrap.get_test_file_content" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wiktionary.tests.test_scrap.scrap_one_test">
+<code class="sig-prename descclassname">wiktionary.tests.test_scrap.</code><code class="sig-name descname">scrap_one_test</code><span class="sig-paren">(</span><em class="sig-param">lang='en'</em>, <em class="sig-param">label='cat'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_scrap.html#scrap_one_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_scrap.scrap_one_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-wiktionary.tests.test_wiktionary_api">
+<span id="wiktionary-tests-test-wiktionary-api-module"></span><h2>wiktionary.tests.test_wiktionary_api module<a class="headerlink" href="#module-wiktionary.tests.test_wiktionary_api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wiktionary.tests.test_wiktionary_api.MyTestCase">
+<em class="property">class </em><code class="sig-prename descclassname">wiktionary.tests.test_wiktionary_api.</code><code class="sig-name descname">MyTestCase</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_wiktionary_api.html#MyTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_wiktionary_api.MyTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="wiktionary.tests.test_wiktionary_api.MyTestCase.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_wiktionary_api.html#MyTestCase.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_wiktionary_api.MyTestCase.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_wiktionary_api.MyTestCase.test_1_parse">
+<code class="sig-name descname">test_1_parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_wiktionary_api.html#MyTestCase.test_1_parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_wiktionary_api.MyTestCase.test_1_parse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_wiktionary_api.MyTestCase.test_2_expand_templates">
+<code class="sig-name descname">test_2_expand_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_wiktionary_api.html#MyTestCase.test_2_expand_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_wiktionary_api.MyTestCase.test_2_expand_templates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_wiktionary_api.MyTestCase.test_3_get_wikitext">
+<code class="sig-name descname">test_3_get_wikitext</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_wiktionary_api.html#MyTestCase.test_3_get_wikitext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_wiktionary_api.MyTestCase.test_3_get_wikitext" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wiktionary.tests.test_wiktionary_api.MyTestCase.test_4_get_wikitext_2">
+<code class="sig-name descname">test_4_get_wikitext_2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/tests/test_wiktionary_api.html#MyTestCase.test_4_get_wikitext_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.tests.test_wiktionary_api.MyTestCase.test_4_get_wikitext_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-wiktionary.tests">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wiktionary.tests" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="wiktionary.en.html" class="btn btn-neutral" title="wiktionary.en package" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

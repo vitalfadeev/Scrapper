@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+Scrapper's high-level functions for work with DB.
+
+For scrapping functions see: wiktionary.*, wikidata.*
+"""
+
 import os
 import json
 import itertools
@@ -14,24 +20,48 @@ def DBExecute( DB, sql, *args ):
     """
     Execute SQL command in database `DB`
 
-    :param DB:      The database
-    :param sql:     SQL command
-    :param args:    sql-command arguments
+    Args:
+        DB :      The database
+        sql (str):  SQL command
+        *args:      sql-command arguments
 
-    :example:
-        ::
+    ::
 
-            DBWikictionary = sqlite3.connect( DB_NAME )
-            DBExecute( DBWikictionary, "SELECT * FROM wiktionary WHERE id = ?", (1, ) )
+        DBWikictionary = sqlite3.connect( DB_NAME )
+        DBExecute( DBWikictionary, "SELECT * FROM wiktionary WHERE id = ?", (1, ) )
     """
     DB.execute( sql, args )
 
 
 def DBExecuteScript( DB, sql, *args ):
+    """
+    Execute many SQL script in database `DB`
+
+    :param DB:      The database
+    :param sql:     SQL script (commands separated by ';')
+
+    ::
+
+        DBWikictionary = sqlite3.connect( DB_NAME )
+        DBExecute( DBWikictionary,
+            "CREATE TABLE wiktionary (LanguageCode CHAR(2));  CREATE INDEX LanguageCode ON wiktionary (LanguageCode);"
+        )
+    """
     DB.executescript( sql )
 
 
 def DBRead( DB, table, id=None, where=None, args=tuple ):
+    """
+    Read item from database `DB`.
+
+    :param DB:      The database
+    :param item:    Instance of class WikictionaryItem
+
+    ::
+
+        item = DBRead( DBWikictionary, 'wiktionary', where="PrimaryKey='...'" )
+
+    """
     if where is None:
         sql = "SELECT * FROM `{}`".format( table )
     else:
@@ -44,6 +74,17 @@ def DBRead( DB, table, id=None, where=None, args=tuple ):
 
 
 def DBWrite(DB, item):
+    """
+    Write item into database `DB`.
+
+    :param DB:      The database
+    :param item:    Instance of class WikictionaryItem
+
+    ::
+
+        DBWrite( DBWikictionary, item )
+
+    """
     fields = []
     values = []
 

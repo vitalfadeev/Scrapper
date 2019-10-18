@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scrapper_Helpers module &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../index.html"/>
+        <link rel="up" title="Scrapper" href="modules.html"/>
+        <link rel="next" title="Scrapper_IxiooAPI module" href="Scrapper_IxiooAPI.html"/>
+        <link rel="prev" title="Scrapper_Downloader module" href="Scrapper_Downloader.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Scrapper</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Scrapper.html">Scrapper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_Downloader.html">Scrapper_Downloader module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Scrapper_Helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wiktionary.html">wiktionary package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">Scrapper</a> &raquo;</li>
+      
+    <li>Scrapper_Helpers module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/docstring/Scrapper_Helpers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-Scrapper_Helpers">
+<span id="scrapper-helpers-module"></span><h1>Scrapper_Helpers module<a class="headerlink" href="#module-Scrapper_Helpers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="Scrapper_Helpers.Store">
+<em class="property">class </em><code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">Store</code><a class="reference internal" href="../_modules/Scrapper_Helpers.html#Store"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.Store" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="Scrapper_Helpers.Store.counter">
+<code class="sig-name descname">counter</code><em class="property"> = 0</em><a class="headerlink" href="#Scrapper_Helpers.Store.counter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Scrapper_Helpers.Store.sections">
+<code class="sig-name descname">sections</code><em class="property"> = {}</em><a class="headerlink" href="#Scrapper_Helpers.Store.sections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Scrapper_Helpers.Store.templates">
+<code class="sig-name descname">templates</code><em class="property"> = {}</em><a class="headerlink" href="#Scrapper_Helpers.Store.templates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.add_template">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">add_template</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#add_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.add_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.check_flag">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">check_flag</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">flags</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#check_flag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.check_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.clean_surrogates">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">clean_surrogates</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#clean_surrogates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.clean_surrogates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.convert_to_alnum">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">convert_to_alnum</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">replace_char='_'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#convert_to_alnum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.convert_to_alnum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.create_storage">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">create_storage</code><span class="sig-paren">(</span><em class="sig-param">folder_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#create_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.create_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create folders recusively.</p>
+<dl class="simple">
+<dt>In:</dt><dd><p>folder_name: Storage folder name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.deduplicate">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">deduplicate</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">char='_'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#deduplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.deduplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>in:  “abc__def”
+out: “abc_def”</p>
+<p>in:  “abc_def”
+out: “abc_def”</p>
+<p>in:  “abc_____def”
+out: “abc_def”</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.dict_merge">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">dict_merge</code><span class="sig-paren">(</span><em class="sig-param">dct: dict</em>, <em class="sig-param">merge_dct: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#dict_merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.dict_merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursive dict merge. Inspired by :meth:<code class="docutils literal notranslate"><span class="pre">dict.update()</span></code>, instead of
+updating only top-level keys, dict_merge recurses down into dicts nested
+to an arbitrary depth, updating keys. The <code class="docutils literal notranslate"><span class="pre">merge_dct</span></code> is merged into
+<code class="docutils literal notranslate"><span class="pre">dct</span></code>.
+:param dct: dict onto which the merge is executed
+:param merge_dct: dct merged into dct
+:return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.extract_from_link">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">extract_from_link</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">startpos=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#extract_from_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.extract_from_link" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.filterWodsProblems">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">filterWodsProblems</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">context=None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#filterWodsProblems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.filterWodsProblems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter word. If not correct retirn None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.first_true">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">first_true</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">default=False</em>, <em class="sig-param">pred=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#first_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.first_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first true value in the iterable.</p>
+<p>If no true value is found, returns <em>default</em></p>
+<p>If <em>pred</em> is not None, returns the first item
+for which pred(item) is true.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.func_name">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">func_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#func_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.func_name" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>name of caller</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.get_contents">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_contents</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the file ‘filename’ and return content.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.get_lognest_word">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_lognest_word</code><span class="sig-paren">(</span><em class="sig-param">lst</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_lognest_word"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_lognest_word" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.get_number">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_number</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>in:  1a
+out: 1</p>
+<p>in:  10a
+out: 10</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.is_ascii">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">is_ascii</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#is_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.is_ascii" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.iterable_to_stream">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">iterable_to_stream</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">buffer_size=8192</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#iterable_to_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.iterable_to_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lets you use an iterable (e.g. a generator) that yields bytestrings as a read-only
+input stream.</p>
+<p>The stream implements Python 3’s newer I/O API (available in Python 2’s io module).
+For efficiency, the stream is buffered.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.load_from_pickle">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">load_from_pickle</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#load_from_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.load_from_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load Treemap from the file ‘filename’. File must be in Pickle format.</p>
+<dl class="simple">
+<dt>In:</dt><dd><p>filename</p>
+</dd>
+<dt>Out:</dt><dd><p>sorteddict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.merge_two_dicts">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">merge_two_dicts</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#merge_two_dicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.merge_two_dicts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.pprint">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">pprint</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwarg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#pprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.pprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.proper">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">proper</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#proper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.proper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.put_contents">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">put_contents</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">content</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#put_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.put_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save ‘content’ to the file ‘filename’. UTF-8.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.remove_comments">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">remove_comments</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">startpos=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#remove_comments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.remove_comments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.sanitize_filename">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">sanitize_filename</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#sanitize_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.sanitize_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove from string ‘filename’ all nonascii chars and  punctuations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.save">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.save_to_json">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">save_to_json</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#save_to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.save_to_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.save_to_pickle">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">save_to_pickle</code><span class="sig-paren">(</span><em class="sig-param">treemap</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#save_to_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.save_to_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save Treemap to the ‘filename’ in Pickle format.</p>
+<dl class="simple">
+<dt>In:</dt><dd><p>treemap
+filename</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.unique">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">unique</code><span class="sig-paren">(</span><em class="sig-param">lst</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#unique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.unique" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Scrapper_IxiooAPI.html" class="btn btn-neutral float-right" title="Scrapper_IxiooAPI module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Scrapper_Downloader.html" class="btn btn-neutral" title="Scrapper_Downloader module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

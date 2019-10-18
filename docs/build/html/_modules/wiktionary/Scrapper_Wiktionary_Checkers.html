@@ -1,0 +1,647 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wiktionary.Scrapper_Wiktionary_Checkers &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>wiktionary.Scrapper_Wiktionary_Checkers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wiktionary.Scrapper_Wiktionary_Checkers</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Iterator</span>
+<span class="kn">import</span> <span class="nn">more_itertools</span>
+<span class="kn">from</span> <span class="nn">Scrapper_Helpers</span> <span class="k">import</span> <span class="n">filterWodsProblems</span><span class="p">,</span> <span class="n">dict_merge</span>
+<span class="kn">from</span> <span class="nn">wiktionary.Scrapper_Wiktionary_Matcher</span> <span class="k">import</span> <span class="n">Matcher</span>
+<span class="kn">from</span> <span class="nn">wiktionary.Scrapper_Wiktionary_WikitextParser</span> <span class="k">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Template</span><span class="p">,</span> <span class="n">Li</span><span class="p">,</span> <span class="n">Link</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Container</span>
+<span class="kn">from</span> <span class="nn">wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents</span> <span class="k">import</span> <span class="n">Explanation</span><span class="p">,</span> <span class="n">ExplanationExample</span>
+
+
+
+<div class="viewcode-block" id="valid"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.valid">[docs]</a><span class="k">def</span> <span class="nf">valid</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definition</span> <span class="p">):</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definition</span> <span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="check"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.check">[docs]</a><span class="k">def</span> <span class="nf">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definition</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">definition</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">yield from</span> <span class="n">func</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">args</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_all_parents"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_all_parents">[docs]</a><span class="k">def</span> <span class="nf">in_all_parents</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">explanation</span> <span class="o">=</span> <span class="n">context</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">explanation</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="k">while</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span></div>
+
+
+<div class="viewcode-block" id="in_section"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_section">[docs]</a><span class="k">def</span> <span class="nf">in_section</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">context</span>
+
+    <span class="c1"># check each title</span>
+    <span class="c1"># definitions[ &#39;synonyms&#39; ] = {}</span>
+    <span class="k">for</span> <span class="n">title</span><span class="p">,</span> <span class="n">defs</span> <span class="ow">in</span> <span class="n">definitions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">sections_by_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="n">title</span><span class="p">,</span> <span class="kc">None</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># do next check</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">defs</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="text_contain"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.text_contain">[docs]</a><span class="k">def</span> <span class="nf">text_contain</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">explanation</span> <span class="o">=</span> <span class="n">context</span>
+    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">definitions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">explanation</span><span class="o">.</span><span class="n">sense_txt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span> <span class="n">text</span> <span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="in_template"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_template">[docs]</a><span class="k">def</span> <span class="nf">in_template</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span><span class="p">:</span> <span class="nb">dict</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">find_lexem</span><span class="p">(</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Template</span><span class="p">):</span>
+            <span class="n">defs</span> <span class="o">=</span> <span class="n">definitions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span> <span class="p">)</span>
+            <span class="k">if</span> <span class="n">defs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">defs</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_language"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_language">[docs]</a><span class="k">def</span> <span class="nf">in_language</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span><span class="p">:</span> <span class="nb">dict</span> <span class="p">):</span>
+    <span class="n">container</span> <span class="o">=</span> <span class="n">context</span>
+    <span class="n">expect_langs</span> <span class="o">=</span> <span class="n">definitions</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">li</span> <span class="ow">in</span> <span class="n">container</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span> <span class="n">Li</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="c1">#    for each li:</span>
+        <span class="c1">#       get first word. it is language</span>
+        <span class="n">language_raw</span> <span class="o">=</span> <span class="n">li</span><span class="o">.</span><span class="n">childs</span><span class="p">[</span> <span class="mi">0</span> <span class="p">]</span><span class="o">.</span><span class="n">raw</span>
+        <span class="n">language</span> <span class="o">=</span> <span class="n">language_raw</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span> <span class="s1">&#39;: </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">language</span> <span class="ow">in</span> <span class="n">expect_langs</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">li</span><span class="p">,</span> <span class="n">definitions</span><span class="p">[</span> <span class="n">language</span> <span class="p">]</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_template_trans_top"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_template_trans_top">[docs]</a><span class="k">def</span> <span class="nf">in_template_trans_top</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">defs</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">find_lexem</span><span class="p">(</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Template</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;trans-top&#39;</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="with_lang"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.with_lang">[docs]</a><span class="k">def</span> <span class="nf">with_lang</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="s1">&#39;lang&#39;</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span> <span class="nb">iter</span><span class="p">(</span> <span class="n">definitions</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">definitions</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">definitions</span><span class="p">[</span> <span class="n">lang</span> <span class="p">]</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_arg"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_arg">[docs]</a><span class="k">def</span> <span class="nf">in_arg</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">context</span>
+    <span class="n">arg_keys</span> <span class="o">=</span> <span class="n">definitions</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_keys</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">t</span><span class="o">.</span><span class="n">arg_links_or_text</span><span class="p">(</span> <span class="n">k</span> <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">arg_keys</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">definitions</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="n">k</span> <span class="p">)</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unsupported&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_arg_by_lang"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_arg_by_lang">[docs]</a><span class="k">def</span> <span class="nf">in_arg_by_lang</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">arg_keys</span> <span class="p">):</span>
+    <span class="n">lang</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="s1">&#39;lang&#39;</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_keys</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span> <span class="n">lang</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="n">k</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">arg_keys</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">definitions</span> <span class="ow">in</span> <span class="n">arg_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="n">k</span> <span class="p">)</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+                <span class="k">yield</span> <span class="p">(</span> <span class="n">lang</span><span class="p">,</span> <span class="n">v</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unsupported&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_any_arg"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_any_arg">[docs]</a><span class="k">def</span> <span class="nf">in_any_arg</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">defs</span> <span class="ow">in</span> <span class="n">definitions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">args</span><span class="p">():</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">defs</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_all_positional_args"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_all_positional_args">[docs]</a><span class="k">def</span> <span class="nf">in_all_positional_args</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Template</span><span class="p">,</span> <span class="n">defs</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">positional_args</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">a</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="in_all_positional_args_except_lang"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_all_positional_args_except_lang">[docs]</a><span class="k">def</span> <span class="nf">in_all_positional_args_except_lang</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Template</span><span class="p">,</span> <span class="n">defs</span> <span class="p">):</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="n">t</span><span class="o">.</span><span class="n">positional_args</span><span class="p">()</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">yield</span> <span class="n">a</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="value_equal"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.value_equal">[docs]</a><span class="k">def</span> <span class="nf">value_equal</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">expected</span> <span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span> <span class="ow">in</span> <span class="n">expected</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span> <span class="o">==</span> <span class="n">expected</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="equal_label"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.equal_label">[docs]</a><span class="k">def</span> <span class="nf">equal_label</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">expected</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="in_link"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_link">[docs]</a><span class="k">def</span> <span class="nf">in_link</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">defs</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">lexem</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">find_lexem</span><span class="p">(</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">lexem</span><span class="p">,</span> <span class="n">Link</span> <span class="p">):</span>
+            <span class="k">yield from</span> <span class="n">lexem</span><span class="o">.</span><span class="n">to_words</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="has_template"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.has_template">[docs]</a><span class="k">def</span> <span class="nf">has_template</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">tnames</span> <span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">tnames</span><span class="p">,</span> <span class="nb">set</span> <span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span> <span class="n">Template</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">tnames</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unsupported&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_self"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_self">[docs]</a><span class="k">def</span> <span class="nf">in_self</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_parent_explanations"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_parent_explanations">[docs]</a><span class="k">def</span> <span class="nf">in_parent_explanations</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="k">while</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">is_explanation</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span></div>
+
+
+<div class="viewcode-block" id="in_all_parent_sections"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_all_parent_sections">[docs]</a><span class="k">def</span> <span class="nf">in_all_parent_sections</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">context</span>
+
+    <span class="k">while</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">parent</span><span class="p">,</span> <span class="n">Explanation</span> <span class="p">):</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span></div>
+
+
+<div class="viewcode-block" id="in_examples"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.in_examples">[docs]</a><span class="k">def</span> <span class="nf">in_examples</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ExplanationExample</span><span class="p">):</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="by_sense"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.by_sense">[docs]</a><span class="k">def</span> <span class="nf">by_sense</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
+    <span class="c1"># 1. if single explaanation:</span>
+    <span class="c1">#    get all from section (do next checkers)</span>
+    <span class="c1">#</span>
+    <span class="c1"># 2. if many explanations:</span>
+    <span class="c1">#    if section without senses</span>
+    <span class="c1">#      get all from sensed block (do next checkers)</span>
+    <span class="c1">#</span>
+    <span class="c1">#    if section has senses</span>
+    <span class="c1">#      get senses</span>
+    <span class="c1">#      do match</span>
+    <span class="c1">#      if matched</span>
+    <span class="c1">#        get all from sensed block (do next checkers)</span>
+    <span class="c1">#</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">context</span>
+
+    <span class="c1"># 1. if single explanation</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">page</span><span class="o">.</span><span class="n">explanations</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># get all from section (do next checkers)</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">childs</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">lexemes</span>
+        <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+
+    <span class="c1"># 2. if many explanations</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span> <span class="n">page</span><span class="o">.</span><span class="n">explanations</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># section senses</span>
+        <span class="n">lexemes_by_sense</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get_lexemes_by_sense</span><span class="p">()</span>
+
+        <span class="c1"># translate sections senses from raw to txt</span>
+        <span class="n">section_senses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="nb">map</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">page</span><span class="o">.</span><span class="n">text_by_raw</span><span class="p">[</span> <span class="n">s</span> <span class="p">],</span> <span class="nb">filter</span><span class="p">(</span> <span class="kc">None</span><span class="p">,</span> <span class="n">lexemes_by_sense</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># if section without senses</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">section_senses</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># get all from sensed block (do next checkers)</span>
+            <span class="n">lexemes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="n">lexemes_by_sense</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">)</span>  <span class="c1"># all</span>
+            <span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+            <span class="n">container</span><span class="o">.</span><span class="n">childs</span> <span class="o">=</span> <span class="n">lexemes</span>
+            <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>  <span class="c1"># call next checkers</span>
+
+        <span class="c1"># if section has senses</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span> <span class="n">section_senses</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># get explanation sense</span>
+            <span class="n">explanation_sense_txt</span> <span class="o">=</span> <span class="n">explanation</span><span class="o">.</span><span class="n">sense_txt</span>
+            <span class="c1"># get all explanations (for match all-at-once in matcher)</span>
+            <span class="n">explanation_sense_txts</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">sense_txt</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">explanations</span> <span class="p">)</span>
+
+            <span class="c1"># match</span>
+            <span class="n">matched_txt</span> <span class="o">=</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span> <span class="n">explanation_sense_txt</span><span class="p">,</span> <span class="n">explanation_sense_txts</span><span class="p">,</span> <span class="n">section_senses</span> <span class="p">)</span>
+
+            <span class="c1"># save sense (for debugging)</span>
+            <span class="n">explanation</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">Senses</span><span class="p">[</span> <span class="nb">type</span><span class="p">(</span><span class="n">section</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="p">]</span> <span class="o">=</span> <span class="n">matched_txt</span>
+
+            <span class="k">if</span> <span class="n">matched_txt</span><span class="p">:</span>
+                <span class="n">matched_raw</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="c1"># txt to raw</span>
+                <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">text_by_raw</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">matched_txt</span><span class="p">:</span>
+                        <span class="n">matched_raw</span> <span class="o">=</span> <span class="n">r</span>
+                        <span class="k">break</span>
+
+                <span class="n">lexemes</span> <span class="o">=</span> <span class="n">lexemes_by_sense</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="n">matched_raw</span><span class="p">,</span> <span class="kc">None</span> <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">lexemes</span><span class="p">:</span>
+                    <span class="c1"># get all from sensed block (do next checkers)</span>
+                    <span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
+                    <span class="n">container</span><span class="o">.</span><span class="n">childs</span> <span class="o">=</span> <span class="n">lexemes</span>
+                    <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>  <span class="c1"># call next checkers</span></div>
+
+
+<div class="viewcode-block" id="en_noun"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.en_noun">[docs]</a><span class="k">def</span> <span class="nf">en_noun</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">label</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    {{en-noun}}</span>
+<span class="sd">    {{en-noun|es}}</span>
+<span class="sd">    {{en-noun|...}}</span>
+<span class="sd">    {{en-noun|...|...}}</span>
+
+<span class="sd">    out: (single, [plural], is_uncountable)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">label</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">[</span> <span class="p">]</span>
+    <span class="n">is_uncountable</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># http://en.wiktionary.org/wiki/Template:en-noun</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="s2">&quot;head&quot;</span> <span class="p">)</span>
+    <span class="n">head</span> <span class="o">=</span> <span class="n">head</span> <span class="k">if</span> <span class="n">head</span> <span class="k">else</span> <span class="n">label</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">p1</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+        <span class="c1"># uncountable</span>
+        <span class="n">is_uncountable</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">p2</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="c1"># ends by s</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">p2</span> <span class="o">==</span> <span class="s2">&quot;es&quot;</span><span class="p">:</span>
+            <span class="c1"># ends by es</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;es&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">p2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># word</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">p1</span> <span class="o">==</span> <span class="s2">&quot;~&quot;</span><span class="p">:</span>
+        <span class="c1"># uncountable and countable</span>
+        <span class="n">is_uncountable</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">p2</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="c1"># ends by s</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">p2</span> <span class="o">==</span> <span class="s2">&quot;es&quot;</span><span class="p">:</span>
+            <span class="c1"># ends by es</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;es&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">p2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># word</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">p1</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">p1</span> <span class="o">==</span> <span class="s2">&quot;es&quot;</span><span class="p">:</span>
+        <span class="c1"># add es</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;es&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">p1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># use term</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">p1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plural_en_noun"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.plural_en_noun">[docs]</a><span class="k">def</span> <span class="nf">plural_en_noun</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">context</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span>
+    <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span> <span class="n">en_noun</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">label</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
+        <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="single_en_noun"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.single_en_noun">[docs]</a><span class="k">def</span> <span class="nf">single_en_noun</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">context</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span>
+
+    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">en_noun</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">label</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">is_uncountable</span><span class="p">)</span> <span class="o">=</span> <span class="n">res</span>
+
+            <span class="k">if</span> <span class="n">definitions</span><span class="p">:</span>
+                <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="en_verb"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.en_verb">[docs]</a><span class="k">def</span> <span class="nf">en_verb</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">defs</span> <span class="p">):</span>
+    <span class="k">yield from</span> <span class="p">()</span></div>
+
+<div class="viewcode-block" id="en_adj"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.en_adj">[docs]</a><span class="k">def</span> <span class="nf">en_adj</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">defs</span> <span class="p">):</span>
+    <span class="k">yield from</span> <span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="check_node"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.check_node">[docs]</a><span class="k">def</span> <span class="nf">check_node</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">lm</span> <span class="p">):</span>
+    <span class="c1"># 1. get from language module all vars. it is definitions</span>
+    <span class="c1"># 2. in each definition take function and arguments. it is checker and arguments.</span>
+    <span class="c1"># 3. recursive</span>
+    <span class="c1"># 4 .run function with arguments. return words</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">(),</span> <span class="nb">vars</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">item</span> <span class="p">)</span> <span class="p">):</span>
+        <span class="c1"># if name == &#39;Translation_IT&#39;:</span>
+        <span class="c1">#     pass</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     continue</span>
+
+        <span class="c1"># get checker() from lang module</span>
+        <span class="c1"># for Synonymy checker name is Synonymy</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="c1"># prepare checkers</span>
+            <span class="n">definitions</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="n">lm</span><span class="p">,</span> <span class="n">name</span> <span class="p">)</span>
+            <span class="n">definitions</span> <span class="o">=</span> <span class="n">detuple_dfinition_keys</span><span class="p">(</span> <span class="n">definitions</span> <span class="p">)</span>
+
+            <span class="c1"># run checker</span>
+            <span class="n">explanation</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="n">generator</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span> <span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="c1"># save result to item attribute</span>
+            <span class="n">store</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">item</span><span class="p">,</span> <span class="n">name</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">list</span> <span class="p">):</span>
+                <span class="n">filtered</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span> <span class="n">filterWodsProblems</span><span class="p">,</span> <span class="n">generator</span> <span class="p">)</span>
+                <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span> <span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">filtered</span> <span class="p">)</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">cleaned</span> <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">):</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">generator</span> <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">bool</span> <span class="p">)</span> <span class="ow">or</span> <span class="n">store</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span> <span class="n">generator</span> <span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">item</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">True</span> <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">str</span> <span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">more_itertools</span><span class="o">.</span><span class="n">first_true</span><span class="p">(</span> <span class="n">generator</span> <span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">item</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="p">)</span>
+            <span class="c1"># elif isinstance( store, int ):</span>
+            <span class="c1">#     if value:</span>
+            <span class="c1">#         setattr( node.item, name, value )</span>
+            <span class="c1"># elif isinstance( store, float ):</span>
+            <span class="c1">#     if value:</span>
+            <span class="c1">#         setattr( node.item, name, value )</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;unsupported: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span> <span class="n">store</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="checkers_from"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.checkers_from">[docs]</a><span class="k">def</span> <span class="nf">checkers_from</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">definitions</span> <span class="p">):</span>
+    <span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span> <span class="n">definitions</span> <span class="p">)</span>
+
+    <span class="c1"># first. from module</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">defs</span> <span class="o">=</span>  <span class="nb">getattr</span><span class="p">(</span> <span class="n">mod</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span> <span class="n">iterator</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># rest. from definitions</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+        <span class="n">defs</span> <span class="o">=</span> <span class="n">defs</span><span class="p">[</span> <span class="n">key</span> <span class="p">]</span>
+
+    <span class="k">yield from</span> <span class="n">check</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">explanation</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">defs</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="detuple_dfinition_keys"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Checkers.detuple_dfinition_keys">[docs]</a><span class="k">def</span> <span class="nf">detuple_dfinition_keys</span><span class="p">(</span> <span class="n">defs</span> <span class="p">):</span>
+    <span class="n">to_append</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1">#</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">defs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">k</span> <span class="p">)</span>
+            <span class="n">to_append</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">v</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">):</span>
+            <span class="n">detuple_dfinition_keys</span><span class="p">(</span> <span class="n">v</span> <span class="p">)</span>
+
+    <span class="c1"># remove tupled keys</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
+        <span class="n">defs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span> <span class="n">r</span> <span class="p">)</span>
+
+    <span class="c1"># add un-tupled keys</span>
+    <span class="k">if</span> <span class="n">to_append</span><span class="p">:</span>
+        <span class="n">dict_merge</span><span class="p">(</span> <span class="n">defs</span><span class="p">,</span> <span class="n">to_append</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">defs</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
