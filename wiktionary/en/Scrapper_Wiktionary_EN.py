@@ -519,8 +519,14 @@ def add_translations_from_trans_see( page, toc: Root ):
         #    dict[ English ]
         #    {{trans-top}}
         current_ts = node
+        if current_ts is None:
+            continue
         current_pos = current_ts.get_parent_pos_node()
+        if current_pos is None:
+            continue
         current_lang = current_pos.get_parent_lang_node()
+        if current_lang is None:
+            continue
         try:
             ts_translations_node = d[ current_lang.title_norm ][ current_pos.title_norm ][ current_ts.title_norm ]
         except KeyError:
