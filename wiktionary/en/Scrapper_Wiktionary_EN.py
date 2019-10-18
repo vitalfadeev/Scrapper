@@ -604,9 +604,6 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     # 3. save
     page.text_by_raw = dict( zip( raws, txts ) )
 
-    # group sensed lexems to .by_sense
-    #group_sensed_lexems( toc )
-
     # update explanation raw, txt
     for node in page.explanations:
         node.sense_raw = node.lexemes[ 0 ].raw
@@ -636,7 +633,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         item.LabelName = page.label
         item.LanguageCode = 'en'
         item.SelfUrl = "https://en.wiktionary.org/wiki/" + page.label
-        item.Sense = node.sense_txt
+        item.Senses['.'] = node.sense_txt
 
         # Index
         indexinPage += 1

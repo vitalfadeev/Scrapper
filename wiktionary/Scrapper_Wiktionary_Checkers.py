@@ -1,3 +1,5 @@
+from typing import Iterator
+
 import more_itertools
 import Scrapper_IxiooAPI
 from Scrapper_Helpers import filterWodsProblems
@@ -201,7 +203,7 @@ def in_examples( page, explanation, context, definitions ):
             yield from check( page, explanation, child, definitions )
 
 
-def by_sense( page, explanation, context, definitions ):
+def by_sense( page, explanation, context, definitions ) -> Iterator:
     # 1. if single explaanation:
     #    get all from section (do next checkers)
     #
@@ -220,7 +222,9 @@ def by_sense( page, explanation, context, definitions ):
     # 1. if single explanation
     if len( page.explanations ) == 1:
         # get all from section (do next checkers)
-        yield from check( page, explanation, section, definitions )
+        container = Container()
+        container.childs = section.lexemes
+        yield from check( page, explanation, container, definitions )
 
     # 2. if many explanations
     elif len( page.explanations ) > 1:
@@ -250,6 +254,9 @@ def by_sense( page, explanation, context, definitions ):
 
             # match
             matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
+
+            # save sense (for debugging)
+            explanation.item.Senses[ type(section).__name__ ] = matched_txt
 
             if matched_txt:
                 matched_raw = None

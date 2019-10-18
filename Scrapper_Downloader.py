@@ -3,8 +3,9 @@ import os
 import os.path
 import requests
 import urllib3
+import logging
 
-
+log = logging.getLogger(__name__)
 DOWNLOAD_TIMEOUT = 33
 
 
@@ -19,28 +20,38 @@ def get_local_file_size(file_name):
     return os.path.getsize(file_name)
 
 
-def _download_with_progress(r, f):
-    CHUNK_SIZE = 1024*4
-    readed = 0
+def _download_with_progress(r, f, remote_file_size, file_name, resume_byte_pos):
+    readed = resume_byte_pos
     r.raw.decode_content = False
+    readeed_pos = readed % (1024 * 1024)
 
-    for chunk in r.iter_content(CHUNK_SIZE):
-        f.write(chunk)
-        readed += len(chunk)
+    print()
+    for chunk in r:
+        f.write( chunk )
 
-        if readed > 1024*1024:
-            print('.', end='')
-            sys.stdout.flush()
-            readed = 0
+        readed += len( chunk )
+
+        if int(readed / 1024 / 1024) != readeed_pos:
+            print( "\r Download progress: {} M / {} M" \
+                   .format(
+                        int(readed / 1024 / 1024),
+                        int(remote_file_size / 1024 / 1024)
+                    ),
+                    end="", flush=True
+            )
+            readeed_pos = int(readed / 1024 / 1024)
+    print()
 
 
-def continue_downloading(url, local_file, resume_byte_pos=0):
+def continue_downloading(url, local_file, remote_file_size, resume_byte_pos=0):
+    file_name = os.path.basename( local_file )
+
     if resume_byte_pos == 0:
         # new file
         r = requests.get(url, stream=True, verify=False, allow_redirects=True, timeout=DOWNLOAD_TIMEOUT)
 
         with open(local_file, 'wb') as f:
-            _download_with_progress(r, f)
+            _download_with_progress(r, f, remote_file_size, file_name, resume_byte_pos)
 
         r.close()
 
@@ -51,7 +62,7 @@ def continue_downloading(url, local_file, resume_byte_pos=0):
                          headers=resume_header)
 
         with open(local_file, 'ab') as f:
-            _download_with_progress(r, f)
+            _download_with_progress(r, f, remote_file_size, file_name, resume_byte_pos)
 
         r.close()
 
@@ -59,7 +70,7 @@ def continue_downloading(url, local_file, resume_byte_pos=0):
 def _download_with_resume(url, local_file):
     # check already downloaded
     if os.path.isfile(local_file):
-        return  True
+        return True
 
     # check part file
     part_file = local_file + ".part"
@@ -73,12 +84,12 @@ def _download_with_resume(url, local_file):
             return True  # OK
         else:
             # continue downloading
-            continue_downloading(url, part_file, local)
+            continue_downloading( url, part_file, remote, local )
 
     else: # no local file
         # downloading
-        continue_downloading(url, part_file, 0)
         remote = get_http_file_size(url)
+        continue_downloading( url, part_file, remote, 0 )
 
     # rename part_file to local_file
     local = get_local_file_size(part_file)
@@ -87,6 +98,7 @@ def _download_with_resume(url, local_file):
 
 
 def download_with_resume(url, local_file, attempts=5):
+    log.debug( "download: %s", url )
     for i in range(attempts):
         try:
             _download_with_resume(url, local_file)

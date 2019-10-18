@@ -2,9 +2,7 @@ import os
 import logging
 import sqlite3
 import bz2
-import copy
 import importlib
-# from typing import List, Set, Dict, Tuple, Optional
 from Scrapper import DBExecute, DBExecuteScript, DBWrite
 from . import Scrapper_Wiktionary_WikitextParser
 from . Scrapper_Wiktionary_Item import WikictionaryItem
@@ -123,7 +121,7 @@ def filterPageProblems(page: Page):
 
 def DBDeleteLangRecords(lang):
     """ Remove old lang data """
-    log.info("deleting old '%s' records...", lang)
+    log.info("Deleting old '%s' records...", lang)
     return DBExecute(DBWikictionary, "DELETE FROM wiktionary WHERE LanguageCode = ?", lang)
 
 
@@ -137,33 +135,15 @@ class Dump:
 
     def download(self):
         """ Download dump """
-        #from pySmartDL import SmartDL
-        #import downloader
-
         url = self.url
         dest = self.path
-
-        #downloader = SmartDL(url, dest)
-        #downloader.start()
-        #self.path = downloader.get_dest()
-
-        #def download_callback(cursize):
-        #    if cursize % 1024000 == 0:
-        #        print("{}M".format(int(cursize / 1024000)))
-        #    return True
-
-        #downloader = downloader.Download(url, dest)
-        #downloader.download(download_callback)
 
         if os.path.isfile(dest):
             pass
         else:
-            #from ctdl import downloader
-            #downloader.download(url, CACHE_FOLDER)
-            pass
-
-        #import wget
-        #wget.download(url, dest, bar=wget.bar_thermometer)
+            from Scrapper_Downloader import download_with_resume
+            log.info( "Downloading: %s", url )
+            download_with_resume( url, dest )
 
         return self
 
@@ -218,7 +198,7 @@ def convert_explanation_raw_to_text( label, explanation_text ):
 
 
 def scrap_one(lang, page):
-    log.warning( "(%s, %s)", lang, page )
+    log.info( "(%s, %s)", lang, page )
 
     lm    = importlib.import_module("wiktionary." + lang)
     items = lm.scrap( page )

@@ -1,7 +1,5 @@
 # fast hashed storage.
 blist
-# probgess bar wwhen downloaded dump
-ctdl
 # dump parse
 lxml
 # group explanations

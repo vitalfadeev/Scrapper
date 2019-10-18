@@ -71,10 +71,7 @@ class WikictionaryItem:
                     Cognates                TEXT NULL,
                     Mentions                TEXT NULL,
                     VerbConjugaisonAdded    INTEGER NULL,
-                    SenseRaw                TEXT NULL,
-                    Sense                   TEXT NULL,
-                    SenseFromSynonyms       TEXT NULL,
-                    SenseFromTranslations   TEXT NULL,
+                    Senses                  TEXT NULL,
                     SeeAlso                 TEXT NULL,
                     Accent                  TEXT NULL,
                     Qualifier               TEXT NULL,
@@ -142,10 +139,7 @@ class WikictionaryItem:
         self.Cognates                   = {}
         self.Mentions                   = {}
         self.VerbConjugaisonAdded       = None
-        self.SenseRaw                   = ""
-        self.Sense                      = ""
-        self.SenseFromSynonyms          = ""
-        self.SenseFromTranslations      = ""
+        self.Senses                     = {}
         self.SeeAlso                    = []
         self.Accent                     = []
         self.Qualifier                  = []

@@ -1,6 +1,6 @@
-#from wiktionary import Scrapper_Wiktionary
-#Scrapper_Wiktionary.scrap( workers=10 )
-#exi(7)
+from wiktionary import Scrapper_Wiktionary
+Scrapper_Wiktionary.scrap( workers=1 )
+exit(7)
 
 import unittest
 
