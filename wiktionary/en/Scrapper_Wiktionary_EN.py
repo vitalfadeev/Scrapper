@@ -15,7 +15,7 @@ from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, 
 from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX, VALUED_SECTIONS
 from ..Scrapper_Wiktionary_Checkers import check_node
 from Scrapper_Helpers import unique, filterWodsProblems
-from wiktionary.en.Scrapper_Wiktionary_EN_Defs2 import \
+from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import \
     Section, Root, Lang, PartOfSpeech, Explanations, section_map, Explanation, ExplanationExample, Translations, \
     ExplanationLi
 
@@ -941,9 +941,6 @@ def get_leaf_explanation_nodes( root: Section ) -> list:
         if node.is_leaf_explanation:
             leaf_explanations.append( node )
 
-        # recursive
-        leaf_explanations.extend( get_leaf_explanation_nodes( node ) )
-
     return leaf_explanations
 
 
@@ -1165,7 +1162,6 @@ def remove_other_langs( toc: Root ):
 def trans_see_finder( toc: Root ):
     for node in toc.find_all( Translations, recursive=True ):
         for t in node.lexemes_by_class[ Template ][ 'trans-see' ]:
-            print(node.title, (node, t), t.raw)
             yield (node, t)
 
 def add_translations_from_trans_see( page, toc: Root ):
@@ -1199,7 +1195,7 @@ def add_translations_from_trans_see( page, toc: Root ):
         ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
         ts_toc = make_tree( ts_lexemes )
         update_index_in_toc( ts_toc )
-        ts_toc.dump()
+        # ts_toc.dump()
 
         # 4. make search index:  dict[ English ][ Noun ][ Translations ] = (node, t)
         # example:
@@ -1268,9 +1264,8 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     mark_leaf_explanation_nodes( toc )
 
     # get all lead explanations
-    explanaions = get_leaf_explanation_nodes( toc )
-    page.explanations = explanaions
-    pprint.pprint(explanaions)
+    explanations = get_leaf_explanation_nodes( toc )
+    page.explanations = explanations
 
     # add translations from {{trans-see|...}}
     add_translations_from_trans_see( page, toc )
@@ -1331,9 +1326,11 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     import importlib
     lm = importlib.import_module("wiktionary.en.Scrapper_Wiktionary_" + 'EN' + '_Definitions')
 
+    indexinPage = 0
+
     # Scrap
     # each explanation
-    for i, node in enumerate( page.explanations, start=1 ):
+    for node in page.explanations:
         item = node.item
 
         # base attributes
@@ -1343,7 +1340,8 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         item.Sense = node.sense_txt
 
         # Index
-        item.IndexinPage = i
+        indexinPage += 1
+        item.IndexinPage = indexinPage
         item.IndexinToc = node.index_in_toc
         item.IndexPartOfSpeech = node.index_pos
 
@@ -1373,7 +1371,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
 
         items.append( item )
 
-    return  items
+    return items
 
 
 # Explanation

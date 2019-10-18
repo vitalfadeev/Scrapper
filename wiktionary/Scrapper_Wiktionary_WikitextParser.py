@@ -608,15 +608,15 @@ class Dd(Container):
     def __repr__(self):
         return "Dd()"
 
-class Section(Container):
-    def __init__(self, *args, **kvars):
-        super().__init__(*args, **kvars)
-        self.level = 0
-        self.header = None
-        self.name = ""
-
-    def __repr__(self):
-        return "Section('" + self.name + "', " + str(self.level) + ")"
+# class Section(Container):
+#     def __init__(self, *args, **kvars):
+#         super().__init__(*args, **kvars)
+#         self.level = 0
+#         self.header = None
+#         self.name = ""
+#
+#     def __repr__(self):
+#         return "Section('" + self.name + "', " + str(self.level) + ")"
 
 class Arg(Container):
     def get_name(self):

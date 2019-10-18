@@ -167,7 +167,7 @@ class Section(list):
 
 
     def get_lexemes_by_sense( self ):
-        ...
+        return {}
 
 
     def dump( self, level=0 ):
@@ -213,6 +213,9 @@ class Explanation(Section):
         self.item = WikictionaryItem()
         self.is_leaf_explanation = False
 
+    def get_sense( self ):
+        return self.lexemes[0].raw
+
 
 class ExplanationExample(Section):
     ...
@@ -223,14 +226,12 @@ class ExplanationLi(Section):
 
 
 class Translations( Section ):
-    @lru_cache( maxsize=32 )
     def get_lexemes_by_sense( self ):
         # find {{tans-top}}
         return dict( trans_top_reader( self.lexemes ) )
 
 
 class Synonyms(Section):
-    @lru_cache( maxsize=32 )
     def get_lexemes_by_sense( self ):
         # find * {{sense}}
         return dict( li_sense_reader( self.lexemes ) )

@@ -107,7 +107,7 @@ Synonymy = {
     in_all_parent_sections: {               # noun / etymology / english
         in_section: {                       # synonyms
             ( 'synonym', 'synonyms' ): {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         ('syn', 'synonyms', 'synonym of'): {
                             with_lang: {
@@ -152,7 +152,7 @@ Antonymy = {
     in_all_parent_sections: {               # noun / etymology / english
         in_section: {
             ('antonym', 'antonyms'): {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         ('antonyms', 'antonym', 'ant'): {
                             with_lang: {
@@ -196,7 +196,7 @@ Hypernymy = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             ('hypernym', 'hypernyms'): {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         ('hypernyms', 'hyper'): {
                             with_lang: {
@@ -240,7 +240,7 @@ Hyponymy = {
     in_all_parent_sections: {               # noun / etymology / english
         in_section: {                       # synonyms
             'hyponyms': {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         ('hypo', 'hyponyms'): {
                             with_lang: {
@@ -285,7 +285,7 @@ Meronymy = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'meronyms': {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         'meronyms': {
                             with_lang: {
@@ -329,7 +329,7 @@ Holonymy = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'holonyms': {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         'holonyms': {
                             with_lang: {
@@ -373,7 +373,7 @@ Troponymy = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'troponyms': {
-                in_li_by_sense_en: {
+                by_sense: {
                     in_template: {
                         'troponyms': {
                             with_lang: {
@@ -492,11 +492,13 @@ Translation_FR = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'translations': {
-                in_trans_top_by_sense: {
-                    'french': {
-                        in_template: {
-                            't' : { with_lang: { 'fr': { in_arg: { 1 } } } },
-                            't+': { with_lang: { 'fr': { in_arg: { 1 } } } },
+                by_sense: {
+                    in_language: {
+                        'french': {
+                            in_template: {
+                                't' : { with_lang: { 'fr': { in_arg: { 1 } } } },
+                                't+': { with_lang: { 'fr': { in_arg: { 1 } } } },
+                            }
                         }
                     }
                 }
@@ -509,11 +511,13 @@ Translation_DE = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'translations': {
-                in_trans_top_by_sense: {
-                    'german': {
-                        in_template: {
-                            't' : { with_lang: { 'de': { in_arg: { 1 } } } },
-                            't+': { with_lang: { 'de': { in_arg: { 1 } } } },
+                by_sense: {
+                    in_language: {
+                        'german': {
+                            in_template: {
+                                't' : { with_lang: { 'de': { in_arg: { 1 } } } },
+                                't+': { with_lang: { 'de': { in_arg: { 1 } } } },
+                            }
                         }
                     }
                 }
@@ -526,11 +530,13 @@ Translation_IT = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'translations': {
-                in_trans_top_by_sense: {
-                    'italian': {
-                        in_template: {
-                            't' : { with_lang: { 'it': { in_arg: { 1 } } } },
-                            't+': { with_lang: { 'it': { in_arg: { 1 } } } },
+                by_sense: {
+                    in_language: {
+                        'italian': {
+                            in_template: {
+                                't' : { with_lang: { 'it': { in_arg: { 1 } } } },
+                                't+': { with_lang: { 'it': { in_arg: { 1 } } } },
+                            }
                         }
                     }
                 }
@@ -543,11 +549,13 @@ Translation_ES = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'translations': {
-                in_trans_top_by_sense: {
-                    'spanish': {
-                        in_template: {
-                            't' : { with_lang: { 'es': { in_arg: { 1 } } } },
-                            't+': { with_lang: { 'es': { in_arg: { 1 } } } },
+                by_sense: {
+                    in_language: {
+                        'spanish': {
+                            in_template: {
+                                't' : { with_lang: { 'es': { in_arg: { 1 } } } },
+                                't+': { with_lang: { 'es': { in_arg: { 1 } } } },
+                            }
                         }
                     }
                 }
@@ -560,11 +568,13 @@ Translation_RU = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'translations': {
-                in_trans_top_by_sense: {
-                    'russian': {
-                        in_template: {
-                            't' : { with_lang: { 'ru': { in_arg: { 1 } } } },
-                            't+': { with_lang: { 'ru': { in_arg: { 1 } } } },
+                by_sense: {
+                    in_language: {
+                        'russian': {
+                            in_template: {
+                                't' : { with_lang: { 'ru': { in_arg: { 1 } } } },
+                                't+': { with_lang: { 'ru': { in_arg: { 1 } } } },
+                            }
                         }
                     }
                 }
@@ -577,11 +587,13 @@ Translation_PT = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {
             'translations': {
-                in_trans_top_by_sense: {
-                    'portuguese': {
-                        in_template: {
-                            't' : { with_lang: { 'pt': { in_arg: { 1 } } } },
-                            't+': { with_lang: { 'pt': { in_arg: { 1 } } } },
+                by_sense: {
+                    in_language: {
+                        'portuguese': {
+                            in_template: {
+                                't' : { with_lang: { 'pt': { in_arg: { 1 } } } },
+                                't+': { with_lang: { 'pt': { in_arg: { 1 } } } },
+                            }
                         }
                     }
                 }

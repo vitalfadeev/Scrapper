@@ -1,12 +1,11 @@
 import itertools
-from collections import defaultdict
 import more_itertools
 import Scrapper_IxiooAPI
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Section, Header, Template, Li, Link, String, Container
-from wiktionary.en import Scrapper_Wiktionary_EN_Templates
-from wiktionary.en.Scrapper_Wiktionary_EN_Defs2 import Explanation, ExplanationExample
-from .en import Scrapper_Wiktionary_EN
+from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
+from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
+from wiktionary.en import Scrapper_Wiktionary_EN
 from Scrapper_Helpers import filterWodsProblems
+from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
 
 
 
@@ -181,6 +180,20 @@ def in_template( page, explanation, context, definitions: dict ):
                 yield from check( page, explanation, t, defs )
 
 
+def in_language( page, explanation, context, definitions: dict ):
+    container = context
+    expect_langs = definitions.keys()
+
+    for li in container.find_objects( Li, recursive=False ):
+        #    for each li:
+        #       get first word. it is language
+        language_raw = li.childs[ 0 ].raw
+        language = language_raw.strip( ': \n' ).lower()
+
+        if language in expect_langs:
+            yield from check( page, explanation, li, definitions[ language ] )
+
+
 def in_template_trans_top( page, explanation, context, defs=None ):
     for t in context.find_lexem( recursive=True ):
         if isinstance(t, Template):
@@ -332,6 +345,74 @@ def get_li_senses_en( page, section ):
                     raw = t.arg( 0, raw=True )
                     txt = page.text_by_raw[ raw ]
                     yield (txt, li)
+
+
+def by_sense( page, explanation, context, definitions ):
+    # 1. if single explaanation:
+    #    get all from section (do next checkers)
+    #
+    # 2. if many explanations:
+    #    if section without senses
+    #      get all from sensed block (do next checkers)
+    #
+    #    if section has senses
+    #      get senses
+    #      do match
+    #      if matched
+    #        get all from sensed block (do next checkers)
+    #
+    section = context
+
+    # 1. if single explanation
+    if len( page.explanations ) == 1:
+        # get all from section (do next checkers)
+        yield from check( page, explanation, section, definitions )
+
+    # 2. if many explanations
+    elif len( page.explanations ) > 1:
+        # section senses
+        lexemes_by_sense = section.get_lexemes_by_sense()
+
+        # translate sections senses from raw to txt
+        section_senses = list( map( lambda s: page.text_by_raw[ s ], lexemes_by_sense.keys() ) )
+
+        # if section without senses
+        if len( section_senses ) == 0:
+            # get all from sensed block (do next checkers)
+            lexemes = list( lexemes_by_sense.values() )  # all
+            container = Container()
+            container.childs = lexemes
+            yield from check( page, explanation, container, definitions )  # call next checkers
+
+        # if section has senses
+        elif len( section_senses ) > 0:
+            # get explanation sense
+            sense_raw = explanation.get_sense()
+            explanation_sense_txt = page.text_by_raw[ sense_raw ]
+            # get all explanations (for match all-at-once in matcher)
+            explanation_sense_raws = map( Explanation.get_sense, page.explanations )
+            # raw to txt
+            explanation_sense_txts = list( map( lambda x: page.text_by_raw[x], explanation_sense_raws ) )
+
+            # match
+            matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
+
+            if matched_txt:
+                matched_raw = None
+
+                # txt to raw
+                for r, t in page.text_by_raw.items():
+                    if t == matched_txt:
+                        matched_raw = r
+                        break
+
+                lexemes = lexemes_by_sense[ matched_raw ]
+
+                # get all from sensed block (do next checkers)
+                container = Container()
+                container.childs = lexemes
+                yield from check( page, explanation, container, definitions )  # call next checkers
+
 
 def in_li_by_sense_en( page, explanation, context, definitions ):
     """
@@ -505,7 +586,7 @@ def check_node( page, node, lm ):
     # 3. recursive
     # 4 .run function with arguments. return words
     for name in filter( lambda s: s[0].isupper(), vars( node.item ) ):
-        # if name == 'SeeAlso':
+        # if name == 'Translation_IT':
         #     pass
         # else:
         #     continue

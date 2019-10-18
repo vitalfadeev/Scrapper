@@ -534,6 +534,6 @@ class WikictionaryItem:
 
 
     def __repr__(self):
-        return "WikictionaryItem(" + self.LabelName + ")"
+        return "WikictionaryItem(" + self.LabelName + ': ' + self.PrimaryKey + ")"
 
 

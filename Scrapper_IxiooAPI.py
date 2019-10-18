@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import requests
 import json
 
@@ -23,8 +25,8 @@ import json
 
 DOMAIN = 'http://lviv.ixioo.com:8030'
 
-
-def Match_List_PKS_With_Lists_Of_PKS(explanations: list, translation_sentences: list) -> list:
+@lru_cache( maxsize=32 )
+def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences: tuple) -> list:
     url = DOMAIN + '/Match_List_PKS_With_Lists_Of_PKS'
     data = {
         'explanations': explanations,

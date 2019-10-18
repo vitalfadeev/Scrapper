@@ -1,4 +1,3 @@
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Container, Section, Header, Template, Li, pack_sections
 from wiktionary.Scrapper_Wiktionary_ValuableSections import VALUABLE_SECTIONS as ws
 from wiktionary.Scrapper_Wiktionary_WordTypes import WORD_TYPES as wt
 
