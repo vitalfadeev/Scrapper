@@ -588,6 +588,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
 
     # 1. collect
     raws = extract_raw_text( toc )
+    raws = list( filter( None, raws ) )
 
     # 2. convert raw to txt
     txts = convert_raw_to_txt( page.label, raws )
