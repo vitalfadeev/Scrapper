@@ -350,15 +350,14 @@ def single_en_noun( page, explanation, context, definitions ):
     t = context
     label = page.label
 
-    res = next( en_noun( t, label ), None )
+    for res in en_noun( t, label ):
+        if res:
+            (s, p, is_uncountable) = res
 
-    if res:
-        (s, p, is_uncountable) = res
-
-    if definitions:
-        yield from check( page, explanation, s, definitions )
-    else:
-        yield s
+            if definitions:
+                yield from check( page, explanation, s, definitions )
+            else:
+                yield s
 
 
 def en_verb( page, explanation, context, defs ):

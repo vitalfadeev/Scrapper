@@ -16,9 +16,13 @@ def DBExecute( DB, sql, *args ):
 
     :param DB:      The database
     :param sql:     SQL command
-    :param args:    SQL arguments
+    :param args:    sql-command arguments
 
-    :Example:       DBExecute( DB, "SELECT * FROM wiktionary WHERE id = ?", (1, ) )
+    :example:
+        ::
+
+            DBWikictionary = sqlite3.connect( DB_NAME )
+            DBExecute( DBWikictionary, "SELECT * FROM wiktionary WHERE id = ?", (1, ) )
     """
     DB.execute( sql, args )
 
