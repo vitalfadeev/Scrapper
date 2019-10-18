@@ -1,10 +1,12 @@
 from functools import lru_cache
 import requests
+import logging
+import logging.config
 from bs4 import BeautifulSoup
 
-
-DOMAIN = "https://en.wiktionary.org"
+DOMAIN  = "https://en.wiktionary.org"
 API_URL = "/w/api.php"
+log     = logging.getLogger(__name__)
 
 
 def set_domain( lang: str ):
@@ -32,8 +34,8 @@ def parse( title, text ):
         data = response.json()
         return data['parse']['text']['*']
     else:
-        print( 'response.status_code', response.status_code )
-        print( 'response.text', response.text )
+        log.error( 'response.status_code: %s', response.status_code )
+        log.error( 'response.text: %s', response.text )
 
 
 def expand_templates( title: str, raws: list ) -> list:
@@ -84,18 +86,20 @@ def get_wikitext( title=None ):
         text = soup.body.mediawiki.page.revision.text
         return text
     else:
-        print( 'response.status_code', response.status_code )
-        print( 'response.text', response.text )
+        log.error( 'response.status_code: %s', response.status_code )
+        log.error( 'response.text: %s', response.text )
 
 
 def _get( params ):
     url = DOMAIN + API_URL
+    log.debug( "request to: %s", url )
     response = requests.get(url, params=params, timeout=(3.05, 27))
     return response
 
 
 def _post( params ):
     url = DOMAIN + API_URL
+    log.debug( "request to: %s", url )
     response = requests.post(url, data=params, timeout=(3.05, 27))
     return response
 

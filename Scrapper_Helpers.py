@@ -9,7 +9,6 @@ import json
 import logging
 import collections
 
-
 log = logging.getLogger(__name__)
 
 

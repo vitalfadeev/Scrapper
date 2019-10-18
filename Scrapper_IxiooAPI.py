@@ -2,6 +2,9 @@ from functools import lru_cache
 
 import requests
 import json
+import logging
+
+log = logging.getLogger(__name__)
 
 """
     This module will make a post request to the URL, as an argument it will pass a json file (dictionary)
@@ -33,6 +36,8 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
         'translations': translation_sentences,
     }
 
+    #
+    log.debug( "Request to: %s", url )
     response = requests.post(url, json=data, timeout=(11, 33))
 
     if response.status_code == 200:
@@ -42,13 +47,13 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
             return pairs
 
         except json.decoder.JSONDecodeError as e:
-            print( 'explanations:', explanations )
-            print( 'translation_sentences:', translation_sentences )
-            print( 'response.text:', response.text )
+            log.error( 'explanations: %s', explanations )
+            log.error( 'translation_sentences: %s', translation_sentences )
+            log.error( 'response.text: %s', response.text )
             raise e
 
     else:
-        print( response.status_code )
-        print( response.text )
+        log.error( response.status_code )
+        log.error( response.text )
         return None
 

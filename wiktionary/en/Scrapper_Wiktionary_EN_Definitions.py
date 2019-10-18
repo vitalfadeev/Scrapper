@@ -1,5 +1,5 @@
 # new version
-from ..Scrapper_Wiktionary_Checkers import *
+from wiktionary.Scrapper_Wiktionary_Checkers import *
 
 
 IsMale = {

@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 import json
 import itertools
-import sqlite3
+import logging
+import logging.config
+
+logging.config.fileConfig('logging.ini')
 
 
 def DBExecute( DB, sql, *args ):

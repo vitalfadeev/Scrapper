@@ -1,304 +1,20 @@
 import itertools
 import collections
-import string
-import re
-import pprint
-from typing import List, Any, Iterator
-from collections import defaultdict
-import Scrapper_IxiooAPI
+from typing import List
+from Scrapper_Helpers import convert_to_alnum, deduplicate, proper, get_lognest_word
 from wiktionary import Scrapper_Wiktionary
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
-from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
-from wiktionary.Scrapper_Wiktionary_ValuableSections import VALUABLE_SECTIONS as ws
 from wiktionary import Scrapper_Wiktionary_WikitextParser
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Dl, Link, String, Container
+from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
+from wiktionary.Scrapper_Wiktionary_Checkers import check_node
+from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Dl, Link, String
 from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX, VALUED_SECTIONS
-from ..Scrapper_Wiktionary_Checkers import check_node
-from Scrapper_Helpers import unique, filterWodsProblems
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import \
-    Section, Root, Lang, PartOfSpeech, Explanations, section_map, Explanation, ExplanationExample, Translations, \
+    Section, Root, Lang, PartOfSpeech, ExplanationsRoot, section_map, Explanation, ExplanationExample, Translations, \
     ExplanationLi
 
 
-# EN = 'en'
-# DE = 'de'
-# PT = 'pt'
-# FR = 'fr'
-# IT = 'it'
-# ES = 'es'
-# RU = 'ru'
-
-
-class TocNode(list):
-    def __init__(self, title='', level=0, parent=None):
-        super().__init__()
-        self.title               = title                    # title             str
-        self.title_norm          = ""                       # title_normal      str
-        self.level               = level                    # level             int
-        self.parent              = parent                   # parent            TocNode
-        self.lexems              = []                       # section lexems    Container
-        self.item                = WikictionaryItem()       # store             WiktionaryItem
-        self.index_in_toc        = ''
-        self.index_pos           = ''
-        self.is_lang             = False
-        self.is_pos              = False
-        self.is_valued_section   = False
-        self.is_explanation      = False
-        self.is_example          = False
-        self.is_li               = False
-        self.is_list             = False
-        self.is_text             = False
-        self.is_header           = False
-        self.is_trans_top        = False
-        self.is_explanation_root = False
-        self.is_explanation_node = False
-        self.is_leaf_explanation = False
-        self.sense_raw           = ""
-        self.sense_txt           = ""
-        self.sections            = {}                       # child section. sections[ 'Synonyms' ] = node
-        self.explanations        = None
-        self.sense_matches       = None
-        self.by_sense            = None                     # cache. .by_sense[ 'sense' ] = Container
-
-    def append(self, node) -> None:
-        node.parent = self
-        super().append(node)
-
-    def find_all(self, recursive=False) -> Iterator[ "TocNode" ]:
-        for c in self:
-            yield c
-
-            if recursive:
-                yield from c.find_all(recursive)
-
-
-    def find_lexem(self, recursive=True) -> Iterator[ Container ]:
-        # return node lexem and node lexem childs
-        for lexem in self.lexems:
-            yield lexem
-
-            if recursive:
-                yield from lexem.find_all( recursive )
-
-
-    def find_parents( self ) -> Iterator[ "TocNode" ]:
-        parent = self.parent
-        while parent:
-            yield parent
-            parent = parent.parent
-
-
-    def find_lang_section( self ) -> Iterator[ "TocNode" ]:
-        yield from filter( lambda node: node.is_lang, self.find_all( recursive=True ) )
-
-
-    def find_part_of_speech_section( self ) -> Iterator[ "TocNode" ]:
-        yield from filter( lambda node: node.is_pos, self.find_all( recursive=True ) )
-
-
-    def find_explanations( self ) -> Iterator[ "TocNode" ]:
-        yield from filter( lambda node: node.is_explanation, self.find_all( recursive=True ) )
-
-
-    def find_examples( self ) -> Iterator[ "TocNode" ]:
-        yield from filter( lambda node: node.is_example, self.find_all( recursive=True ) )
-
-
-    def get_parent_lang_node( self ) -> "TocNode":
-        node = self.parent
-
-        while node is not None:
-            if node.is_lang is True:
-                return node
-            else:
-                node = node.parent
-
-        return None
-
-
-    def get_parent_pos_node( self ) -> "TocNode":
-        node = self.parent
-
-        while node is not None:
-            if node.is_pos is True:
-                return node
-            else:
-                node = node.parent
-
-        return None
-
-
-    def merge_with_parents( self ) -> WikictionaryItem:
-        """ Merge item data with parents data. Starts from parent. Ends on 'self'.
-            Parents values replaced by 'self' values (- for dict, str, int, for list - append).
-        """
-        item = WikictionaryItem()
-
-        for parent in reversed( list( self.find_parents() ) ):
-            item.merge( parent.item )
-
-        item.merge( self.item )
-
-        return item
-
-
-    def merge_with_childs( self ) -> WikictionaryItem:
-        """ Merge item data with childs data. Starts from 'self' node. Ends on leaf.
-        """
-        item = WikictionaryItem()
-
-        for child in self.find_all( recursive=True ):
-            item.merge( child.item )
-
-        item.merge( self.item )
-
-        return item
-
-
-    def dump(self, level=0, wide=False, with_lexems=False):
-        WIDTH = 68
-
-        # print header
-        if level == 0:
-            if wide:
-                s = ""
-                print(s.ljust(WIDTH), self.item.dumps(print_header=True))
-
-            # recursive
-            for i, child in enumerate(self, start=1):
-                child.dump(level+1, wide, with_lexems)
-            return
-
-        # print node
-        if wide:
-            # wide. show item columns
-            s = ("  " * level) + ' ' + self.index_in_toc + ' ' + self.title
-            print(s.ljust(WIDTH) + self.item.dumps())
-        else:
-            # short. title only
-            print("  " * level + self.index_in_toc + ' ' + repr(self))
-            if with_lexems:
-                for lexem in self.lexems:
-                    print("  " * level + '- ' +  repr(lexem))
-
-        # recursive
-        for child in self:
-            child.dump(level+1, wide, with_lexems)
-
-
-    def dump_sense_raw( self, level=0 ):
-        if self.sense_raw:
-            print( '  '*level + self.index_in_toc + ' ' + self.sense_raw )
-
-        # recursive
-        for node in self:
-            node.dump_sense_raw( level+1 )
-
-
-    def dump_sense_txt( self, level=0 ):
-        if self.sense_txt:
-            print( '  '*level + self.index_in_toc + ' ' + self.sense_txt )
-
-        # recursive
-        for node in self:
-            node.dump_sense_txt( level+1 )
-
-
-    def __repr__(self):
-        if self.is_lang:
-            return self.title
-        elif self.is_pos:
-            return self.title
-        elif self.is_explanation_root:
-            return self.title
-        elif self.is_explanation:
-            return self.title
-        elif self.is_example:
-            return self.title
-        else:
-            return self.title
-
-
-def make_tree_( lexems: list ) -> TocNode:
-    root = TocNode()
-    last = root
-
-    # 1. scan each lexem
-    # 2. get Headers
-    # 3. make tree
-    # group lexems by class
-    for lexem in lexems:
-        if isinstance( lexem, Header):
-            header = lexem
-            node = TocNode( title=header.name, level=header.level )
-            node.is_header = True
-            node.lexems.append( header )
-
-            # flags
-            beauty_name = header.name.lower().strip()
-            if header.level < 4 and beauty_name in LANG_SECTIONS_INDEX:
-                # Language
-                node.is_lang = True
-                node.title_norm = LANG_SECTIONS_INDEX[ beauty_name ]
-
-            elif beauty_name in PART_OF_SPEECH_SECTIONS_INDEX:
-                # Part of speech
-                node.is_pos = True
-                node.title_norm = PART_OF_SPEECH_SECTIONS_INDEX[ beauty_name ]
-
-            elif beauty_name in VALUED_SECTIONS_INDEX:
-                # Synonyms, Antonyms, Translations
-                node.is_valued_section = True
-                node.title_norm = VALUED_SECTIONS_INDEX[ beauty_name ]
-
-            else:
-                node.title_norm = beauty_name
-
-            # hierarhy
-            if last is root:
-                # top-level node
-                parent = last
-                parent.append(node)
-                last = node
-
-            elif header.level > last.level:
-                # child node
-                parent = last
-                parent.append(node)
-                last = node
-
-            elif header.level == last.level:
-                # same level node
-                parent = last.parent
-                parent.append(node)
-                last = node
-
-            else:
-                # parent node
-                # find parent
-                parent = last
-
-                while parent is not root:
-                    if header.level > parent.level:
-                        break
-                    else:
-                        parent = parent.parent
-
-                parent.append(node)
-                last = node
-
-            # sections index
-            parent.sections[ beauty_name ] = node
-
-        else:
-            # text block
-            last.lexems.append( lexem )
-
-    return root
-
-
-
-def make_tree( lexemes: list ) -> Root:
+def make_table_of_contents( lexemes: list ) -> Root:
     root = Root()
     last = root
 
@@ -388,35 +104,6 @@ def make_tree( lexemes: list ) -> Root:
             last.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
 
     return root
-
-
-def mark_explanations( toc: TocNode ):
-    # find POS node
-    # find 1st list in childs
-    # set flags:
-    #   is_explanation
-    #   is_example
-    for lang_node in toc.find_lang_section():
-        for node in lang_node.find_part_of_speech_section():
-            # part-of-speech found
-            # find 1st li
-            for c in node:
-                if c.is_list:
-                    # 1st list found
-                    # set flags
-                    c.is_explanation_root = True
-                    c.title = 'Explanations'
-
-                    li_node: TocNode
-                    for li_node in c.find_all( recursive=True ):
-                        li_node.is_explanation_node = True
-
-                        if li_node.lexems[0].base.endswith('#'):
-                            li_node.is_explanation = True
-                        elif li_node.lexems[0].base.endswith(':'):
-                            li_node.is_example = True
-
-                    break # stop. and go to next POS
 
 
 def extract_raw_text( toc: Root ) -> list:
@@ -515,89 +202,7 @@ def extract_raw_text( toc: Root ) -> list:
     return raws
 
 
-def group_by_sense( toc: TocNode ) -> TocNode:
-    for node in toc:
-        for lexem in node.lexems:
-            if isinstance( lexem, Template ):
-                t = lexem
-                if t.name == 'trans-top':
-                    # do grouping
-
-                    # 1. read rest. expect Template.name == 'trans-bottom'. skip Template.name == 'trans-mid'
-                    # 2. take text or Li. pass to the make_tree(). get root. set title = 'trans-top'. add to the node. set flag trans_top = True
-
-                    # node
-                    #   - text
-                    #   - {{trans-top|....\}}
-                    #   - *
-                    #   - *
-                    #   - *
-                    #   - {{trans-bottom}}
-                    #   - text
-                    #
-                    # to
-                    #
-                    # node text
-                    # node 'trans-top'
-                    # node text
-
-                    # root
-                    #   node
-                    #   node
-                    #   node
-                    #
-                    # replace with
-                    #
-                    # root
-                    #   trans_top_node
-                    #     node
-                    #     node
-                    #     node
-
-                    #                        sense
-                    # explanation              x
-                    # {{trans-top|...}} / li   x
-                    # =synonyms= / li          x
-                    # =sense= / li             x
-                    # {{sense|...}}            x
-                    pass
-
-        group_by_sense( node )
-
-    return toc
-
-
-def extract_explanations(root: TocNode) -> tuple:
-    explanations = []
-    lexems2 = []
-
-    # find first list block
-    iterator = iter(root.lexems)
-
-    # find first Li
-    for lexem in iterator:
-        if isinstance(lexem, Li):
-            # found
-            explanations.append(lexem)
-            break
-        else:
-            lexems2.append(lexem)
-
-    # find rest li
-    for lexem in iterator:
-        if isinstance(lexem, Li):
-            explanations.append(lexem)   # examples here also
-        else:
-            break
-
-    # save rest lexems
-    for lexem in iterator:
-        lexems2.append(lexem)
-
-    return (explanations, lexems2)
-
-
-def make_explanations_tree( lexemes: list ) -> Explanations:
+def make_explanations_tree( lexemes: list ) -> ExplanationsRoot:
     # make toc
     # Add childs to parents
     # Add examples to explanations
@@ -613,7 +218,7 @@ def make_explanations_tree( lexemes: list ) -> Explanations:
         else:
             return False
 
-    root = Explanations()
+    root = ExplanationsRoot()
     root.title = 'Explanations'
     last = root
 
@@ -660,113 +265,7 @@ def make_explanations_tree( lexemes: list ) -> Explanations:
     return root
 
 
-def make_li_tree( lexems: list ) -> TocNode:
-    # make toc
-    # Add childs to parents
-    # Add examples to explanations
-    def is_a_contain_b( a: TocNode, b: TocNode ) -> bool:
-        pa_base = a.lexems[0].base
-        li_base = b.lexems[0].base
-
-        if li_base.startswith( pa_base ):
-            if li_base == pa_base:
-                return False
-            else:
-                return True
-        else:
-            return False
-
-    root = TocNode()
-    root.title = 'list'
-    root.is_list_root = True
-    last = root
-
-    for li in lexems:
-        node = TocNode()
-        node.is_li = True
-        node.title = li.raw
-        node.lexems.append( li )
-
-        if last is root:
-            root.append( node )
-            last = node
-
-        elif is_a_contain_b( last, node ):
-            last.append( node )
-            last = node
-
-        else:
-            while last is not root:
-                if is_a_contain_b( last, node ):
-                    break
-                else:
-                    last = last.parent
-
-            last.append( node )
-            last = node
-
-    return root
-
-
-# def find_translations_in_sections_in_trans_see(node: TocNode) -> WikictionaryItem:
-#     # {{trans-see|cat|cat/translations#Noun}}
-#     from ..Scrapper_Wiktionary_WikitextParser import parse
-#
-#     item = WikictionaryItem()
-#
-#     for lexem in node.lexems:
-#         if isinstance(lexem, Template):
-#             t = lexem
-#             if t.name == 'trans-see':
-#                 gloss = t.arg(0)
-#                 title = t.arg(1)
-#                 if title:
-#                     spits = title.split( '#', maxsplit=1 )
-#                     page_title    = spits[0].strip()
-#                     section_title = spits[1] if len(spits) > 1 else ''
-#
-#                     if page_title:
-#                         # meke http request
-#                         text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( page_title )
-#
-#                         # parse
-#                         lexems = parse(text)
-#                         toc    = make_toc(lexems)
-#
-#                         # scrap translations
-#                         for trnode in toc.find_all( recursive=True ):
-#                             scrap_translations( trnode, with_trans_seee=False )
-#
-#                         # merge translations
-#                         for trnode in toc.find_all( recursive=True ):
-#                             item.TranslationsBySentence.update( trnode.item.TranslationsBySentence )
-#                             item.TranslationsByLang.update( trnode.item.TranslationsByLang )
-#
-#     return item
-
-
-# def scrap_translations(node: TocNode, with_trans_seee=True):
-#     """
-#     :param node:
-#     :param with_trans_seee:  for prevent recursion
-#     :return:
-#     """
-#     for sec in node:
-#         if sec.title.lower().strip() in VALUED_SECTIONS[ ws.TRANSLATIONS ]:
-#             translations  = find_translations_in_sections_in_trans_top( sec )
-#             node.item.TranslationsBySentence = translations
-#
-#             if with_trans_seee:
-#                 item = find_translations_in_sections_in_trans_see( sec )
-#                 node.item.TranslationsBySentence.update( item.TranslationsBySentence )
-#                 node.item.TranslationsByLang = item.TranslationsByLang
-
-
-#
 def get_label_type( expl, item ):
-    from Scrapper_Helpers import convert_to_alnum, deduplicate, proper, get_lognest_word
-    from ..Scrapper_Wiktionary_WikitextParser import Li, Dl, Link, String
-
     wt = proper(item.Type) if item.Type is not None else ""
 
     # Extract the list of item enclosed in {{ }}
@@ -837,103 +336,6 @@ def get_label_type( expl, item ):
     return wt + "_" + "_".join(biglst[:4])
 
 
-def group_by_class( lexems: list ):
-    # chains:
-    # - lexem: Header
-    # - lexem: Li
-    # - lexem: Li
-    # - lexem: Li
-    # - lexem: String
-    # to groups:
-    # - (Header, (lexem))
-    # - (Li    , (lexem, lexem, lexem))
-    # - (str   , (lexem))
-
-    class keyfn:
-        def __init__(self):
-            self.expect = None  # ( key, expect_class, expect_name )
-
-        def __call__(self, x, *args, **kwargs):
-            if self.expect:
-                (key, expect_class, expect_name) = self.expect
-                if isinstance( x, expect_class ) and x.name == expect_name:
-                    self.expect = None
-                    return key
-                else:
-                    return key
-
-            else:
-                if isinstance( x, Header ):
-                    return Header
-                # elif isinstance( x, Li ):
-                #     return Li
-                # elif isinstance( x, Dl ):
-                #     return Dl
-                # elif isinstance( x, Template ) and x.name == 'trans-top':
-                #     self.expect = ( 'trans-top', Template, 'trans-bottom' )
-                #     return 'trans-top'
-                else:
-                    return str
-
-    yield from itertools.groupby( lexems, keyfn() )
-
-
-def make_tree_from_groups( root: TocNode ) -> TocNode:
-    # =====Synonyms=====
-    # See also [[Thesaurus:cat]], [[Thesaurus:man]].
-    # {{checksense|en}}
-    # * {{sense|any member of the [[suborder]] (sometimes [[superfamily]]) [[Feliformia]] or [[Feloidea]]}} {{l|en|feliform}} ("[[cat-like]]" [[carnivoran]]), [[feloid]] (compare [[Caniformia]], {{taxlink|Canoidea|superfamily|noshow=1|ver=170212}})
-    # * {{sense|any member of the [[subfamily]] [[Felinae]], genera ''[[Puma]]'', ''[[Acinonyx]]'', ''[[Lynx]]'', ''[[Leopardus]]'', and ''[[Felis]]'')}} {{l|en|feline cat}}, a [[feline]]
-    # * {{sense|any member of the subfamily [[Pantherinae]], genera ''[[Panthera]], [[Uncia]]'' and ''[[Neofelis]]''}} {{l|en|pantherine cat}}, a [[pantherine]]
-    #
-    # to
-    # node: root
-    #   node: Synonyms
-    #     node: tx
-    #       - See also [[Thesaurus:cat]], [[Thesaurus:man]].
-    #       - {{checksense|en}}
-    #    node: li
-    #      node: li
-    #        - * {{sense|any member of the [[suborder]] (sometimes [[superfamily]]) [[Feliformia]] or [[Feloidea]]}} {{l|en|feliform}} ("[[cat-like]]" [[carnivoran]]), [[feloid]] (compare [[Caniformia]], {{taxlink|Canoidea|superfamily|noshow=1|ver=170212}})
-    #      node: li
-    #        - * {{sense|any member of the [[subfamily]] [[Felinae]], genera ''[[Puma]]'', ''[[Acinonyx]]'', ''[[Lynx]]'', ''[[Leopardus]]'', and ''[[Felis]]'')}} {{l|en|feline cat}}, a [[feline]]
-    #      node: li
-    #        - * {{sense|any member of the subfamily [[Pantherinae]], genera ''[[Panthera]], [[Uncia]]'' and ''[[Neofelis]]''}} {{l|en|pantherine cat}}, a [[pantherine]]
-
-    # last
-    last = root
-
-    # group lexems by class
-    for k, group in group_by_class( root.lexems ):
-        # make tree branches: li, dl, tx
-        if k is Li:
-            # Li block
-            node = TocNode()
-            node.title = 'li'
-            node.is_li = True
-            node = make_li_tree( node, group )
-            last.append( node )
-        else:
-            # text block
-            node = TocNode()
-            node.title = 'tx'
-            node.is_tx = True
-            node.lexems = list( group )
-            last.append( node )
-
-    return root
-
-
-def convert_lists_to_tree( root : TocNode ) -> TocNode:
-    make_tree_from_groups( root )
-
-    # recursive
-    for node in root:
-        convert_lists_to_tree( node )
-
-    return root
-
-
 def get_leaf_explanation_nodes( root: Section ) -> list:
     leaf_explanations = []
 
@@ -964,112 +366,9 @@ def make_lists_same_length( a: list, b: list ):
         a.extend( itertools.repeat( '', len(b) - len(a) ) )
 
 
-# def convert_items_raw_to_txt( page_title: str, items: list ) -> list:
-#     raws = [ ]
-#
-#     for item in items:
-#         raws.append( item.ExplainationRaw )
-#         raws.append( item.ExplainationExamplesRaw )
-#
-#     converted = Scrapper_Wiktionary_RemoteAPI.expand_templates( page_title, raws )
-#     itreaator = iter( converted )
-#
-#     for item in items:
-#         item.ExplainationTxt = next( itreaator )
-#         item.ExplainationExamplesTxt = next( itreaator )
-#
-#         # beautify
-#         item.ExplainationTxt = item.ExplainationTxt.lstrip( '#*: ' )
-#         item.ExplainationExamplesTxt = item.ExplainationExamplesTxt.lstrip( '#*: ' )
-#
-#     return items
-
-
 def convert_raw_to_txt( page_title: str, raws: list ) -> list:
     converted = Scrapper_Wiktionary_RemoteAPI.expand_templates( page_title, raws )
     return converted
-
-
-# def attach_translations( items: list ) -> list:
-#     # attach translations
-#     # group items by IndexPartOfSpeech
-#     groups = [ (k, list( g )) for k, g in itertools.groupby( items, key=lambda item: item.IndexPartOfSpeech) ]
-#
-#     # get lists
-#     for k, group in groups:
-#         # make package
-#         explanations = []
-#         tr_sentences = []
-#
-#         for item in group:
-#             explanations.append( item.ExplainationTxt )
-#             tr_sentences.extend( item.TranslationsBySentence.keys() )
-#
-#         # unique
-#         tr_sentences = list( set( tr_sentences ) )
-#
-#         # if has translations only
-#         if tr_sentences:
-#             # make same length
-#             #make_lists_same_length( explanations, tr_sentences )
-#
-#             # request to api
-#             pairs = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( explanations, tr_sentences )
-#
-#             # attach
-#             for item, (e, t) in zip(group, pairs):
-#                 item.TranslationSentence = t
-#                 item.TranslationsPairs   = pairs
-#                 try:
-#                     by_lang = item.TranslationsBySentence[ t ]
-#                     item.Translation_EN.extend( by_lang.get( EN, [] ) )
-#                     item.Translation_FR.extend( by_lang.get( FR, [] ) )
-#                     item.Translation_DE.extend( by_lang.get( DE, [] ) )
-#                     item.Translation_ES.extend( by_lang.get( ES, [] ) )
-#                     item.Translation_IT.extend( by_lang.get( IT, [] ) )
-#                     item.Translation_PT.extend( by_lang.get( PT, [] ) )
-#                     item.Translation_RU.extend( by_lang.get( RU, [] ) )
-#
-#                 except KeyError:
-#                     pass
-#
-#     return items
-
-
-def get_synonyms_by_sentences( node: TocNode ) -> list:
-    syns = []
-
-    # find 'Synonyms' section
-    for node in node:
-        if node.title == 'Synonyms':
-            # found
-            # find list elements: li
-            for lexem in node.lexems:
-                if isinstance( lexem, Li ):
-                    # found
-                    # fetch all synonyms
-                    pass
-
-    return syns
-
-
-def attach_synonyms( pos_node: TocNode ) -> list:
-    # attach synonyms
-
-    # get node explanations
-    #   fetch explanations
-    # get node synonyms (from subsection)
-    #   fetch synonyms list (by sentence)
-    #   fetch from: https://en.wiktionary.org/wiki/Thesaurus:cat
-
-    # =====Synonyms=====
-    # * {{sense|any member of the [[suborder]] (sometimes [[superfamily]]) [[Feliformia]] or [[Feloidea]]}} {{l|en|feliform}} ("[[cat-like]]" [[carnivoran]]), [[feloid]] (compare [[Caniformia]], {{taxlink|Canoidea|superfamily|noshow=1|ver=170212}})
-    # * {{sense|any member of the [[subfamily]] [[Felinae]], genera ''[[Puma]]'', ''[[Acinonyx]]'', ''[[Lynx]]'', ''[[Leopardus]]'', and ''[[Felis]]'')}} {{l|en|feline cat}}, a [[feline]]
-    # * {{sense|any member of the subfamily [[Pantherinae]], genera ''[[Panthera]], [[Uncia]]'' and ''[[Neofelis]]''}} {{l|en|pantherine cat}}, a [[pantherine]]
-
-    syns = get_synonyms_by_sentences( pos_node )
-
-    return pos_node
 
 
 def mark_leaf_explanation_nodes( root: Root ):
@@ -1106,7 +405,7 @@ def update_index_in_toc( root: Section, level=0, prefix="", index_pos=''  ):
 
     node: Section
     for node in root:
-        if isinstance( node, Explanations ):
+        if isinstance( node, ExplanationsRoot ):
             node.index_in_toc = prefix + 'ex.'
 
         elif isinstance( node, ExplanationExample ):
@@ -1193,7 +492,7 @@ def add_translations_from_trans_see( page, toc: Root ):
 
         # 3. parse page -> lexemes + toc
         ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
-        ts_toc = make_tree( ts_lexemes )
+        ts_toc = make_table_of_contents( ts_lexemes )
         update_index_in_toc( ts_toc )
         # ts_toc.dump()
 
@@ -1255,7 +554,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     page.lexems = lexems
 
     # make table-of-contents (toc)
-    toc = make_tree( lexems )
+    toc = make_table_of_contents( lexems )
     page.toc = toc
     remove_other_langs( toc )
 

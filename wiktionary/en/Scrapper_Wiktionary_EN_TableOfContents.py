@@ -192,19 +192,19 @@ class Section(list):
 
 
 class Root(Section):
-    ...
+    pass
 
 
 class Lang(Section):
-    ...
+    pass
 
 
 class PartOfSpeech(Section):
-    ...
+    pass
 
 
-class Explanations(Section):
-    ...
+class ExplanationsRoot( Section ):
+    pass
 
 
 class Explanation(Section):
@@ -218,11 +218,11 @@ class Explanation(Section):
 
 
 class ExplanationExample(Section):
-    ...
+    pass
 
 
 class ExplanationLi(Section):
-    ...
+    pass
 
 
 class Translations( Section ):
@@ -231,42 +231,27 @@ class Translations( Section ):
         return dict( trans_top_reader( self.lexemes ) )
 
 
-class Synonyms(Section):
+class AnyYms(Section):
     def get_lexemes_by_sense( self ):
         # find * {{sense}}
         return dict( li_sense_reader( self.lexemes ) )
 
-    # def scrap_by_sense( self, sense ):
-    #     pass
-    #
-    # def scrap_all( self ):
-    #     pass
-    #
-    # def scrap( self, page, explanation ):
-    #     if self.by_sense:
-    #         self.scrap_by_sense( explanation.sense_txt )
-    #     else:
-    #         self.scrap_all()
+class Synonyms(AnyYms): pass
+class Antonyms(AnyYms): pass
+class Hyponyms(AnyYms): pass
+class Hypernyms(AnyYms): pass
+class Troponyms(AnyYms): pass
+class Holonyms(AnyYms): pass
+class Meronyms(AnyYms): pass
 
 
 section_map = {
     ws.TRANSLATIONS: Translations,
     ws.SYNONYMS: Synonyms,
+    ws.ANTONYMS: Antonyms,
+    ws.HYPONYMS: Hyponyms,
+    ws.HYPERNYMS: Hypernyms,
+    ws.TROPONYMS: Troponyms,
+    ws.HOLONYMS: Holonyms,
+    ws.MERONYMS: Meronyms,
 }
-
-
-
-
-class PksMatcher:
-    @classmethod
-    @lru_cache( maxsize=32 )
-    def match( self, explanations: Explanations, section: Section ):
-        e_sentences = list( explanations.by_sense.keys() )
-        s_sentences = list( section.by_sense.keys() )
-
-        if e_sentences and s_sentences:
-            matches = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( e_sentences, s_sentences )
-            return matches
-        else:
-            return None
-

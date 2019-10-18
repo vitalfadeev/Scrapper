@@ -1,11 +1,10 @@
-import itertools
 import more_itertools
 import Scrapper_IxiooAPI
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
-from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
-from wiktionary.en import Scrapper_Wiktionary_EN
 from Scrapper_Helpers import filterWodsProblems
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
+from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
+from wiktionary.en import Scrapper_Wiktionary_EN
+from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
 
 
 
@@ -39,126 +38,6 @@ def in_section( page, explanation, context, definitions ):
         if section is not None:
             # do next check
             yield from check( page, explanation, section, defs )
-
-
-def in_trans_top_by_sense( page, explanation, context, definitions ):
-    # get translations
-    # {{trans-top|...}}
-    # *Abkhaz: {{t | ab | ацгә}}
-    # *Acehnese: {{t | ace | mië}}
-    # *Adyghe: {{t | ady | кӏэтыу}}
-    #
-    # if many explanations
-    #   1. find section 'Translations'. (context)
-    #   2. get all senses
-    #       find all {{trans-top|...}}
-    #       get first arg. it is sense
-    #       sense-raw to sense-txt
-    #       save to cache.  senses[ sense ] = element
-    #   3. pks match senses + explanations
-    #   4. get matched sense. and related container
-    #   5. in container find all li
-    #      for each li:
-    #         get first word. it is language
-    #         if language == expected lang
-    #            get word
-    #   6. save parsed {{trans-top|...}} to cache. for use with other languages
-    #      section.trans_top_by_sense[ sense ][ language ] = Container
-    #
-    # if single explanation
-    #   1. find section 'Translations'. (context)
-    #   2. find all {{trans-top|...}}
-    #   3. get all
-
-    node = context
-    section = context
-    expect_langs = definitions.keys()
-
-    # if many explanations
-    if len( page.explanations ) > 1:
-        # 1. we in section 'Translations'. (context)
-        # 2. get all senses. (for use in matching)
-        #     find all {{trans-top|...}}
-        #     get first arg. it is sense
-        #     sense-raw to sense-txt
-        #     save to cache.  senses[ sense ] = element
-        by_sense = {}
-
-        for t in node.find_lexem( recursive=False ):
-            if isinstance( t, Template ):
-                if t.name == 'trans-top':
-                    # get sense
-                    sense_raw = t.arg(0, raw=True)
-                    if sense_raw:
-                        # sense-raw to sense-txt
-                        sense_txt = page.text_by_raw[ sense_raw ]
-                        by_sense[ sense_txt ] = t
-        # we have all senses!
-
-        if by_sense:
-            pass
-
-        # 3. pks match senses + explanations
-        if by_sense and section.by_sense:
-            # prepare pks match
-            explanations = list( page.explanation_by_sense.keys() )
-            section_senses = list( section.by_sense.keys() )
-
-            # do pks match
-            if explanations and section_senses:
-                matches = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( explanations, section_senses )
-
-                # cache
-                section.sense_matches = dict( matches )
-
-            else:
-                # if no senses
-                section.sense_matches = { }
-
-        else:
-            # if no senses
-            section.sense_matches = { }
-
-        matched_lexemes_container = None
-
-        # 4. get matched sense. and related container
-        if section.sense_matches:
-            e_sense = explanation.sense_txt
-            t_sense = section.sense_matches.get( e_sense, None )
-
-            if t_sense:
-                # find matched lexemes
-                matched_lexemes_container = section.by_sense[ t_sense ]
-
-        # 5. in container find all li
-        #    for each li:
-        #       get first word. it is language
-        #       if language == expected lang
-        #          get word
-        #matched_lexemes_container = next( filter( lambda x: isinstance(x, Template) and x.name == 'trans-top', section.lexems ), None )
-        if matched_lexemes_container:
-            # extract words
-            for li in Scrapper_Wiktionary_EN.trans_top_reader( section.lexems, matched_lexemes_container ):
-                if isinstance( li, Li ):
-                    # get first word. it is language
-                    language_raw = li.childs[ 0 ].raw
-                    language = language_raw.strip( ': \n' ).lower()
-
-                    if language in expect_langs:
-                        yield from check( page, explanation, li, definitions[ language ] )
-
-    # if sungle explanation
-    if len( page.explanations ) == 1:
-        for li in section.lexems:
-            if isinstance( li, Li ):
-                #    for each li:
-                #       get first word. it is language
-                language_raw = li.childs[ 0 ].raw
-                language = language_raw.strip( ': \n' ).lower()
-
-                if language in expect_langs:
-                    yield from check( page, explanation, li, definitions[ language ] )
-            break
 
 
 def if_explanation( page, explanation, context, definitions ):
@@ -293,16 +172,6 @@ def has_template( page, explanation, context, tnames ):
         raise Exception("unsupported")
 
 
-# def if_single_explanation( page, explanation, context, definitions ):
-#     if len( page.explanations ) == 1:
-#         yield from check( page, explanation, context, definitions )
-#
-#
-# def if_many_explanations( page, explanation, context, definitions ):
-#     if len( page.explanations ) > 1:
-#         yield from check( page, explanation, context, definitions )
-
-
 def in_self( page, explanation, context, definitions ):
     yield from check( page, explanation, context, definitions )
 
@@ -330,21 +199,6 @@ def in_examples( page, explanation, context, definitions ):
     for child in context:
         if isinstance(child, ExplanationExample):
             yield from check( page, explanation, child, definitions )
-
-
-def get_li_senses_en( page, section ):
-    """
-    search: * {{sense|...}}
-    return [ ('sentence1', lexemes_container1), ('sentence2', lexemes_container2),) ]
-    """
-    for lexem in section.lexemes:
-        if isinstance( lexem, Li ):
-            li = lexem
-            for t in lexem.find_objects( Template, recursive=False ):
-                if t.name == 'sense':
-                    raw = t.arg( 0, raw=True )
-                    txt = page.text_by_raw[ raw ]
-                    yield (txt, li)
 
 
 def by_sense( page, explanation, context, definitions ):
@@ -412,73 +266,6 @@ def by_sense( page, explanation, context, definitions ):
                 container = Container()
                 container.childs = lexemes
                 yield from check( page, explanation, container, definitions )  # call next checkers
-
-
-def in_li_by_sense_en( page, explanation, context, definitions ):
-    """
-    # extract senses
-    # if single explaanation:
-    #   get all from section
-    #
-    # if many explanations:
-    #   get_senses: {           # extract senses. senes[ sense ] = [ lexem, lexem ]
-    #       in_li: {
-    #           in_template: {
-    #               'sense': {
-    #                   in_arg: { 0 }
-    #               }
-    #           }
-    #       }
-    #   },
-    #   pks match
-    #     all explanations + all section_senses
-    #     cache matches
-    #
-    #   here have: section_senses, explanation sense, matched pairs
-    #   match:
-    #     have section_senses + explanation_sense
-    #     sense
-    """
-    section = context
-
-    # if single explanation
-    if len( page.explanations ) == 1:
-        # extract words
-        yield from check( page, explanation, section, definitions )
-
-    # if many explanations
-    elif len( page.explanations ) > 1:
-        # check cached
-        if not hasattr(section, 'section.sense_matches') or section.sense_matches is None:
-            # extract senses
-            section.by_sense = dict( get_li_senses_en( page, section ) )
-            # we have all senses!
-
-            # prepare pks match
-            explanations = list( page.explanation_by_sense.keys() )
-            section_senses = list( section.by_sense.keys() )
-
-            # do pks match
-            if explanations and section_senses:
-                matches = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( explanations, section_senses )
-
-                # cache
-                section.sense_matches = dict( matches )
-
-            else:
-                # if no senses
-                section.sense_matches = {}
-
-        #
-        e_sense = explanation.sense_txt
-        s_sense = section.sense_matches.get( e_sense, None )
-
-        if s_sense:
-            # find matched lexemes
-            matched_lexemes_container = section.by_sense[ s_sense ]
-
-            # extract words
-            yield from check( page, explanation, matched_lexemes_container, definitions )
 
 
 def en_noun( t, label ):
