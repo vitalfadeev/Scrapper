@@ -32,6 +32,9 @@ IsFeminine = {
             'feminine plural of': {},
             'feminine singular of': {},
         }
+    },
+    in_self: {
+        text_contain: { "(usually female)" }
     }
 }
 

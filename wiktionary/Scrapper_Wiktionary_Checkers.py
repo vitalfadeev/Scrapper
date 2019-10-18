@@ -257,12 +257,13 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
                         matched_raw = r
                         break
 
-                lexemes = lexemes_by_sense[ matched_raw ]
+                lexemes = lexemes_by_sense.get( matched_raw, None )
 
-                # get all from sensed block (do next checkers)
-                container = Container()
-                container.childs = lexemes
-                yield from check( page, explanation, container, definitions )  # call next checkers
+                if lexemes:
+                    # get all from sensed block (do next checkers)
+                    container = Container()
+                    container.childs = lexemes
+                    yield from check( page, explanation, container, definitions )  # call next checkers
 
 
 def en_noun( t, label ):
