@@ -232,7 +232,7 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
         lexemes_by_sense = section.get_lexemes_by_sense()
 
         # translate sections senses from raw to txt
-        section_senses = list( map( lambda s: page.text_by_raw[ s ], lexemes_by_sense.keys() ) )
+        section_senses = list( map( lambda s: page.text_by_raw[ s ], filter( None, lexemes_by_sense.keys() ) ) )
 
         # if section without senses
         if len( section_senses ) == 0:
