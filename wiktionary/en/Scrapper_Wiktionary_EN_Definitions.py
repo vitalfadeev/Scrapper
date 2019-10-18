@@ -13,9 +13,9 @@ IsMale = {
             'masculine plural past participle of': {},
             'masculine plural of': {},
         },
-        if_explanation: {
-            text_contain: { "(usually male)" }
-        }
+    },
+    in_self: {
+        text_contain: { "(usually male)" }
     }
 }
 

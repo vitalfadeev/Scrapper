@@ -1,11 +1,8 @@
 from typing import Iterator
-
 import more_itertools
-import Scrapper_IxiooAPI
-from Scrapper_Helpers import filterWodsProblems
+from Scrapper_Helpers import filterWodsProblems, dict_merge
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
-from wiktionary.en import Scrapper_Wiktionary_EN
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
 
 
@@ -42,14 +39,10 @@ def in_section( page, explanation, context, definitions ):
             yield from check( page, explanation, section, defs )
 
 
-def if_explanation( page, explanation, context, definitions ):
-    if hasattr( context, 'is_explanation' ) and context.is_explanation:
-        yield from check( page, explanation, context, definitions )
-
-
 def text_contain( page, explanation, context, definitions ):
+    explanation = context
     for text in definitions:
-        if context.sense_txt.find( text ) != -1:
+        if explanation.sense_txt.find( text ) != -1:
             yield True
 
 
@@ -452,6 +445,6 @@ def detuple_dfinition_keys( defs ):
 
     # add un-tupled keys
     if to_append:
-        defs.update( to_append )
+        dict_merge( defs, to_append )
 
     return defs
