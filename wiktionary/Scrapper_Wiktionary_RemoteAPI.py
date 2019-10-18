@@ -92,14 +92,16 @@ def get_wikitext( title=None ):
 
 def _get( params ):
     url = DOMAIN + API_URL
-    log.debug( "request to: %s: %s: %s", url, params.get('titles', None), params )
+    action = params.get('action', '') + ': ' + params.get('titles', '')
+    log.debug( "request to: %s: %s: %s", url, action, params )
     response = requests.get(url, params=params, timeout=(3.05, 27))
     return response
 
 
 def _post( params ):
     url = DOMAIN + API_URL
-    log.debug( "request to: %s: %s: %s", url, params.get('titles', None), params )
+    action = params.get('action', '') + ': ' + params.get('titles', '')
+    log.debug( "request to: %s: %s: %s", url, action, params )
     response = requests.post(url, data=params, timeout=(3.05, 27))
     return response
 

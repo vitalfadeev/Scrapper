@@ -212,8 +212,12 @@ class Explanation(Section):
         super().__init__()
         self.item = WikictionaryItem()
         self.is_leaf_explanation = False
+        self.sense_raw = None
+        self.sense_txt = None
 
     def get_sense( self ):
+        # get raw of #
+        # concatenate with parents
         return self.lexemes[0].raw
 
 

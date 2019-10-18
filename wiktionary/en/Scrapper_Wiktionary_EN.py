@@ -413,11 +413,6 @@ def update_index_in_toc( root: Section, level=0, prefix="", index_pos=''  ):
             counter[ ':' ] += 1
             node.index_in_toc = prefix + ':' + str( counter[':'] ) + '.'
 
-        elif isinstance( node, Explanation ):
-            #
-            counter[ '*' ] += 1
-            node.index_in_toc = prefix + '*' + str( counter['*'] ) + '.'
-
         else:
             i += 1
             node.index_in_toc = prefix + str( i ) + '.'
@@ -541,6 +536,62 @@ def add_translations_from_trans_see( page, toc: Root ):
                 node.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
 
 
+def update_popularity_if_word( item ):
+    item.PopularityOfWord = 0
+
+    if item.ExplainationExamplesRaw is not None:
+        item.PopularityOfWord += len( item.ExplainationExamplesRaw ) * 5
+
+    if item.RelatedTerms is not None:
+        item.PopularityOfWord += len( item.RelatedTerms )
+
+    other_cost = 0
+
+    if item.Translation_DE is not None:
+        other_cost += len( item.Translation_DE )
+
+    if item.Translation_EN is not None:
+        other_cost += len( item.Translation_EN )
+
+    if item.Translation_ES is not None:
+        other_cost += len( item.Translation_ES )
+
+    if item.Translation_FR is not None:
+        other_cost += len( item.Translation_FR )
+
+    if item.Translation_IT is not None:
+        other_cost += len( item.Translation_IT )
+
+    if item.Translation_PT is not None:
+        other_cost += len( item.Translation_PT )
+
+    if item.Translation_RU is not None:
+        other_cost += len( item.Translation_RU )
+
+    if item.Holonymy is not None:
+        other_cost += len( item.Holonymy )
+
+    if item.Troponymy is not None:
+        other_cost += len( item.Troponymy )
+
+    if item.Hypernymy is not None:
+        other_cost += len( item.Hypernymy )
+
+    if item.Hyponymy is not None:
+        other_cost += len( item.Hyponymy )
+
+    if item.Meronymy is not None:
+        other_cost += len( item.Meronymy )
+
+    if item.Synonymy is not None:
+        other_cost += len( item.Synonymy )
+
+    if item.Antonymy is not None:
+        other_cost += len( item.Antonymy )
+
+    item.PopularityOfWord += 1 if other_cost else 0
+
+
 
 def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
     # 1. get Page: id, ns, title, raw-text
@@ -607,8 +658,17 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
 
     # update explanation raw, txt
     for node in page.explanations:
-        node.sense_raw = node.lexemes[ 0 ].raw
-        node.sense_txt = page.text_by_raw[ node.sense_raw ]
+        node.sense_raw = node.get_sense()
+
+        # get raw of #
+        # concatenate with parents
+        sense = page.text_by_raw[ node.get_sense() ]
+        parent = node.parent
+        while parent is not None and isinstance( parent, (Explanation, ExplanationLi) ):
+            sense = page.text_by_raw[ parent.get_sense() ] + ': ' + sense
+            parent = parent.parent
+        node.sense_txt = sense
+
 
     # Prepare for scrap
     # now, get all explanation senses
@@ -631,15 +691,16 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         item = node.item
 
         # base attributes
-        item.LabelName = page.label
-        item.LanguageCode = 'en'
-        item.SelfUrl = "https://en.wiktionary.org/wiki/" + page.label
-        item.Senses['.'] = node.sense_txt
+        item.LabelName     = page.label
+        item.LanguageCode  = 'en'
+        item.SelfUrl       = "https://en.wiktionary.org/wiki/" + page.label
+        item.TypeLabelName = node.get_parent_pos_node().title
+        item.Senses['.']   = node.sense_txt
 
         # Index
         indexinPage += 1
-        item.IndexinPage = indexinPage
-        item.IndexinToc = node.index_in_toc
+        item.IndexinPage       = indexinPage
+        item.IndexinToc        = node.index_in_toc
         item.IndexPartOfSpeech = node.index_pos
 
         # Synonyms, Antonyms, Troponyms, Holonyms, Translations_*,...
@@ -656,7 +717,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         # Example
         for example_node in node.find_example_sections():
             item.ExplainationExamplesRaw = example_node.lexemes[0].raw
-            item.ExplainationExamplesTxt =  page.text_by_raw[ item.ExplainationExamplesRaw ]
+            item.ExplainationExamplesTxt = page.text_by_raw[ item.ExplainationExamplesRaw ]
             break  # first only
 
         # LabelType
@@ -666,6 +727,8 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         label_type = item.LabelType if item.LabelType else ""
         item.PrimaryKey = item.LanguageCode + "-" + item.LabelName + "§" + label_type + "-" + str( item.IndexinPage )
 
+        # PopularityOfWord 
+        update_popularity_if_word( item )
         items.append( item )
 
     return items

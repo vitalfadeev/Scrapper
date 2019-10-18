@@ -649,7 +649,7 @@ Mentions = {
 SeeAlso = {
     (in_self, in_all_parents): {  # noun / etymology / english / root
         in_template: {
-            ('lb', 'lbl', 'label', 'm', 'mention', 'l', 'link',): {
+            ('l', 'link',): {
                 with_lang: {
                     'en': {
                         in_arg: { 1 }

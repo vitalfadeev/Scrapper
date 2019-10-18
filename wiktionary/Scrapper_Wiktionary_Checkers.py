@@ -245,12 +245,9 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
         # if section has senses
         elif len( section_senses ) > 0:
             # get explanation sense
-            sense_raw = explanation.get_sense()
-            explanation_sense_txt = page.text_by_raw[ sense_raw ]
+            explanation_sense_txt = explanation.sense_txt
             # get all explanations (for match all-at-once in matcher)
-            explanation_sense_raws = map( Explanation.get_sense, page.explanations )
-            # raw to txt
-            explanation_sense_txts = list( map( lambda x: page.text_by_raw[x], explanation_sense_raws ) )
+            explanation_sense_txts = map( lambda x: x.sense_txt, page.explanations )
 
             # match
             matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
