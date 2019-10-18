@@ -55,32 +55,3 @@ class WORD_TYPES:
     HYPHENATION = 'hyphenation'
     PREPOSITIONAL_PHRASE = 'prepositional_phrase'
     PUNCTUATION_MARK = 'punctuation mark'
-
-    def detect_type(self, s):
-        for a in dir(self):
-            if a.isupper():
-                if getattr(self, a) == s.lower():
-                    return getattr(self, a)
-
-        return None  # not found type
-
-
-    def get_names(self):
-        """
-        out:
-            [
-                (noun, noun),
-                (Proper noun, noun),
-                (section_title_lowercase, type),
-            ]
-        """
-        names = []
-
-        for a in dir(self):
-            if a.isupper():
-                names.append((getattr(self, a), getattr(self, a)))
-
-        # fixes
-        names.append(("Proper noun", self.NOUN))
-
-        return names

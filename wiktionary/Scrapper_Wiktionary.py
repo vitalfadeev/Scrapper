@@ -218,12 +218,12 @@ def scrap_one_wrapper(args):
         log.error( "%s", args, exc_info=True )
 
 
-def scrap(lang: str ="en", workers: int = 1):
+def scrap( lang: str ="en", workers: int = 1 ):
     """
     The main function in Scrapper.
     Here run multiprocessing, create .bz2 reader, read dump, read pages.
 
-    :param lang:        str
+    :param lang:        str     The language code. One of: 'en', 'it', 'fr', 'de', 'pt', 'ru', 'es'. See also: Wiktionary languages.
     :param workers:     int     Number of workers in multiprocessing. If workers=1, then run in single process.
                                 Recommendation: workers = 10 (for parallel network requests)
     """

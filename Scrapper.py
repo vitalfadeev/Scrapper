@@ -1,14 +1,25 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import os
 import json
 import itertools
 import logging
 import logging.config
 
-logging.config.fileConfig('logging.ini')
+if os.path.isfile('logging.ini'):
+    logging.config.fileConfig('logging.ini')
 
 
 def DBExecute( DB, sql, *args ):
+    """
+    Execute SQL command in database `DB`
+
+    :param DB:      The database
+    :param sql:     SQL command
+    :param args:    SQL arguments
+
+    :Example:       DBExecute( DB, "SELECT * FROM wiktionary WHERE id = ?", (1, ) )
+    """
     DB.execute( sql, args )
 
 

@@ -349,7 +349,11 @@ def plural_en_noun( page, explanation, context, definitions ):
 def single_en_noun( page, explanation, context, definitions ):
     t = context
     label = page.label
-    (s, p, is_uncountable) = next( en_noun( t, label ) )
+
+    res = next( en_noun( t, label ), None )
+
+    if res:
+        (s, p, is_uncountable) = res
 
     if definitions:
         yield from check( page, explanation, s, definitions )

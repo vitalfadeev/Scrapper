@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections.abc import Iterable
-from .Scrapper_Wiktionary_WikitextParser import  Section, Template, Link, Li, Dl, Dt, Dd, String
+from wiktionary.Scrapper_Wiktionary_WikitextParser import  Template, Link, Li, Dl, Dt, Dd, String
 from Scrapper_Helpers import convert_to_alnum, proper, deduplicate, get_lognest_word
 
 TP_EXPL = "EXPL"
