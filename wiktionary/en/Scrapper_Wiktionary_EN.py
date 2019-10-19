@@ -672,7 +672,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
             txts_cleaned.append( txt )
     txts = txts_cleaned
 
-    # 3. save
+    # 3. keep
     page.text_by_raw = dict( zip( raws, txts ) )
 
     # update explanation raw, txt
@@ -730,8 +730,9 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         item.Type = PART_OF_SPEECH_SECTIONS_INDEX[ pos_node .title.lower().strip() ]
 
         # explanation text
-        item.ExplainationRaw = node.sense_raw
-        item.ExplainationTxt = node.sense_txt
+        item.ExplainationRaw = node.get_sense()
+        item.ExplainationTxt = page.text_by_raw[ item.ExplainationRaw ]
+        item.DescriptionTxt  = node.sense_txt
 
         # Example
         for example_node in node.find_example_sections():

@@ -26,6 +26,7 @@ def _download_with_progress(r, f, remote_file_size, file_name, resume_byte_pos):
     readeed_pos = readed % (1024 * 1024)
 
     print()
+
     for chunk in r:
         f.write( chunk )
 
@@ -40,6 +41,7 @@ def _download_with_progress(r, f, remote_file_size, file_name, resume_byte_pos):
                     end="", flush=True
             )
             readeed_pos = int(readed / 1024 / 1024)
+
     print()
 
 

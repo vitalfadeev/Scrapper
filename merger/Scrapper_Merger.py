@@ -7,7 +7,7 @@ import logging
 import multiprocessing
 import requests
 import wikipedia
-from Scrapper import DBExecute, DBExecuteScript, DBWrite, DBRead
+from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite, DBRead
 from Scrapper_Helpers import get_contents, put_contents, unique
 from wiktionary.Scrapper_Wiktionary import DBWikictionary, WikictionaryItem
 from wikidata.Scrapper_Wikidata import DBWWikidata, WikidataItem

@@ -28,6 +28,7 @@ class WikictionaryItem:
                     ExplainationTxt         TEXT,
                     ExplainationExamplesRaw TEXT,
                     ExplainationExamplesTxt TEXT,
+                    DescriptionTxt          TEXT,
                     IsMale                  INTEGER NULL,
                     IsFeminine              INTEGER NULL,
                     IsNeutre                INTEGER NULL,
@@ -93,6 +94,7 @@ class WikictionaryItem:
         self.ExplainationTxt            = ""  #
         self.ExplainationExamplesRaw    = ""
         self.ExplainationExamplesTxt    = ""
+        self.DescriptionTxt             = ""
         self.IsMale                     = bool
         self.IsFeminine                 = bool  # ""
         self.IsNeutre                   = bool  # ""

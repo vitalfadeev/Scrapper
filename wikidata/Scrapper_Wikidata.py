@@ -9,7 +9,7 @@ import multiprocessing
 import ijson
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
 from Scrapper_Helpers import filterWodsProblems, clean_surrogates, pprint, create_storage
-from Scrapper import DBExecute, DBExecuteScript, DBWrite
+from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Downloader import download_with_resume
 
 #

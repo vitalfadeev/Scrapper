@@ -3,6 +3,7 @@ from functools import lru_cache
 import requests
 import json
 import logging
+from Scrapper_Helpers import retry
 
 log = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ log = logging.getLogger(__name__)
 DOMAIN = 'http://lviv.ixioo.com:8030'
 
 @lru_cache( maxsize=32 )
+@retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
 def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences: tuple) -> list:
     url = DOMAIN + '/Match_List_PKS_With_Lists_Of_PKS'
     data = {

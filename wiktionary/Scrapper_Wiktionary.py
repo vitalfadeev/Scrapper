@@ -10,7 +10,7 @@ import sqlite3
 import bz2
 import importlib
 import string
-from Scrapper import DBExecute, DBExecuteScript, DBWrite
+from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from . import Scrapper_Wiktionary_WikitextParser
 from . Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary import Scrapper_Wiktionary_RemoteAPI

@@ -1,2 +1,6 @@
 # Project exclude paths
 /venv/
+/wiktionary.db
+/test_wiktionary.db
+/main.log
+/cached/

@@ -6,14 +6,8 @@ Scrapper's high-level functions for work with DB.
 For scrapping functions see: wiktionary.*, wikidata.*
 """
 
-import os
 import json
 import itertools
-import logging
-import logging.config
-
-if os.path.isfile('logging.ini'):
-    logging.config.fileConfig('logging.ini')
 
 
 def DBExecute( DB, sql, *args ):

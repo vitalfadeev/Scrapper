@@ -3,6 +3,7 @@ import requests
 import logging
 import logging.config
 from bs4 import BeautifulSoup
+from Scrapper_Helpers import retry
 
 DOMAIN  = "https://en.wiktionary.org"
 API_URL = "/w/api.php"
@@ -90,21 +91,23 @@ def get_wikitext( title=None ):
         log.error( 'response.text: %s', response.text )
 
 
+@retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
 def _get( params ):
     url = DOMAIN + API_URL
     action = params.get('action', '')
     titles = params.get('titles', params.get('title', ''))
     log.debug( "Request to: %s: %s(%s)", url, action, titles )
-    response = requests.get(url, params=params, timeout=(3.05, 27))
+    response = requests.get(url, params=params, timeout=(15, 27))
     return response
 
 
+@retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
 def _post( params ):
     url = DOMAIN + API_URL
     action = params.get('action', '')
     titles = params.get('titles', params.get('title', ''))
     log.debug( "Request to: %s: %s(%s)", url, action, titles )
-    response = requests.post(url, data=params, timeout=(3.05, 27))
+    response = requests.post(url, data=params, timeout=(15, 27))
     return response
 
 
