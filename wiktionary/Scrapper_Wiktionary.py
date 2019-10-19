@@ -9,6 +9,7 @@ import logging
 import sqlite3
 import bz2
 import importlib
+import string
 from Scrapper import DBExecute, DBExecuteScript, DBWrite
 from . import Scrapper_Wiktionary_WikitextParser
 from . Scrapper_Wiktionary_Item import WikictionaryItem
@@ -18,6 +19,9 @@ DB_NAME         = "wiktionary.db"
 DBWikictionary  = sqlite3.connect(DB_NAME, isolation_level=None)
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
+english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
+ASCII           = set(string.printable)
+
 
 # init DB
 DBExecute( DBWikictionary, "PRAGMA journal_mode = OFF" )
@@ -86,6 +90,18 @@ class Page:
         return "("+self.label+")"
 
 
+def isEnglish( s ):
+    return s.translate( english_table ).isalnum()
+
+
+def is_ascii( s ):
+    for c in s:
+        if c not in ASCII:
+            return False
+
+    return True
+
+
 def filterPageProblems(page: Page):
     """
     Filter page. If not correct retirn None
@@ -115,9 +131,9 @@ def filterPageProblems(page: Page):
         return None
 
     # skip single symbols
-    if len(page.label) == 1:
-        log.warning("    filter: %s: len() == 1: [SKIP]", page)
-        return None
+    # if len(page.label) == 1:
+    #     log.warning("    filter: %s: len() == 1: [SKIP]", page)
+    #     return None
 
     # skip words contains more than 3 symbol of two dots (ABBR?)
     # if page.label.count('.') > 3:
@@ -137,6 +153,11 @@ def filterPageProblems(page: Page):
     # skip #
     if page.label.find('#') != -1:
         log.warning("    filter: %s: find('#'): [SKIP]", page.label)
+        return None
+
+    # skip non ASCII
+    if is_ascii( page.label ) is False:
+        log.warning("    filter: %s: non ASCII: [SKIP]", page.label)
         return None
 
     return page
