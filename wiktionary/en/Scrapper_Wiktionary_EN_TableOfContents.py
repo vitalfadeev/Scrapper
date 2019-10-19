@@ -170,21 +170,24 @@ class Section(list):
         return {}
 
 
-    def dump( self, level=0 ):
+    def dump( self, level=0, show_me=None ):
         # print header
         if level == 0:
             # recursive
             for i, child in enumerate( self, start=1 ):
-                child.dump( level+1 )
+                child.dump( level+1, show_me )
             return
 
         # print node
         # short. title only
-        print("  " * level + self.index_in_toc + ' ' + repr(self))
+        if show_me is not None and self is show_me:
+            print( "  " * level + self.index_in_toc + ' ' + repr(self) + '  <---  i here' )
+        else:
+            print( "  " * level + self.index_in_toc + ' ' + repr(self) )
 
         # recursive
         for child in self:
-            child.dump( level+1 )
+            child.dump( level+1, show_me )
 
 
     def __repr__(self):

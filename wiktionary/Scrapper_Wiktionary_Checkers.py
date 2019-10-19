@@ -393,10 +393,12 @@ def check_node( page, node, lm ):
             # save result to item attribute
             store = getattr( node.item, name )
 
+            # save method depend of type
             if isinstance( store, list ):
                 filtered = filter( filterWodsProblems, generator )
                 cleaned = map( str.strip, filtered )
-                store.extend( cleaned )
+                uniqued = filter( lambda x: x not in store, cleaned )
+                store.extend( uniqued )
             elif isinstance( store, dict ):
                 store.update( generator )
             elif isinstance( store, bool ) or store is bool:
@@ -406,12 +408,6 @@ def check_node( page, node, lm ):
                 value = more_itertools.first_true( generator )
                 if value:
                     setattr( node.item, name, value )
-            # elif isinstance( store, int ):
-            #     if value:
-            #         setattr( node.item, name, value )
-            # elif isinstance( store, float ):
-            #     if value:
-            #         setattr( node.item, name, value )
             else:
                 raise Exception( "unsupported: " + str( type( store ) ) )
 

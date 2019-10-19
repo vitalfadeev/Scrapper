@@ -1,5 +1,6 @@
 import itertools
 import collections
+from collections import defaultdict
 from typing import List
 from Scrapper_Helpers import convert_to_alnum, deduplicate, proper, get_lognest_word
 from wiktionary import Scrapper_Wiktionary
@@ -463,11 +464,14 @@ def add_translations_from_trans_see( page, toc: Root ):
     # 2. request page via wiktionary API
     # 3. parse page -> lexemes + toc
     # 4. make search index:  dict[ English ][ Noun ][ Translations ] = node
-    # 5. check: dict[ English ][ Noun ] == current_node.part_of_speech
+    # 5. check:
+    #      dict[ English ][ Noun ] == current_node.part_of_speech
+    #      dict[ Noun ] == current_node.part_of_speech
+    #      dict[ Translations ]
     # 6. get trarnslation lexemes. add to node =Translations=
 
     # 1. find all {{trans-see|...}}
-    node: Section
+    node: Translations
     for node, t in trans_see_finder( toc ):
         # found
         full_url = t.arg( 1 )
@@ -498,42 +502,51 @@ def add_translations_from_trans_see( page, toc: Root ):
         #        Translations
         #          {{trans-top}}
         #      Verb
-        d = {}
+        d = defaultdict( lambda: defaultdict( list ) )
+
         # find =Translations=
-        for nd in ts_toc.find_all( Translations, recursive=True ):
-            ts = nd
-            pos = ts.get_parent_pos_node()
-            lang = pos.get_parent_lang_node()
-            # dict[ English ][ Noun ][ Translations ] = node
-            d \
-                .setdefault( lang.title_norm, {} ) \
-                .setdefault( pos.title_norm, {} ) \
-                .setdefault( ts.title_norm, nd )
+        for ts in ts_toc.find_all( Translations, recursive=True ):
+            pos  = ts.get_parent_pos_node()   if ts  is not None   else None
+            lang = pos.get_parent_lang_node() if pos is not None   else None
+
+            spos  = pos.title_norm  if pos  is not None else None
+            slang = lang.title_norm if lang is not None else None
+
+            # dict[ English ][ Noun ] = translations_node
+            d[ slang ][ spos ] = ts
+
+            # English / Verb / Translations     ->      English / Verb / Translations   - is better better better
+            # Verb / Translations               ->      None    / Verb / Translations   - is better better
+            # English / Translations            ->      English / None / Translations   - is better
+            # English / Synonyms / Translations ->      None    / None / Translations   - is good
+            # Translations                      ->      None    / None / Translations   - is good
+
 
         # 5. check:
-        #    dict[ English ][ Noun ][ Translations ]
-        #    dict[ English ][ Translations ]
-        #    dict[ Translations ]
-        #    dict[ English ][ Noun ]
-        #    dict[ Noun ]
-        #    dict[ English ]
+        #    dict[ English ][ Verb ][ Translations ]
+        #    dict[ English ][ None ][ Translations ]
+        #    dict[ None    ][ Verb ][ Translations ]
+        #    dict[ None    ][ None ][ Translations ]
         #    {{trans-top}}
-        current_ts = node
-        if current_ts is None:
-            continue
-        current_pos = current_ts.get_parent_pos_node()
-        if current_pos is None:
-            continue
-        current_lang = current_pos.get_parent_lang_node()
-        if current_lang is None:
-            continue
-        try:
-            ts_translations_node = d[ current_lang.title_norm ][ current_pos.title_norm ][ current_ts.title_norm ]
-        except KeyError:
-            ts_translations_node = None
+        current_ts   = node
+        current_pos  = current_ts.get_parent_pos_node()
+        current_lang = current_pos.get_parent_lang_node()   if current_pos is not None   else None
 
-        # 6. get all from =Trarnslations=. add to node =Translations=
-        if ts_translations_node is not None:
+        cpos  =  current_pos.title_norm  if current_pos  is not None   else None
+        clang =  current_lang.title_norm if current_lang is not None   else None
+
+        #
+        checks = [
+            d[ clang ][ cpos ],     # ib betted betted betted
+            d[ clang ][ None ],     # ib betted betted
+            d[ None  ][ cpos ],     # ib betted
+            d[ None  ][ None ],     # ib good
+        ]
+
+        # 6. get all from external page =Trarnslations=.
+        #    add to node =Translations=
+        ts_translations_node: Translations
+        for ts_translations_node in filter( None, checks ):
             # append lexemes
             node.lexemes.extend( ts_translations_node.lexemes )
             # update index
@@ -542,7 +555,7 @@ def add_translations_from_trans_see( page, toc: Root ):
                 node.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
 
 
-def update_popularity_if_word( item ):
+def update_popularity_of_word( item ):
     item.PopularityOfWord = 0
 
     if item.ExplainationExamplesRaw is not None:
@@ -734,7 +747,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
         item.PrimaryKey = item.LanguageCode + "-" + item.LabelName + "§" + label_type + "-" + str( item.IndexinPage )
 
         # PopularityOfWord 
-        update_popularity_if_word( item )
+        update_popularity_of_word( item )
         items.append( item )
 
     return items
