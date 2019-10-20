@@ -478,6 +478,13 @@ DerivedTerms = {
                             },
                         },
                     },
+                    ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia', 'alter', 'll'): {
+                        with_lang: {
+                            'en': {
+                                in_arg: { 1 }
+                            },
+                        },
+                    },
                 },
                 in_link: {},
             }
@@ -518,8 +525,8 @@ Translation_FR = {
                     in_language: {
                         'french': {
                             in_template: {
-                                't' : { with_lang: { 'fr': { in_arg: { 1 } } } },
-                                't+': { with_lang: { 'fr': { in_arg: { 1 } } } },
+                                't' : { with_lang: { 'fr': { in_t: { 1 } } } },
+                                't+': { with_lang: { 'fr': { in_t: { 1 } } } },
                             }
                         }
                     }
@@ -537,8 +544,8 @@ Translation_DE = {
                     in_language: {
                         'german': {
                             in_template: {
-                                't' : { with_lang: { 'de': { in_arg: { 1 } } } },
-                                't+': { with_lang: { 'de': { in_arg: { 1 } } } },
+                                't' : { with_lang: { 'de': { in_t: {} } } },
+                                't+': { with_lang: { 'de': { in_t: {} } } },
                             }
                         }
                     }
@@ -556,8 +563,8 @@ Translation_IT = {
                     in_language: {
                         'italian': {
                             in_template: {
-                                't' : { with_lang: { 'it': { in_arg: { 1 } } } },
-                                't+': { with_lang: { 'it': { in_arg: { 1 } } } },
+                                't' : { with_lang: { 'it': { in_t: { 1 } } } },
+                                't+': { with_lang: { 'it': { in_t: { 1 } } } },
                             }
                         }
                     }
@@ -575,8 +582,8 @@ Translation_ES = {
                     in_language: {
                         'spanish': {
                             in_template: {
-                                't' : { with_lang: { 'es': { in_arg: { 1 } } } },
-                                't+': { with_lang: { 'es': { in_arg: { 1 } } } },
+                                't' : { with_lang: { 'es': { in_t: { 1 } } } },
+                                't+': { with_lang: { 'es': { in_t: { 1 } } } },
                             }
                         }
                     }
@@ -594,8 +601,8 @@ Translation_RU = {
                     in_language: {
                         'russian': {
                             in_template: {
-                                't' : { with_lang: { 'ru': { in_arg: { 1 } } } },
-                                't+': { with_lang: { 'ru': { in_arg: { 1 } } } },
+                                't' : { with_lang: { 'ru': { in_t: { 1 } } } },
+                                't+': { with_lang: { 'ru': { in_t: { 1 } } } },
                             }
                         }
                     }
@@ -613,8 +620,8 @@ Translation_PT = {
                     in_language: {
                         'portuguese': {
                             in_template: {
-                                't' : { with_lang: { 'pt': { in_arg: { 1 } } } },
-                                't+': { with_lang: { 'pt': { in_arg: { 1 } } } },
+                                't' : { with_lang: { 'pt': { in_t: { 1 } } } },
+                                't+': { with_lang: { 'pt': { in_t: { 1 } } } },
                             }
                         }
                     }

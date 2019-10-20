@@ -1,7 +1,7 @@
 from typing import Iterator
 import logging
 import more_itertools
-from Scrapper_Helpers import filterWodsProblems, dict_merge
+from Scrapper_Helpers import filterWodsProblems, dict_merge, deduplicate
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
@@ -110,6 +110,20 @@ def in_arg( page, explanation, context, definitions, path ):
         raise Exception("unsupported")
 
 
+def in_t( page, explanation, context, definitions, path ):
+    t = context
+
+    # get argument
+    a = t.positional_arg(1)
+
+    if a is not None:
+        # get arg text
+        # split by ,
+        text = a.get_text()
+        text = deduplicate( text, ' ' )
+        yield from filter( None, map( str.strip, text.split(',;') ) )
+
+
 def in_arg_by_lang( page, explanation, t, arg_keys, path ):
     lang = t.arg(0)
     if lang is None:
@@ -120,7 +134,7 @@ def in_arg_by_lang( page, explanation, t, arg_keys, path ):
             yield ( lang, t.arg( k ) )
     elif isinstance( arg_keys, dict ):
         for k, definitions in arg_keys.items():
-            a = t.arg( k )
+            a = t.positional_arg( k )
             for v in check( page, explanation, a, definitions, path ):
                 yield ( lang, v )
     else:

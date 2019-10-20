@@ -1,0 +1,47 @@
+{{also|Abed}}
+==English==
+
+===Etymology===
+From {{inh|en|enm|abedde}}, {{m|ang|on}} {{m|ang|bedde||bed}}, from {{inh|en|ang|bedd||bed}}. Equivalent to {{prefix|en|a|bed|t1=in, on}}.
+
+===Pronunciation===
+* {{a|RP}} {{IPA|en|/əˈbɛd/}}
+* {{a|US}} {{IPA|en|/əˈbɛd/}}
+* {{rhymes|en|ɛd}}
+
+===Adverb===
+{{en-adv|-}}
+
+# In bed, or on the bed; confined to bed. {{defdate|First attested from 1150 to 1350.}}<ref name=SOED>{{R:SOED5|page=3}}</ref>
+#* {{quote-book|en|author={{w|William Shakespeare}}|year=c.1564–1616|title={{w|Twelfth Night}}|section=II, iii|passage=Not to be '''abed''' after midnight}}
+#* {{quote-book|en|year=1922|author={{w|Michael Arlen}}|title=[http://openlibrary.org/works/OL1519647W “Piracy”: A Romantic Chronicle of These Days]|chapter=Ep./4/2
+|passage=The world was awake to the 2nd of May, but Mayfair is not the world, and even the menials of Mayfair lie long '''abed'''.}}
+#* '''1948''', {{w|Alan Paton}}, ''{{w|Cry, the Beloved Country}}'', London: Jonathan Cape, Chapter 12,
+#*: Who can lie peacefully '''abed''', while the darkness holds some secret?
+# To [[childbed]]
+#* {{quote-book|en|author={{w|William Shakespeare}}|year=c.1564–1616|title={{w|Titus Andronicus}}|section=IV, ii|passage=I mean, she's brought '''a-bed'''}}
+
+====Derived terms====
+* {{l|en|slugabed}}
+
+====Translations====
+{{trans-top|in bed, or on the bed}}
+* Bulgarian: {{t|bg|на легло|sc=Cyrl}}
+* Dutch: {{t|nl|te bed}}, {{t+|nl|bedlegerig}}
+* Finnish: {{t+|fi|vuode|alt=vuoteessa}}, {{t+|fi|sänky|alt=sängyssä}}
+* French: {{t+|fr|au lit}}
+* German: {{t|de|[[zu]] [[Bett]]}}, {{t|de|[[im]] [[Bett]]}}
+* Italian: {{t|it|a letto}}
+{{trans-mid}}
+* Norwegian: {{t|no|i seng}}
+* Portuguese: {{t|pt|[[deitado]] ([[na]] [[cama]])}}
+* Russian: {{t|ru|в [[постель|посте́ли]]}}
+* Spanish: {{t|es|en cama}}, {{t+|es|acostado}}
+* Turkish: {{t|tr|yatakta}}
+{{trans-bottom}}
+
+===References===
+<references/>
+
+===Anagrams===
+* {{anagrams|en|a=abde|adeb|bade|baed|bead}}
