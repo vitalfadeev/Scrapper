@@ -234,10 +234,11 @@ def by_sense( page, explanation, context, definitions, path ) -> Iterator:
         # translate sections senses from raw to txt
         section_senses = list( map( lambda s: page.text_by_raw[ s ], filter( None, lexemes_by_sense.keys() ) ) )
 
+
         # if section without senses
         if len( section_senses ) == 0:
             # get all from sensed block (do next checkers)
-            lexemes = list( lexemes_by_sense.values() )  # all
+            lexemes = section.lexemes  # all
             container = Container()
             container.childs = lexemes
             yield from check( page, explanation, container, definitions, path )  # call next checkers
