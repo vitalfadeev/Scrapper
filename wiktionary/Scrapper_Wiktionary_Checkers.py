@@ -1,10 +1,12 @@
 from typing import Iterator
+import logging
 import more_itertools
 from Scrapper_Helpers import filterWodsProblems, dict_merge
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
 
+log = logging.getLogger(__name__)
 
 
 def valid( page, explanation, context, definition ):
@@ -264,6 +266,14 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
                     container = Container()
                     container.childs = lexemes
                     yield from check( page, explanation, container, definitions )  # call next checkers
+
+            else: # no matched senses
+                log.warning(
+                    'PKS-Warning : in word "{}" PKS didnt found : "{}" for "{}"'  \
+                        .format(
+                            page.label, section, explanation_sense_txt
+                        )
+                )
 
 
 def en_noun( t, label ):

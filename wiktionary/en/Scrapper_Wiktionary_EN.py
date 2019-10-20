@@ -489,6 +489,10 @@ def add_translations_from_trans_see( page, toc: Root ):
         # 2. request to wiktionary API
         raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( page_url )
 
+        # if page not exists - next
+        if raw_text is None:
+            continue
+
         # 3. parse page -> lexemes + toc
         ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
         ts_toc = make_table_of_contents( ts_lexemes )
