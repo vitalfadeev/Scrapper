@@ -119,6 +119,13 @@ Synonymy = {
                                 },
                             },
                         },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
                         ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia', 'alter', 'll'): {
                             with_lang: {
                                 'en': {
@@ -158,6 +165,13 @@ Antonymy = {
                 by_sense: {
                     in_template: {
                         ('antonyms', 'antonym', 'ant'): {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
                             with_lang: {
                                 'en': {
                                     in_all_positional_args_except_lang: { }
@@ -208,6 +222,13 @@ Hypernymy = {
                                 },
                             },
                         },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
                         ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia', 'alter', 'll'): {
                             with_lang: {
                                 'en': {
@@ -246,6 +267,13 @@ Hyponymy = {
                 by_sense: {
                     in_template: {
                         ('hypo', 'hyponyms'): {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
                             with_lang: {
                                 'en': {
                                     in_all_positional_args_except_lang: { }
@@ -297,6 +325,13 @@ Meronymy = {
                                 },
                             },
                         },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
                         ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia', 'alter', 'll'): {
                             with_lang: {
                                 'en': {
@@ -341,6 +376,13 @@ Holonymy = {
                                 },
                             },
                         },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
                         ('l', 'lb', 'lbl', 'label', 'm', 'mention', 'link', 'wikipedia', 'alter', 'll'): {
                             with_lang: {
                                 'en': {
@@ -379,6 +421,13 @@ Troponymy = {
                 by_sense: {
                     in_template: {
                         'troponyms': {
+                            with_lang: {
+                                'en': {
+                                    in_all_positional_args_except_lang: { }
+                                },
+                            },
+                        },
+                        ('col', 'col1', 'col2', 'col3', 'col4'): {
                             with_lang: {
                                 'en': {
                                     in_all_positional_args_except_lang: { }
@@ -459,6 +508,13 @@ RelatedTerms = {
                     ('taxlink', 'vern', 'ws', 'ws link'): {
                         in_arg: { 0 }
                     },
+                    ('rel1', 'rel2', 'rel3', 'rel4', 'rel', 'der1', 'der2', 'der3', 'der4', 'der', ): {
+                        with_lang: {
+                            'en': {
+                                in_all_positional_args_except_lang: {}
+                            },
+                        },
+                    },
                 },
                 in_link: {},
             }
@@ -471,7 +527,7 @@ DerivedTerms = {
         in_section: {
             'derived terms': {
                 in_template: {
-                    ('der', 'der1', 'der2', 'der3', 'der4'): {
+                    ('rel1', 'rel2', 'rel3', 'rel4', 'rel', 'der1', 'der2', 'der3', 'der4', 'der', ): {
                         with_lang: {
                             'en': {
                                 in_all_positional_args_except_lang: {}
@@ -677,16 +733,22 @@ Mentions = {
 
 SeeAlso = {
     (in_self, in_all_parents): {  # noun / etymology / english / root
-        in_template: {
-            ('l', 'link',): {
-                with_lang: {
-                    'en': {
-                        in_arg: { 1 }
-                    }
-                }
+        in_section: {
+            'see also': {
+                in_template: {
+                    ('l', 'link',): {
+                        with_lang: {
+                            'en': {
+                                in_arg: { 1 }
+                            }
+                        }
+                    },
+                },
             },
-            ('see', 'also', 'see also'): {
-                in_arg: { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+            in_template: {
+                ('see', 'also', 'see also'): {
+                    in_arg: { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+                }
             }
         }
     }

@@ -1,0 +1,811 @@
+{{also|Live}}
+==English==
+{{wikipedia|dab=live}}
+
+===Etymology 1===
+From {{inh|en|enm|liven}}, {{m|enm|libben}}, from {{inh|en|ang|lifian}}, {{m|ang|libban|t=to live; be alive}}, from {{inh|en|gem-pro|*libjaną}}, from {{der|en|ine-pro|*leyp-|t=leave, cling, linger}}. Cognate with {{cog|stq|lieuwje|t=to live}}, {{cog|fy|libje|t=to live}}, {{cog|nl|leven|t=to live}}, {{cog|nds-de|leven}}, {{m|nds-de|lęven|t=to live}}, {{cog|de|leben|t=to live}}, {{cog|sv|leva|t=to live}}, {{cog|is|lifa|t=to live}}, {{cog|got|𐌻𐌹𐌱𐌰𐌽|t=to live}}.
+
+====Pronunciation====
+* {{a|RP}} {{enPR|lĭv}}, {{IPA|en|/lɪv/}}
+* {{a|GenAm|}}, {{IPA|en|/lɪv/}}
+* {{audio|en|en-us-live-verb.ogg|Audio (US)}}
+* {{rhymes|en|ɪv}}
+
+====Verb====
+{{en-verb|liv}}
+
+# {{lb|en|intransitive}} To be [[alive]]; to have [[life]].
+#: {{ux|en|He's not expected to '''live''' for more than a few months.}}
+# {{lb|en|intransitive}} To have [[permanent]] [[residence]] somewhere, to [[inhabit]], to [[reside]].
+#: {{ux|en|I '''live''' at 2a Acacia Avenue.&emsp; He '''lives''' in LA, but he's staying here over the summer.}}
+#* {{RQ:WBsnt IvryGt|chapter=Prologue|page=16|passage=Athelstan Arundel walked home all the way, foaming and raging. No omnibus, cab, or conveyance ever built could contain a young man in such a rage. His mother '''lived''' at Pembridge Square, which is four good measured miles from Lincoln's Inn.}}
+#* {{quote-book|en|year=1918|author={{w|W. B. Maxwell}}|chapter=10
+|title=[http://openlibrary.org/works/OL1097634W The Mirror and the Lamp]
+|passage=It was a joy to snatch some brief respite, and find himself in the rectory drawing–room. Listening here was as pleasant as talking; just to watch was pleasant. The young priests who '''lived''' here wore cassocks and birettas; their faces were fine and mild, yet really strong, like the rector's face; and in their intercourse with him and his wife they seemed to be brothers.}}
+# {{lb|en|intransitive}} To [[survive]]; to [[persevere]]; to [[continue]].
+#: {{ux|en|Her memory '''lives''' in that song.}}
+#* {{quote-journal
+|en
+|date=March 14, 2017
+|author=Stuart James
+|title=Leicester stun Sevilla to reach last eight after Kasper Schmeichel save
+|work=the Guardian
+|url=https://www.theguardian.com/football/2017/mar/14/leicester-city-sevilla-champions-league-match-report
+|page=
+|passage=He has now overseen three straight victories since taking over from Claudio Ranieri and this latest win, against one of the best teams in Europe, will '''live''' long in the memory for every Leicester supporter.}}
+# {{lb|en|intransitive|hyperbole}} To [[cope]].
+#: {{ux|en|You'll just have to '''live''' with it!&emsp; I can't '''live''' in a world without you.}}
+# {{lb|en|intransitive}} To pass life in a specified manner.
+#: {{ux|en|It is difficult to '''live''' in poverty. &emsp; And they '''lived''' happily ever after.}}
+# {{lb|en|transitive}} To spend, as one's life; to pass; to maintain; to continue in, constantly or habitually.
+#: {{ux|en|To '''live''' an idle or a useful life.}}
+#* {{quote-book|en|passage=Many people write their romances, others '''live''' them; Honore de Balzac did both.|title=[[S:Women in the Life of Balzac/Conclusion|Women in the Life of Balzac]]|author=Juanita Helm Floyd|year=1921}}
+#* {{quote-journal|en|date=December 19, 2011|author=Kerry Brown|title=[http://www.guardian.co.uk/world/2011/dec/19/kim-jong-il Kim Jong-il obituary]|work=The Guardian
+|passage=By 1980, South Korea had overtaken its northern neighbour, and was well on its way to being one of the Asian tigers – high-performing economies, with democratic movements ultimately winning power in the 1990s. The withdrawal of most Soviet aid in 1991, with the fall of the Soviet empire, pushed North Korea further down. Kim Il-sung had held a genuine place on North Korean people's affections. His son was regarded as a shadowy playboy, with rumours circulating over the years that he imported Russian and Chinese prostitutes, and '''lived''' a life of profligacy and excess.}}
+#* {{quote-journal|en|title=[http://www.economist.com/news/leaders/21578665-nearly-1-billion-people-have-been-taken-out-extreme-poverty-20-years-world-should-aim Towards the end of poverty]
+|date=2013-06-01|volume=407|issue=8838|page=11|magazine={{w|The Economist}}
+|passage=But poverty’s scourge is fiercest below $1.25 (the average of the 15 poorest countries’ own poverty lines, measured in 2005 dollars and adjusted for differences in purchasing power): people below that level [[live]] lives that are poor, nasty, brutish and short.}}
+# {{lb|en|transitive}} To act [[habitually]] in [[conformity]] with; to [[practice]]; to [[exemplify]] in one's [[way of life]].
+#* {{rfdate|en|and other bibliographic particulars}} {{w|John Foxe}}
+#*: to '''live''' the Gospel
+#* {{quote-book|en|passage=Change happens from the inside out and this great resource can show you how to '''live''' the habits that build personal and professional effectiveness.|title=[http://books.google.com/books?id=BiBfY37WbHEC Motivation at Work]|year=2006|author=Laura Cardone}}
+# {{lb|en|intransitive}} To outlast danger; to float (said of a ship, boat, etc).
+#: {{ux|en|No ship could '''live''' in such a storm.}}
+#* {{rfdate|en|and other bibliographic particulars}} {{w|William Shakespeare}}
+#*: a strong mast that '''lived''' upon the sea
+# {{lb|en|intransitive|followed by "[[on]]" or "[[upon]]"}} To [[maintain]] or [[support]] one's existence; to [[provide]] for oneself; to [[feed]]; to [[subsist]].
+#: {{ux|en|It is hard to '''live''' on the minimum wage. &emsp; They '''lived''' on stale bread.}}
+# {{lb|en|intransitive|informal}} To [[make the most of]] life; to experience a [[full]], [[rich]] [[life]].
+#: {{ux|en|I'm sick of spending every day studying at home: I want to go out there and '''live'''!}}
+
+=====Synonyms=====
+* {{sense|to have permanent residence somewhere}} {{l|en|dwell}}; See also [[Thesaurus:reside]]
+* {{sense|to survive}} {{l|en|go on}}, {{l|en|last}}, {{l|en|remain}}; See also [[Thesaurus:persist]]
+
+=====Usage notes=====
+Throughout Late Middle English and Early Modern English in Midlands and Northern dialects, the present participle form '''livand''' co-occurs with the form '''living'''.
+
+=====Derived terms=====
+{{der4|en|alive
+|forlive
+|lively
+|long-lived
+|mislive
+|outlive
+|overlive
+|relive
+|short-lived
+}}
+
+=====Related terms=====
+{{rel4|en|title=Terms related to ''live'' (verb)|can't live with them, can't live without them|life|live and die|live and let live|live down|live for the day|live in sin|live in the past|live large|live off|live on|live on the edge|live out|live over|live over the brush|live the dream|live up|live with|long live}}
+
+=====Translations=====
+{{trans-top|be alive}}
+* Afrikaans: {{t+|af|leef}}
+* Albanian: {{t+|sq|jetoj}}
+* Arabic: {{t|ar|عَاشَ}}, {{t|ar|سَكَنَ}}
+*: Egyptian Arabic: {{t|arz|عَاش|tr=ʿāš|sc=Arab}}
+* Aragonese: {{t+|an|bibir}}
+* Armenian: {{t+|hy|ապրել}}
+*: Old Armenian: {{t|hy|կեամ}}
+* Aromanian: {{t|rup|bãnedz}}, {{t|rup|bãnedzu}}
+* Asturian: {{t+|ast|vivir}}
+* Azerbaijani: {{t+|az|yaşamaq}}
+* Basque: {{t|eu|bizi izan}}
+* Belarusian: {{t|be|жыць|impf}}
+* Berber:
+*: Tashelhit: {{t|shi|ddr}}
+* Breton: {{t|br|beva}}
+* Bulgarian: {{t+|bg|живѐя|impf}}
+* Burmese: {{t+|my|ရှင်|sc=Mymr}}
+* Catalan: {{t+|ca|viure}}
+* Chinese:
+*: Mandarin: {{t+|cmn|生|tr=shēng|sc=Hani}}
+* Coptic:
+*: Bohairic: {{t|cop|ⲱⲛϧ}}
+*: Sahidic, Fayyumic: {{t|cop|ⲱⲛϩ}}
+* Crimean Tatar: {{t|crh|yaşamaq}}
+* Czech: {{t+|cs|žít|impf}}
+* Danish: {{t+|da|leve}}
+* Dutch: {{t+|nl|leven}}
+* Egyptian: {{t-egy|ꜥnḫ|h=anx-n:x}}
+* Esperanto: {{t|eo|vivi}}
+* Estonian: {{t+|et|elama}}
+* Faroese: {{t|fo|liva}}
+* Finnish: {{t+|fi|elää}}
+* Franco-Provençal: {{t|frp|vivre}}
+* French: {{t+|fr|vivre}}
+* Friulian: {{t|fur|vivi}}
+* Galician: {{t|gl|vivir}}
+* Georgian: {{t|ka|სიცოცხლე}}, {{t|ka|ცხოვრება}}
+* German: {{t+|de|leben}}
+* Greek: {{t+|el|ζω}}
+*: Ancient Greek: {{t|grc|ζάω}}
+* Greenlandic: {{t|kl|inuuvoq}}
+* Haitian Creole: {{t|ht|ret}}, {{t|ht|rete}}
+* Hebrew: {{t+|he|חַי|tr=kháy|sc=Hebr}}
+* Hindi: {{t+|hi|जीना}}
+* Hungarian: {{t+|hu|él}}
+* Icelandic: {{t+|is|lifa}}
+* Ido: {{t+|io|vivar}}
+* Indonesian: {{t+|id|hidup}}
+* Irish: {{t|ga|mair}}, {{t|ga|[[bí]] [[beo]]}}, {{t|ga|bí i do bheatha}}
+* Italian: {{t+|it|vivere}}
+* Japanese: {{t+|ja|生きる|tr=いきる, ikiru}}, {{t+|ja|暮らす|tr=くらす, kurasu}} {{q|spend time|get along}}
+* Kamkata-viri: {{t|bsh|ǰūa}}
+* Kannada: {{t+|kn|ಬದುಕು}}
+* Kazakh: {{t|kk|өмір сүру|sc=Cyrl}}, {{t+|kk|тұру|sc=Cyrl}}
+* Khmer: {{t+|km|នៅ}}, {{t+|km|រស់}}
+* Korean: {{t+|ko|살다}}
+* Kunigami: {{t|xug|生ちちゅん|tr=ひちちゅん, hichichun}}
+* Kurdish:
+*: Sorani: {{t+|ku|ژیان|tr=jiyan|sc=ku-Arab}}
+* Kyrgyz: {{t+|ky|өмүр сүрүү|sc=Cyrl}}, {{t+|ky|жашоо|sc=Cyrl}}
+* Ladin: {{t|lld|viver}}
+* Lamboya: {{t|lmy|morha}}
+* Lao: {{t|lo|ທຽວສົງສານ}}
+* Latgalian: {{t|ltg|dzeivuot}}
+* Latin: {{t+|la|vivo}}, {{t|la|vigeo}}
+* Latvian: {{t+|lv|dzīvot}}
+* Lithuanian: {{t+|lt|gyventi}}
+* Low German:
+*: German Low German: {{t|nds-de|leven}}
+{{trans-mid}}
+* Luxembourgish: {{t|lb|liewen}}
+* Macedonian: {{t|mk|живее|impf}}
+* Malay: {{t|ms|hidup}}
+* Maltese: {{t|mt|għex}}
+* Manchu: {{t|mnc|ᠪᠠᠨᠵᡳᠮᠪᡳ|tr=banjimbi}}
+* Miyako: {{t|mvi|生きーㇲ゙|tr=いきーㇲ゙, ikīz}}
+* Mongolian: {{t+|mn|амьдрах|sc=Cyrl}}
+* Navajo: {{t|nv|hiná}}
+* Neapolitan: {{t|nap|campà}}
+* Norman: {{t|nrf|vivre}}
+* North Frisian:
+*: Föhr-Amrum: {{t|frr|lewe}}
+* Northern Amami-Oshima: {{t|ryn|生きみゅり|tr=いきみゅり, ikimyuri}}
+* Northern Sami: {{t|se|eallit}}
+* Norwegian: {{t+|no|leve}}
+* Novial: {{t|nov|viva}}
+* Occitan: {{t+|oc|viure}}
+* Okinawan: {{t|ryu|生ちちゅん|tr=いちちゅん, ichichun}}
+* Old Church Slavonic: {{t|cu|жити}}
+* Old English: {{t|ang|libban}}
+* Persian: {{t+|fa|زندگی کردن|tr=zendegi kardan|sc=fa-Arab}}, {{t+|fa|زیستن|tr=zistan|sc=fa-Arab}}
+* Polish: {{t+|pl|żyć|impf}}
+* Portuguese: {{t+|pt|viver}}
+* Purepecha: {{t|pua|irekani}}
+* Quechua: {{t+|qu|kawsay}}, {{t|qu|kausai}}, {{t|qu|kawai}}
+* Rapa Nui: {{t|rap|ora}}
+* Romani: {{t|rom|zhuvel}}
+* Romanian: {{t+|ro|trăi}}
+* Romansch: {{t|rm|viver}}
+* Russian: {{t+|ru|жить|impf}}, {{t+|ru|прожи́ть|pf}}
+* Rusyn: {{t|rue|жыти|impf}}
+* Sanskrit: {{t+|sa|जीवति|tr=jī́vati}}
+* Sardinian: {{t|sc|campai}}, {{t|sc|vívere}}, {{t|sc|bívere}}
+* Scots: {{t|sco|leeve}}
+* Scottish Gaelic: {{t|gd|bi}} {{t|gd|beò}}
+* Serbo-Croatian:
+*: Cyrillic: (''Ekavian'') {{t|sh|жи́вети|impf|sc=Cyrl}}, (''Ijekavian'') {{t|sh|жи́вјети|impf|sc=Cyrl}}
+*: Roman: (''Ekavian'') {{t+|sh|žíveti|impf}}, (''Ijekavian'') {{t+|sh|žívjeti|impf}}
+* Sicilian: {{t+|scn|vìviri}}
+* Sinhalese: {{t|si|ජීවත් වෙනවා|sc=Sinh}}
+* Slovak: {{t|sk|žiť|impf}}
+* Slovene: {{t+|sl|živéti|impf}}
+* Sorbian:
+*: Lower Sorbian: {{t|dsb|[[žywy]] [[byś]]|impf}}, {{t|dsb|žywiś|alt=žywiś se|impf}}
+* Sotho: {{t+|st|phela}}
+* Spanish: {{t+|es|vivir}}
+* Sundanese: {{t|su|jumeneng}}
+* Swahili: {{t+|sw|ishi}}
+* Swedish: {{t+|sv|leva}}
+* Tagalog: {{t+|tl|mabuhay}}
+* Tajik: {{t|tg|зиндагӣ кардан|sc=Cyrl}}
+* Tamil: {{t|ta|வாழ}}
+* Tatar: {{t+|tt|яшәргә|sc=Cyrl}}
+* Thai: {{t|th|มีชีวิต}}, {{t+|th|อยู่}}
+* Tocharian A: {{t|xto|śo-}}
+* Tocharian B: {{t|txb|śai-}}
+* Turkish: {{t+|tr|yaşamak}}
+* Turkmen: {{t|tk|ýaşamak}}
+* Ukrainian: {{t|uk|жи́ти|impf}}
+* Urdu: {{t|ur|جینا|tr=jīnā|sc=ur-Arab}}
+* Uyghur: {{t|ug|ياشىماق|sc=ug-Arab}}
+* Uzbek: {{t+|uz|yashamoq}}
+* Venetian: {{t|vec|viver}}, {{t|vec|vìvar}}
+* Vietnamese: {{t+|vi|sống}}
+* Võro: {{t-needed|vro}}
+* Walloon: {{t+|wa|viker}}
+* Welsh: {{t+|cy|byw}}
+* West Frisian: {{t|fy|libje}}
+* Zealandic: {{t|zea|leve}}
+* ǃXóõ: {{t|nmn|ǃnúm|s}}, {{t|nmn|ǃnûɲa|p}}
+{{trans-bottom}}
+
+{{trans-top|have permanent residence}}
+* Afrikaans: {{t+|af|woon}}
+* Albanian: {{t+|sq|banoj}}
+* Arabic: {{t|ar|سَكَنَ}}, {{t|ar|عَاشَ}}
+* Armenian: {{t+|hy|ապրել}}
+* Asturian: {{t+|ast|vivir}}
+* Belarusian: {{t|be|жыць|impf}}
+* Bulgarian: {{t+|bg|живѐя|impf}}
+* Burmese: {{t+|my|နေ|sc=Mymr}}
+* Catalan: {{t+|ca|viure}}
+* Chinese:
+*: Mandarin: {{t+|cmn|住|tr=zhù|sc=Hani}}, {{t+|cmn|居住|tr=jūzhù|sc=Hani}}
+* Cornish: {{t|kw|bos trigys}}
+* Czech: {{t+|cs|žít|impf}}, {{t+|cs|bydlet|impf}}
+* Danish: {{t+|da|bo}}
+* Dutch: {{t+|nl|wonen}}
+* Elfdalian: {{t|ovd|byddja}}
+* Esperanto: {{t+|eo|loĝi}}
+* Faroese: {{t|fo|búgva}}
+* Finnish: {{t+|fi|asua}}, {{t+|fi|elää}}
+* French: {{t+|fr|habiter}}, {{t+|fr|demeurer}}
+* Georgian: {{t|ka|ცხოვრება}}
+* German: {{t+|de|wohnen}}, {{t+|de|leben}}
+* Greek: {{t+|el|μένω}}
+*: Ancient Greek: {{t|grc|οἰκέω}}
+* Greenlandic: {{t|kl|najugaqarpoq}}
+* Hebrew: {{t+|he|גָּר|tr=gar|sc=Hebr}}
+* Hindi: {{t+|hi|रहना}}, {{t|hi|निवास करना|sc=Deva}}
+* Hungarian: {{t+|hu|lakik}}
+* Hunsrik: {{t|hrx|wohne}}
+* Icelandic: {{t+|is|búa}}, {{t|is|eiga heima}}
+* Ido: {{t+|io|rezidar}}
+* Indonesian: {{t+|id|tinggal}}
+* Interlingua: {{t|ia|habitar}}
+* Irish: {{t|ga|cónaigh}}, {{t|ga|bí i do chónaí}}
+* Italian: {{t+|it|abitare}}
+* Japanese: {{t+|ja|住む|tr=すむ, sumu}}
+* Korean: {{t+|ko|살다}}
+* Kurdish: {{t+|ku|jîn}}, {{t+|ku|jiyan}}
+* Lao: {{t|lo|ຢູ່}}
+* Latin: {{t+|la|vivo}}, {{t+|la|habito}}
+* Latvian: {{t+|lv|dzīvot}}
+* Lithuanian: {{t+|lt|gyventi}}
+* Low German:
+*: German Low German: {{t|nds-de|wahnen}}
+* Luxembourgish: {{t+|lb|wunnen}}
+* Malay: {{t+|ms|tinggal}}
+{{trans-mid}}
+* Manchu: {{t|mnc|ᡨᡝᠮᠪᡳ|tr=tembi}}
+* Norman: {{t|nrf|d'meuther}}
+* North Frisian: {{qualifier|Mooring dialect}} {{t|frr|booge}}
+* Northern Sami: {{t|se|orrut}}, {{t|se|ássat}}
+* Norwegian: {{t+|no|bo}}
+* Old English: {{t|ang|wunian}}, {{t|ang|libban}}
+* Pashto: {{t|ps|ژوند کول|tr=žwǝ́nd kawǝ́l}}
+* Persian: {{t+|fa|زندگی کردن|tr=zendegi kardan|sc=fa-Arab}}
+* Polish: {{t+|pl|mieszkać|impf}}
+* Portuguese: {{t+|pt|viver}}, {{t+|pt|morar}}
+* Purepecha: {{t|pua|irekani}}
+* Quechua: {{t|qu|tiyai}}, {{t|qu|taai}}
+* Romani: {{t|rom|beshel}}
+* Romanian: {{t+|ro|locui}}, {{t|ro|a avea locuință}}
+* Romansch: {{t|rm|star}}, {{t|rm|abitar}}
+* Russian: {{t+|ru|жить|impf}}, {{t+|ru|прожива́ть|impf}}
+* Scots: {{t|sco|bide}}
+* Scottish Gaelic: {{t|gd|fuirich}}, {{t|gd|còmhnaich}}
+* Serbo-Croatian:
+*: Cyrillic: (''Ekavian'') {{t|sh|жи́вети|impf|sc=Cyrl}}, (''Ijekavian'') {{t|sh|жи́вјети|impf|sc=Cyrl}}
+*: Roman: (''Ekavian'') {{t+|sh|žíveti|impf}}, (''Ijekavian'') {{t+|sh|žívjeti|impf}}
+* Sichuan Yi: {{t|ii|ꀀ}}
+* Slovak: {{t|sk|žiť|impf}}, {{t|sk|bývať|impf}}
+* Slovene: {{t+|sl|živéti|impf}}
+* Sorbian:
+*: Lower Sorbian: {{t|dsb|bydliś|impf}}
+*: Upper Sorbian: {{t|hsb|bydlić|impf}}
+* Sotho: {{t+|st|dula}}
+* Spanish: {{t+|es|vivir}}, {{t+|es|morar}} {{qualifier|literarily}}
+* Swahili: {{t+|sw|ishi}}
+* Swedish: {{t+|sv|bo}}
+* Tagalog: {{t|tl|manirahan}}
+* Tajik: {{t|tg|зиндагӣ кардан}}
+* Thai: {{t+|th|อยู่}}, {{t+|th|อาศัย}}
+* Turkish: {{t+|tr|yaşamak}}, {{t+|tr|oturmak}}
+* Ukrainian: {{t|uk|жи́ти|impf}}, {{t+|uk|прожива́ти|impf}}, {{t+|uk|ме́шкати|impf}}
+* Urdu: {{t|ur|رہنا|tr=rahnā|sc=ur-Arab}}
+* Venetian: {{t+|vec|star}}
+* Vietnamese: {{t+|vi|ở}}, {{t+|vi|sống}}
+* Vilamovian: {{t|wym|wönn}}
+* Walloon: {{t+|wa|dimorer}}, {{t+|wa|dimani}}
+* Welsh: {{t+|cy|byw}}
+* Yiddish: {{t|yi|וווינען}}
+* Zealandic: {{t|zea|weune}}
+* ǃXóõ: {{t|nmn|ǃnúm|s}}, {{t|nmn|ǃnûɲa|p}}
+{{trans-bottom}}
+
+{{trans-top|survive, persevere, continue}}
+* Afrikaans: {{t|af|oorleef}}
+* Arabic: {{t|ar|يَنْجُو}}
+* Armenian: {{t|hy|ապրե}}
+* Burmese: {{t|my|အသက်ရှင်|sc=Mymr}}
+* Catalan: {{t+|ca|viure}}
+* Chinese:
+*: Mandarin: {{t+|cmn|生存|tr=shēng cún}}
+* Czech: {{t+|cs|žít}}
+* Danish: {{t+|da|overleve}}
+* Dutch: {{t|nl|verderleven}}, {{t+|nl|overleven}}, {{t+|nl|voortbestaan}}
+* Finnish: {{t+|fi|elää}}, {{t+|fi|selvitä}}
+* Georgian: {{t-needed|ka}}
+* German: {{t+|de|überleben}}
+* Greek: {{t+|el|επιζώ}}, {{t+|el|επιβιώνω}}
+* Kurdish: {{t+|ku|jîn}}, {{t+|ku|jiyan}}
+* Latin: {{t+|la|vivo}}
+{{trans-mid}}
+* Manchu: {{t|mnc|ᡨᠠᡴᠰᡳᠮᠪᡳ|tr=taksimbi}}
+* Polish: {{t+|pl|przetrwać}}, {{t+|pl|przeżyć}}
+* Portuguese: {{t+|pt|sobreviver}}, {{t+|pt|perseverar}}
+* Romanian: {{t+|ro|supraviețui|alt=a supraviețui}}
+* Russian: {{t+|ru|жить|impf}}
+* Scottish Gaelic: {{t|gd|mair}}
+* Slovak: {{t|sk|prežiť}}, {{t|sk|zažiť}}
+* Slovene: {{t+|sl|živeti}}
+* Sorbian:
+*: Lower Sorbian: {{t|dsb|[[žywy]] [[byś]]|impf}}
+* Swahili: {{t+|sw|ishi}}
+* Swedish: {{t+|sv|leva}}
+* Turkish: {{t+|tr|yaşamak}}
+* Walloon: {{t+|wa|riviker}}
+* Welsh: {{t+|cy|byw}}
+{{trans-bottom}}
+
+{{trans-top|cope}}
+* Russian: {{t+|ru|жить|impf}}
+{{trans-mid}}
+{{trans-bottom}}
+
+{{trans-top|spend (one's life), pass, maintain, continue in}}
+* Portuguese: {{t+|pt|viver}}
+{{trans-mid}}
+* Russian: {{t+|ru|жить|impf}}
+{{trans-bottom}}
+
+{{trans-top|outlast (danger), float (of a ship, boat)}}
+* Russian: {{t+|ru|вы́жить|pf}}
+{{trans-mid}}
+{{trans-bottom}}
+
+{{checktrans-top}}
+* Persian: {{t+check|fa|زندگی کردن|tr=zendegi kardan}}
+{{trans-mid}}
+* Telugu: {{t+check|te|జీవించు|sc=Telu}}
+{{trans-bottom}}
+
+====See also====
+* {{l|en|abide}}
+* {{l|en|dwell}}
+* {{l|en|reside}}
+* {{l|en|stay}}
+
+===Etymology 2===
+See [[alive]]
+
+====Pronunciation====
+* {{a|RP}} {{enPR|līv}}, {{IPA|en|/laɪv/}}
+* {{a|GenAm}} {{IPA|en|/laɪv/}}
+* {{audio|en|en-us-live-adj.ogg|Audio (US)}}
+* {{rhymes|en|aɪv}}
+
+====Adjective====
+{{en-adj|-}}
+
+# {{lb|en|only used attributively}} Having [[life]]; that is [[alive]].
+#: ''The post office will not ship '''live''' animals.''
+# Being in existence; [[actual]]
+#: ''He is a '''live''' example of the consequences of excessive drinking.''
+# Having active properties; being energized.
+# [[operational|Operational]]; being in actual use rather than in testing.
+# Taken from a living animal.
+#: '''''live''' feathers''
+# {{lb|en|engineering}} Imparting power; having motion.
+#: ''the '''live''' spindle of a lathe''
+#: ''a '''live''', or driving, axle''
+# {{lb|en|sports}} Still in active play.
+#: ''a '''live''' ball''
+# {{lb|en|broadcasting}} [[see|Seen]] or [[heard]] from a [[broadcast]], as it happens.
+#: ''The station presented a '''live''' news program every evening.''
+# Of a performance or speech, [[in person]].
+#: ''This nightclub has a '''live''' band on weekends.''
+# Of a recorded [[performance]], made in front of an [[audience]], or not having been [[edited]] after recording.
+# Of firearms or explosives, capable of causing harm.
+#: ''The air force practices dropping '''live''' bombs on the uninhabited island.''
+# {{lb|en|circuitry}} Electrically [[charged]] or [[energized]], usually indicating that the item may cause [[electrocution]] if touched.
+#: ''Use caution when working near '''live''' wires.''
+# {{lb|en|poker}} Being a bet which can be [[raised]] by the bettor, usually in reference to a [[blind]] or [[straddle]].
+#: ''Tommy's blind was '''live''', so he was given the option to raise.''
+# Featuring humans; not [[animated]], in the phrases “[[live actors]]” or “[[live action]]”.
+# Being in a state of ignition; burning.
+#: ''a '''live''' coal; '''live''' embers''
+# {{lb|en|obsolete}} Full of earnestness; active; wide awake; glowing.
+#: ''a '''live''' man, or orator''
+# {{lb|en|obsolete}} Vivid; bright.
+#* Thomson
+#*: the '''live''' carnation
+
+=====Usage notes=====
+* ''Live'' in the sense of "having life" is used only attributively (before a noun), as in "live animals". Predicatively (after the noun), ''alive'' is used, as in "be alive". ''Living'' may be used either attributively or predicatively.
+
+=====Synonyms=====
+* {{sense|having life}} {{l|en|living}}, {{l|en|alive}}
+* {{sense|electrically charged}} {{l|en|hot}}
+* {{sense|in person}} {{l|en|in person}}, {{l|en|in the flesh}}
+
+=====Antonyms=====
+* {{sense|having life}} {{l|en|dead}}
+* {{sense|capable of causing harm}} {{l|en|blank}}, {{l|en|dummy}}
+* {{sense|electrically charged}} {{l|en|neutral}}, {{l|en|dead}}
+* {{sense|as it happens}} {{l|en|recorded}}, {{l|en|prerecorded}}
+* {{sense|in person}} {{l|en|broadcast}}
+* {{sense|featuring humans}} {{l|en|animated}}
+
+=====Derived terms=====
+{{rel-top3|Terms derived from the adjective "live"}}
+* {{l|en|lively}}
+{{rel-mid3}}
+* {{l|en|live one}}
+* {{l|en|live rail}}
+{{rel-mid3}}
+* {{l|en|live wire}}
+{{rel-bottom}}
+
+=====Compounds=====
+* [[live actors]]
+* [[live action]]
+* [[live album]]
+* [[live broadcast]]
+* [[live recording]]
+
+=====Translations=====
+{{trans-top|having life}}
+* Albanian: {{t+|sq|gjallë}}
+* Arabic: {{t|ar|حَيّ‎}}
+* Armenian: {{t+|hy|կենդանի}}
+* Bashkir: {{t|ba|тере|sc=Cyrl}}
+* Belarusian: {{t|be|жывы́|sc=Cyrl}}
+* Breton: {{t+|br|bev}}
+* Bulgarian: {{t+|bg|жив}}
+* Catalan: {{t+|ca|viu}}
+* Czech: {{t+|cs|živý}}
+* Dutch: {{t+|nl|levend}}
+* Finnish: {{t+|fi|elävä}}
+* French: {{t+|fr|vivant}}
+* German: {{t+|de|lebend}}
+* Greek: {{t+|el|ζωντανός|m}}
+* Hindi: {{t+|hi|जीवित|sc=Deva}}, {{t+|hi|सजीव|sc=Deva}}, {{t+|hi|जीवंत|sc=Deva}}
+* Hungarian: {{t+|hu|élő}}
+* Icelandic: {{t+|is|lifandi}}
+* Irish: {{t+|ga|beo}}
+* Italian: {{t+|it|vivo}}
+* Japanese: {{t+|ja|生きる|tr=いきてる, ikiteru|alt=生きてる}},
+* Kurdish: {{t+|ku|jîndar}}, {{t+|ku|sax}}, {{t+|ku|zindî}}
+* Latvian: {{t|lv|dzīvs|m}}
+* Lithuanian: {{t+|lt|gyventi}}
+{{trans-mid}}
+* Macedonian: {{t|mk|жив}}
+* Manx: {{t|gv|bio}}
+* Maori: {{t|mi|whaiora}}, {{t|mi|kaiao}}
+* Occitan: {{t+|oc|viu}}
+* Old English: {{t|ang|cwic}}
+* Polish: {{t+|pl|żywy}}
+* Portuguese: {{t+|pt|vivo}}
+* Romanian: {{t+|ro|viu}}
+* Russian: {{t+|ru|живо́й}}
+* Sardinian:
+*: Campidanese: {{t|sc|biu}}
+*: Logudorese: {{t|sc|bibu}}
+* Scottish Gaelic: {{t|gd|beò}}
+* Serbo-Croatian:
+*: Cyrillic: {{t|sh|жи̑в|sc=Cyrl}}
+*: Roman: {{t+|sh|žȋv}}
+* Slovak: {{t|sk|živý}}
+* Slovene: {{t+|sl|žív}}
+* Spanish: {{t+|es|vivo}}
+* Swahili: {{t+|sw|ishi}}
+* Swedish: {{t+|sv|levande}}
+* Turkish: {{t+|tr|canlı}}
+* Ukrainian: {{t|uk|живи́й}}
+{{trans-bottom}}
+
+{{trans-top|(broadcasting) seen or heard from a broadcast, as it happens}}
+* Armenian: {{t+|hy|ուղիղ}}
+* Bulgarian: {{t+|bg|дире́ктен}}, {{t|bg|на живо}}
+* Catalan: {{t|ca|en viu}}
+* Chinese:
+*: Mandarin: {{t+|cmn|直播|tr=zhíbō}}
+* Danish: {{t|da|direkte}}
+* Dutch: {{t+|nl|live}}, {{t+|nl|rechtstreeks}}
+* Faroese: {{t|fo|beinleiðis}}
+* Finnish: {{t+|fi|suora}}
+* French: {{t+|fr|en direct}}
+* Georgian: {{t|ka|პირდაპირი ჩართვა}}, {{t|ka|პირდაპირი ეთერი}}
+* German: {{t|de|Live-}}
+* Greek: {{t+|el|ζωντανός|m}}
+* Hindi: {{t|hi|सीधा प्रसारण|sc=Deva}}
+{{trans-mid}}
+* Indonesian: {{t+|id|langsung}}
+* Italian: {{t|it|in diretta}}
+* Japanese: {{t|ja|ライブ|tr=raibu}}
+* Malay: {{t|ms|langsung}}
+* Maori: {{t|mi|mataora}}, {{t|mi|matawā}}
+* Polish: {{t+|pl|na żywo}}
+* Portuguese: {{t+|pt|ao vivo}}
+* Romanian: {{t|ro|în direct}}
+* Russian: {{t|ru|[[в]] [[эфир|эфи́ре]]}}, {{t|ru|в [[прямой|прямо́м]] [[эфир|эфи́ре]]}}, {{t+|ru|лайв}}, {{t+|ru|живьём}}, {{t+|ru|вживу́ю}}
+* Scottish Gaelic: {{t|gd|beò}}
+* Slovak: {{t|sk|naživo}}, {{t|sk|na živo}}
+* Slovene: {{t|sl|v žívo}}
+* Spanish: {{t+|es|en vivo}}, {{t+|es|en directo}}
+* Turkish: {{t+|tr|canlı}}
+* Vietnamese: {{t+|vi|trực tiếp}}
+{{trans-bottom}}
+
+{{trans-top|capable of causing harm}}
+* Dutch: {{t+|nl|scherp}}
+* Finnish: {{t+|fi|kova}}
+* German: {{t+|de|scharf}}
+* Greek: {{t|el|άσκαστος}}, {{t+|el|άκαυστος}}, {{t+|el|άκαυτος}}
+{{trans-mid}}
+* Kurdish: {{t+|ku|ziyandar}}
+* Portuguese: {{t+|pt|ativo}}
+* Swedish: {{t+|sv|skarp}}
+{{trans-bottom}}
+
+{{trans-top|electrically charged}}
+* Finnish: {{t|fi|jännitteinen}}
+* Greek: {{t+|el|ηλεκτροφόρος}}, {{t|el|ρευματοφόρος}}
+* Maori: {{t|mi|whaihiko}}
+* Norwegian:
+*: Bokmål: {{t|nb|strømførende}}
+{{trans-mid}}
+* Portuguese: {{t+|pt|carregado}}
+* Swedish: {{t|sv|strömförande}}
+{{trans-bottom}}
+
+{{trans-top|being in a state of ignition; burning}}
+* Irish: {{t+|ga|beo}}, {{t+|ga|dearg}}
+{{trans-mid}}
+{{trans-bottom}}
+
+{{checktrans-top}}
+* Latvian: {{t-check|lv|dzivēt}}
+{{trans-mid}}
+* Slovak: {{t-check|sk|živý}}, {{t-check|sk|ostrý}}<!-- the first looks like "alive", not sure about the other -->
+{{trans-bottom}}
+
+====Adverb====
+{{en-adv}}
+
+# Of an event, as it happens; in [[real time]]; [[direct]].
+#: ''The concert was broadcast '''live''' by radio.''
+# Of making a performance or speech, [[in person]].
+#: ''He'll be appearing '''live''' at the auditorium.''
+
+=====Translations=====
+{{trans-top|as it happens}}
+* Armenian: {{t+|hy|ուղիղ}}, {{t|hy|ուղիղ եթերով}}
+* Bulgarian: {{t|bg|на живо}}
+* Catalan: {{t|ca|en viu}}, {{t|ca|en directe}}
+* Czech: {{t+|cs|živě}}, {{t|cs|v přímém přenose}}
+* Dutch: {{t+|nl|rechtstreeks}}
+* Finnish: {{t|fi|suorana}}, {{t+|fi|livenä}}
+* French: {{t+|fr|en direct}}
+* German: {{t+|de|direkt}}, {{t+|de|live}}
+* Greek: {{t+|el|ζωντανά}}, {{t|el|λάιβ}}
+* Icelandic: {{t+|is|beint}}
+* Italian: {{t|it|dal vivo}}, {{t+|it|live}}, {{t|it|in presa diretta}}, {{t|it|in tempo reale}}
+* Japanese: {{t+|ja|生|tr=なまの, nama no|alt=生の|sc=Jpan}}
+* Kurdish: {{t+|ku|zindî}}
+* Macedonian: {{t|mk|во живо}}
+* Norwegian: {{t+|no|direkte}}, {{t+|no|live}} {{q|English loanword}}
+{{trans-mid}}
+* Polish: {{t+|pl|na żywo}}
+* Portuguese: {{t+|pt|ao vivo}}
+* Romanian: {{t|ro|în direct}}
+* Russian: {{t|ru|в [[прямой|прямо́м]] [[эфир|эфи́ре]]}}, {{t+|ru|лайв}}, {{t+|ru|живьём}}
+* Serbo-Croatian:
+*: Cyrillic: {{t|sh|у̏жӣво|sc=Cyrl}}
+*: Roman: {{t+|sh|ȕžīvo}}
+* Slovak: {{t|sk|v priamom prenose}}, {{t|sk|naživo}}
+* Slovene: {{t|sl|v živo}}
+* Spanish: {{t+|es|en vivo}}, {{t+|es|en directo}}
+* Swahili: {{t+|sw|ishi}}
+* Thai: {{t+|th|สด}}
+* Turkish: {{t+|tr|canlı}}
+* Ukrainian: {{t|uk|на́живо}}
+{{trans-bottom}}
+
+====Noun====
+{{en-noun}}
+
+# {{lb|en|obsolete}} [[life]]
+#: {{rfquotek|en|Geoffrey Chaucer}}
+
+===Further reading===
+* {{R:Webster 1913}}
+* {{R:Century 1911}}
+
+===Anagrams===
+* {{anagrams|en|a=eilv|Levi|Viel|evil|veil|vile|vlei}}
+
+[[Category:English basic words]]
+[[Category:English heteronyms]]
+
+----
+
+==Danish==
+
+===Etymology 1===
+Verbal form of the noun {{m|da|liv||life}}.
+
+====Pronunciation====
+* {{IPA|da|/liːvə/|[ˈliːwə]}}
+
+====Verb====
+{{da-verb|liv|live|liver|livede|har|livet}}
+
+# [[enliven]]
+
+=====Usage notes=====
+Used with {{m|da|op||up}}: live op
+
+===Etymology 2===
+Borrowed from {{bor|da|en|live}} {{defdate|1965}}.
+
+====Adverb====
+{{da-adv}}
+
+# {{l|en|live}} {{qualifier|as it happens}}
+
+=====Synonyms=====
+* {{l|da|direkte}}
+
+----
+
+==Esperanto==
+
+===Adverb===
+{{head|eo|adverb|lative|liven}}
+
+# {{lb|eo|neologism}} [[on]] [[the]] [[left]]
+
+====Synonyms====
+* {{l|eo|maldekstre}}
+
+====Antonyms====
+* {{l|eo|dekstre}}
+
+====Related terms====
+* {{l|eo|liven}}
+
+[[Category:eo:Directions]]
+
+----
+
+==Finnish==
+
+===Etymology 1===
+
+====Pronunciation====
+* {{fi-IPA|*}}
+* {{hyphenation|fi|li|ve}}
+
+====Noun====
+{{fi-noun}}
+
+# {{lb|fi|dialectal}} [[lye]]
+
+=====Declension=====
+{{fi-decl-hame|li|v|p|ä}}
+
+=====Synonyms=====
+* {{l|fi|lipeä}}
+
+===Etymology 2===
+From {{bor|fi|en|live}}.
+
+====Pronunciation====
+* {{fi-IPA}}
+* {{hyphenation|fi|li|ve}}
+
+====Adjective====
+{{fi-adj|-}}
+
+# {{lb|fi|nonstandard}} {{l|en|live}}
+
+=====Usage notes=====
+* Chiefly used as modifier in compound terms:
+*: '''''live'''-esitys''
+*:: '''live''' performance
+* Almost always used in essive singular when used independently:
+*: ''He esiintyvät tänään '''livenä''' areenalla.''
+*:: They will perform '''live''' today at the arena.
+
+====Synonyms====
+* {{l|fi|elävä}}
+
+===Anagrams===
+* {{anagrams|fi|a=eilv|Elvi|Veli|ilve|veli}}
+
+----
+
+==German==
+
+===Etymology===
+From {{bor|de|en|live}}.
+
+===Pronunciation===
+* {{IPA|mt|/laɪ̯f/}}
+* {{audio|de|De-live.ogg|Audio}}
+
+===Adverb===
+{{de-adv}}
+
+# {{lb|de|broadcast, event}} [[live#English|live]] {{gloss|at it happens, in real time, directly}}
+
+====Usage notes====
+* There is no adjective corresponding to {{m|de||live}}, but it can form compounds (see below).
+
+====Synonyms====
+* {{l|de|direkt}}
+* {{l|de|in [[Echtzeit]]}}
+
+====Derived terms====
+* {{l|de|Livekonzert}}, {{l|de|Live-Konzert}}
+* {{l|de|Liveschaltung}}, {{l|de|Live-Schaltung}}
+* {{l|de|Livesendung}}, {{l|de|Live-Sendung}}
+* {{l|de|Liveübertragung}}, {{l|de|Live-Übertragung}}
+
+===Further reading===
+* {{R:Duden}}
+
+----
+
+==Italian==
+
+===Adjective===
+{{head|it|adjective|invariable}}
+
+# Performed or recorded live
+
+===Anagrams===
+* {{l|it|levi}}
+* {{l|it|veli}}
+* {{l|it|vile}}
+
+----
+
+==Latin==
+
+===Verb===
+{{la-verb-form|līvē}}
+
+# {{inflection of|la|līveō||2|s|pres|actv|impr}}
+
+----
+
+==Picard==
+
+===Etymology===
+From {{inh|pcd|la|liber}}.
+
+===Noun===
+{{head|pcd|noun|g=m|plural|lives}}
+
+# [[book]]
+
+----
+
+==Swazi==
+
+===Noun===
+{{ss-noun|líve|5|6|émáve}}
+
+# [[country]]
+
+====Inflection====
+{{rfinfl|ss|noun}}

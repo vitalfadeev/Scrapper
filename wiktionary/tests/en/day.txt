@@ -1,0 +1,286 @@
+{{also|Appendix:Variations of "day"|Day|dày|dây|dạy|dậy}}
+==English==
+
+===Alternative forms===
+* {{alter|en|daie|daye}} {{qualifier|obsolete}}
+
+===Etymology===
+{{PIE root|en|dʰegʷʰ}}
+From {{inh|en|enm|day}}, from {{inh|en|ang|dæġ||day}}, from {{inh|en|gem-pro|*dagaz||day}}, from {{inh|en|ine-pro||*dʰogʷʰ-o-s}}, from {{m|ine-pro|*dʰegʷʰ-||to burn}}.
+
+Cognate with {{cog|stq|Dai||day}}, {{cog|fy|dei||day}}, {{cog|nl|dag||day}}, {{cog|nds-de|Dag||day}}, {{cog|gsw|Däi|t=day}}, {{cog|de|Tag||day}}, {{cog|sv|-}}, {{cog|no|-}} and {{cog|da|dag||day}}, {{cog|is|dagur||day}}. Cognate also with {{cog|sq|djeg||to burn}}, {{cog|lt|degti||to burn}}, {{cog|xto|tsäk-}}, {{cog|ru|жечь||to burn}} from *degti, {{m|ru|дёготь||tar, pitch}}, {{cog|sa|दाह|tr=dāhá||heat}}, {{m|sa|दहति|tr=dáhati||to burn}}, {{cog|la|foveō||to warm, keep warm, incubate}}.
+
+{{ncog|la|diēs}} is a [[false cognate]]; it derives from {{ncog|ine-pro|*dyew-||to shine}}.
+
+===Pronunciation===
+* {{enPR|dā}}, {{IPA|en|/deɪ/}}
+* {{audio|en|en-us-day.ogg|Audio (US)}}
+* {{audio|en|En-uk-a day.ogg|Audio (UK female)}}
+* {{audio|en|LL-Q1860 (eng)-Back ache-Day.wav|Audio (UK male)}}
+* {{rhymes|en|eɪ}}
+* {{homophones|en|dey}}
+
+===Noun===
+{{en-noun}}
+
+# Any period of 24 [[hour]]s.
+#: {{ux|en|I've been here for two '''days''' and a bit.}}
+# A period from [[midnight]] to the following [[midnight]].
+#: {{ux|en|The '''day''' begins at midnight.}}
+# {{lb|en|astronomy}} Rotational period of a planet (especially [[Earth]]).
+#: {{ux|en|A '''day''' on Mars is slightly over 24 hours.}}
+# The part of a day period which one spends at one’s job, school, etc.
+#: {{ux|en|I worked two '''days''' last week.}}
+#* {{quote-book|en|year=1913|author={{w|Joseph C. Lincoln}}|chapter=7
+|title=[http://openlibrary.org/works/OL5535161W ''Mr. Pratt's Patients'']
+|passage=“{{...}}if you call my duds a ‘livery’ again there'll be trouble. It's bad enough to go around togged out like a life saver on a drill '''day''', but I can stand that 'cause I'm paid for it. What I won't stand is to have them togs called a livery.{{nb...}}”}}
+# Part of a day period between [[sunrise]] and [[sunset]] where one enjoys [[daylight]]; [[daytime]].
+#: {{ux|en|'''day''' and night;&emsp; I work at night and sleep during the '''day'''.}}
+#* {{quote-book|en|year=1898|author={{w|Winston Churchill (novelist)|Winston Churchill}}
+|title={{w|''The Celebrity''}}|chapter=8
+|passage=The '''day''' was cool and snappy for August, and the Rise all green with a lavish nature. Now we plunged into a deep shade with the boughs lacing each other overhead, and crossed dainty, rustic bridges over the cold trout-streams,{{nb...}}.}}
+#: {{ant|en|night}}
+# A specified time or period; time, considered with reference to the existence or prominence of a person or thing; age; time.
+#: {{ux|en|Every dog has its '''day'''.}}
+#* {{RQ:EHough PrqsPrc|I|0108}}
+#*: This new-comer was a man who in any company would have seemed striking.{{...}}Indeed, all his features were in large mold, like the man himself, as though he had come from a '''day''' when skin garments made the proper garb of men.
+#* {{RQ:Orwell Animal Farm|6}}
+#*: If they had no more food than they had had in Jones's '''day''', at least they did not have less.
+#* {{quote-book|en|year=2011|author={{w|Kat Martin}}|title=''A Song for My Mother''|publisher=Vanguard Press|isbn=9781593156565|url={{gbooks|aDz9AgAAQBAJ|200|day}}|passage=In his senior year, he had run across an old '66 Chevy Super Sport headed for the junkyard, bought it for a song, and overhauled it with his dad's help, turning it into the big red muscle car it was back in its '''day'''.}}
+# A period of [[contention]] of a day or less.
+#: {{ux|en|The '''day''' belonged to the Allies.}}
+# {{lb|en|meteorology}} A 24-hour period beginning at 6am or sunrise.
+#: {{ux|en|Your 8am forecast: The high for the '''day''' will be 30 and the low, before dawn, will be 10.}}
+
+====Hypernyms====
+{{col4
+|en|time
+|week
+|month
+|year
+|title=Hypernyms of day
+}}
+
+====Hyponyms====
+{{col3
+|en|bad hair day
+|Bastille Day
+|birthday
+|Boxing Day
+|bridal day
+|calendar day
+|Canada Day
+|Christmas Day
+|civil day
+|Day of Atonement
+|Day of Judgment
+|day of reckoning
+|day of rest
+|Days of Awe
+|days of grace
+|D-Day
+|dollar day
+|doomsday
+|duvet day
+|feast day
+|field day
+|flag day
+|Flag Day
+<!--Friday is a related term-->
+|foreday
+|Friday
+|heyday
+|holiday
+|holy day
+|judgment day
+|lifeday
+|loveday
+|May Day
+<!--"mayday" as a distress call is not connected to "day"-->
+|midday
+<!--Monday is a related term-->
+|Monday
+|name day
+|New Year's Day
+|noonday
+|one day
+|payday
+|polling day
+|rainy day
+|rest day
+|saint's day
+<!--Saturday is a related term-->
+|Saturday
+|sick day
+|solar day
+|someday
+|St. Andrew's Day
+|St. David's Day
+|St. George's Day
+|St. Patrick's Day
+|St. Stephen's Day
+<!--Sunday is a related term-->
+|Sunday
+|synodic day
+|the other day
+<!--Thursday is a related term-->
+|Thursday
+|Twelfth Day
+<!--Tuesday is a related term-->
+|Tuesday
+|Victoria day
+|wedding day
+<!--Wednesday is a related term-->
+|Wednesday
+|weekday
+|workday
+|working day
+<!--yesterday is a related term-->
+}}
+
+====Derived terms====
+{{rel3|en
+|daily
+}}
+
+====Related terms====
+{{der4|en|a broken clock is right twice a day|a cold day in hell|all day, all-day|all in a day's work|any day now|as the day is long|at the end of the day|call it a day|catch of the day|day after day|daybeam|day bed, daybed|day blindness|day boarder|dayboat|daybook|dayboy|daybreak|day by day|[[day care]], [[daycare|day centre]], [[daycentre]]|day-clean|day dot|daydream|dayfly|daygirl|Day-Glo|day hospital|day in, day out|day job|[[day laborer]], [[day labourer]]|daylight|daylily|daylong|daymare|daymark|day name|day-neutral|day of days|day off|day-old|day one|day out|daypack|daypart|day patient|day release|day room|days<!--adverb: every day; during the day-->|daysack|daysail|daysailer|day school|day shift|dayspring|daystar|daytime|[[day trade]], [[daytrade]]|[[day trader]], [[daytrader]]|day trading|day to day|day-to-day|day trip|dayward|daywear|degree-day|dish of the day|eight-day clock|end one's days|everyday|every dog has its day|first-day cover|Friday|from day to day|have had its day|have had one's day|have seen one's day|holiday|in this day and age|it's early days|late in the day|latter-day|make one's day|Monday|off day|one-day|one of these days|present-day|rule the day|same-day|Saturday|save the day|Sunday|that'll be the day|Thursday|time of day|today|today is a good day to die|tomorrow is another day|Tuesday|Wednesday|weekday|win the day|workaday|yesterday}}
+
+====Descendants====
+* {{desc|srn|dei}}
+
+====Translations====
+See {{section link|day/translations#Noun}}
+
+====References====
+* {{pedia|Day (disambiguation)}}
+
+===Verb===
+{{en-verb}}
+
+# {{lb|en|rare|intransitive}} To [[spend]] a day (in a place).
+#* {{quote-book|en|year=2008|author=Richard F. Burton|title=Arabian Nights, in 16 volumes|page=233|passage=When I nighted and '''dayed''' in Damascus town, {{...}}}}
+
+===See also===
+* {{list:days of the week/en}}
+* {{l|en|Sabbath}}
+* {{l|en|calendar}}
+
+===Anagrams===
+* {{anagrams|en|a=ady|d'ya|y'ad|yad}}
+
+[[Category:English basic words]]
+[[Category:en:Time]]
+[[Category:en:Times of day]]
+
+----
+
+==Cebuano==
+
+===Etymology===
+Initial clipping of {{m|ceb|inday}}.
+
+===Pronunciation===
+* {{a|General Cebuano}} {{IPA|ceb|/ˈd̪aɪ/}}
+* {{rhymes|ceb|aɪ}}
+* {{hyphenation|ceb|day}}
+
+===Noun===
+{{head|ceb|noun}}
+
+# {{lb|ceb|colloquial}} A familiar address to a girl.
+# A familiar address to a [[daughter]].
+
+[[Category:Cebuano clippings]]
+
+----
+
+==Kalasha==
+
+===Verb===
+{{head|kls|verb}}
+
+# [[I]] [[am]]
+
+----
+
+==Middle English==
+
+===Etymology 1===
+From {{inh|enm|ang|dæġ}}, from {{inh|enm|gem-pro|*dagaz}}.
+
+====Alternative forms====
+* {{alter|enm|dai|dæi|dey|daȝ|dæȝ|dei|daye|daȝȝ|daȝh|daiȝ|*dah}}
+
+====Pronunciation====
+* {{a|Early ME}} {{IPA|enm|/daj/|/dɛj/}}
+* {{IPA|enm|/dɛi̯/}}
+
+====Noun====
+{{enm-noun|pl=dayes|pl2=days|pl3=dawes}}
+
+# {{l|en|day}} (composed of 24 hours)
+#*:{{quote-book|enm|year=a.1400|author={{w|Geoffrey Chaucer}}|title={{w|The Canterbury Tales}} |chapter=[[w:The Clerk's Tale|The Clerk's Tale]]|line=783-784|passage=Toward Saluces shaping hir journey, / Fro '''day''' to '''day''' they ryden in hir wey{{...}}|translation=Towards [[w:Saluzzo|Saluzzo]] they point their journey, / From '''day''' to '''day''' they ride on their way{{...}}}}
+# {{l|en|day}} (as opposed to night)
+#*:{{quote-book|enm|year=a.1382|author=John Wycliffe|title={{w|Wycliffe's Bible}} |chapter={{w|Genesis 1:5}}|passage=and he clepide the liȝt, '''dai''', and the derkneſſis, nyȝt. And the euentid and morwetid was maad, o '''daie'''.|translation=And he called light "'''day'''" and the darkness "night". And the evening and morning was made; one '''day'''.}}
+# [[daylight]], [[sunlight]]
+# [[epoch]], [[age]], [[period]]
+# A certain day.
+
+=====Antonyms=====
+* {{l|enm|nyght}}
+
+=====Related terms=====
+{{rel4|enm
+|Childermasse day
+|dayly
+|ende-day
+|endyng day
+|Friday
+|holiday
+|lawday
+|Monday
+|Paske day
+|Saterday
+|Sunnenday
+|Tewesday
+|Thursday
+|Wednesday
+|weke-day
+|yesterday
+}}
+
+=====Descendants=====
+* {{desc|en|day}}
+* {{desc|sco|day}}
+
+=====References=====
+* {{R:MED Online|entry=dai (n.)|id=MED10482 |accessdate=2018-03-20}}
+
+===Etymology 2===
+
+====Pronoun====
+{{head|enm|pronoun}}
+
+# {{alt form|enm|þei}}
+
+====References====
+* {{R:MED Online|entry= thei (pron.)  |id=MED45106 |accessdate=29 May 2018}}
+
+[[Category:enm:Time]]
+
+----
+
+==Scots==
+
+===Etymology===
+From {{inh|sco|enm|day}}, from {{inh|sco|ang|dæġ}}, from {{inh|sco|gem-pro|*dagaz}}.
+
+===Noun===
+{{sco-noun}}
+
+# {{l|en|day}}
+# {{lb|sco|in the definite singular}} [[today]]
+#: {{ux|sco|A'm sorry, A've no seen Angus '''the day'''.|I'm sorry, I haven't seen Angus '''today'''.}}
+
+{{c|sco|Time}}
