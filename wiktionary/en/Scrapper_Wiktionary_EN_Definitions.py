@@ -785,7 +785,7 @@ SenseRaw = {
 }
 
 ExternalLinks = {
-    (in_self, in_all_parent_sections): {  # noun / etymology / english
+    (in_self, in_examples): {  # noun / etymology / english
         in_template: {
             'soplink': {
                 in_all_positional_args: { }
