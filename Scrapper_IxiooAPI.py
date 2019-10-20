@@ -39,7 +39,7 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
     }
 
     #
-    log.debug( "Request to: %s", url )
+    log.debug( "  Request to: %s", url )
     response = requests.post(url, json=data, timeout=(11, 33))
 
     if response.status_code == 200:
@@ -49,13 +49,13 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
             return pairs
 
         except json.decoder.JSONDecodeError as e:
-            log.error( 'explanations: %s', explanations )
-            log.error( 'translation_sentences: %s', translation_sentences )
-            log.error( 'response.text: %s', response.text )
+            log.error( '  explanations: %s', explanations )
+            log.error( '  translation_sentences: %s', translation_sentences )
+            log.error( '  response.text: %s', response.text )
             raise e
 
     else:
-        log.error( response.status_code )
-        log.error( response.text )
+        log.error( "  %s", response.status_code )
+        log.error( "  %s", response.text )
         return None
 

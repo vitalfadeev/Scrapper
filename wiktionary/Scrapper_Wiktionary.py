@@ -6,6 +6,7 @@ The Goal: read dump, get pages, parse, find words, save to database
 """
 import os
 import logging
+import logging.config
 import sqlite3
 import bz2
 import importlib
@@ -21,6 +22,9 @@ CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
 ASCII           = set(string.printable)
+
+if os.path.isfile('logging.ini'):
+    logging.config.fileConfig('logging.ini')
 
 
 # init DB
@@ -78,8 +82,6 @@ class Page:
         Returns:
             (list)
         """
-        log.debug("to_lexems()")
-
         # parse
         lexems = Scrapper_Wiktionary_WikitextParser.parse(self.text)
 
@@ -112,7 +114,6 @@ def filterPageProblems(page: Page):
     Returns:
         Page | None
     """
-    #log.warning( "(%s, %s)", page.ns, page )
 
     # skip None
     if page is None:
@@ -121,7 +122,7 @@ def filterPageProblems(page: Page):
 
     # skip special namespaces. keep terms only
     if int(page.ns) != 0:
-        log.warning("    filter: %s: ns:%s != 0: [SKIP]", page, page.ns)
+        log.warning("  filter: %s: ns:%s != 0: [SKIP]", page, page.ns)
         return None
 
     # skip #REDIRECT
@@ -132,32 +133,32 @@ def filterPageProblems(page: Page):
 
     # skip single symbols
     # if len(page.label) == 1:
-    #     log.warning("    filter: %s: len() == 1: [SKIP]", page)
+    #     log.warning("  filter: %s: len() == 1: [SKIP]", page)
     #     return None
 
     # skip words contains more than 3 symbol of two dots (ABBR?)
     # if page.label.count('.') > 3:
-    #    log.warn("    filter: %s: count('.') > 3: [SKIP]", page.label)
+    #    log.warn("  filter: %s: count('.') > 3: [SKIP]", page.label)
     #    return None
 
     # skip words contains :
     if page.label.find(':') != -1:
-        log.warning("    filter: %s: find(':'): [SKIP]", page.label)
+        log.warning("  filter: %s: find(':'): [SKIP]", page.label)
         return None
 
     # skip more than 3 spaces
     if page.label.count(' ') > 3:
-        log.warning("    filter: %s: count(' ') > 3: [SKIP]", page.label)
+        log.warning("  filter: %s: count(' ') > 3: [SKIP]", page.label)
         return None
 
     # skip #
     if page.label.find('#') != -1:
-        log.warning("    filter: %s: find('#'): [SKIP]", page.label)
+        log.warning("  filter: %s: find('#'): [SKIP]", page.label)
         return None
 
     # skip non ASCII
     if is_ascii( page.label ) is False:
-        log.warning("    filter: %s: non ASCII: [SKIP]", page.label)
+        log.warning("  filter: %s: non ASCII: [SKIP]", page.label)
         return None
 
     return page
@@ -329,7 +330,7 @@ def scrap_one_wrapper(args):
     try:
         scrap_one( *args )
     except Exception as e:
-        log.error( "%s", args, exc_info=True )
+        log.error( "  %s", args, exc_info=True )
 
 
 def scrap( lang: str ="en", workers: int = 1 ):

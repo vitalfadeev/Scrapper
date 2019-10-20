@@ -191,7 +191,7 @@ class Section(list):
 
 
     def __repr__(self):
-        return self.title
+        return self.index_in_toc + ' ' + self.title
 
 
 class Root(Section):

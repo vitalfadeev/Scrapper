@@ -9,54 +9,59 @@ from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, Ex
 log = logging.getLogger(__name__)
 
 
-def valid( page, explanation, context, definition ):
-    return any( check( page, explanation, context, definition ))
+def valid( page, explanation, context, definition, path ):
+    return any( check( page, explanation, context, definition, path ))
 
 
-def check( page, explanation, context, definition ):
+def check( page, explanation, context, definition, path ):
     for func, args in definition.items():
-        yield from func( page, explanation, context, args )
+        path2 = path.copy()
+        path2.append( func.__name__ )
+        yield from func( page, explanation, context, args, path2 )
 
 
-def in_all_parents( page, explanation, context, definitions ):
+def in_all_parents( page, explanation, context, definitions, path ):
     explanation = context
     node = explanation.parent
 
     while node is not None:
-        yield from check( page, explanation, node, definitions )
+        yield from check( page, explanation, node, definitions, path )
 
         node = node.parent
 
 
-def in_section( page, explanation, context, definitions ):
+def in_section( page, explanation, context, definitions, path ):
     node = context
 
-    # check each title
+    # 1. take eash subsection
+    # 2. check title in definitions
+    # 3. run next checkers
+    #
     # definitions[ 'synonyms' ] = {}
-    for title, defs in definitions.items():
-        section = node.sections_by_name.get( title, None )
+    for sub_title, sub_section in node.sections_by_name.items():
+        defs = definitions.get( sub_title, None )
 
-        if section is not None:
+        if defs is not None:
             # do next check
-            yield from check( page, explanation, section, defs )
+            yield from check( page, explanation, sub_section, defs, path )
 
 
-def text_contain( page, explanation, context, definitions ):
+def text_contain( page, explanation, context, definitions, path ):
     explanation = context
     for text in definitions:
         if explanation.sense_txt.find( text ) != -1:
             yield True
 
 
-def in_template( page, explanation, context, definitions: dict ):
+def in_template( page, explanation, context, definitions: dict, path ):
     for t in context.find_lexem( recursive=True ):
         if isinstance(t, Template):
             defs = definitions.get( t.name, None )
             if defs is not None:
-                yield from check( page, explanation, t, defs )
+                yield from check( page, explanation, t, defs, path )
 
 
-def in_language( page, explanation, context, definitions: dict ):
+def in_language( page, explanation, context, definitions: dict, path ):
     container = context
     expect_langs = definitions.keys()
 
@@ -67,7 +72,7 @@ def in_language( page, explanation, context, definitions: dict ):
         language = language_raw.strip( ': \n' ).lower()
 
         if language in expect_langs:
-            yield from check( page, explanation, li, definitions[ language ] )
+            yield from check( page, explanation, li, definitions[ language ], path )
 
 
 def in_template_trans_top( page, explanation, context, defs=None ):
@@ -77,18 +82,18 @@ def in_template_trans_top( page, explanation, context, defs=None ):
                 pass
 
 
-def with_lang( page, explanation, t, definitions ):
+def with_lang( page, explanation, t, definitions, path ):
     lang = t.arg(0)
     if lang is None:
         lang = t.arg( 'lang' )
 
     if lang is None:
-        yield from check( page, explanation, t, next( iter( definitions.values() ) ) )
+        yield from check( page, explanation, t, next( iter( definitions.values() ) ), path )
     elif lang in definitions:
-        yield from check( page, explanation, t, definitions[ lang ] )
+        yield from check( page, explanation, t, definitions[ lang ], path )
 
 
-def in_arg( page, explanation, context, definitions ):
+def in_arg( page, explanation, context, definitions, path ):
     t = context
     arg_keys = definitions
 
@@ -99,13 +104,13 @@ def in_arg( page, explanation, context, definitions ):
     elif isinstance( arg_keys, dict ):
         for k, definitions in arg_keys.items():
             a = t.arg( k )
-            yield from check( page, explanation, a, definitions )
+            yield from check( page, explanation, a, definitions, path )
 
     else:
         raise Exception("unsupported")
 
 
-def in_arg_by_lang( page, explanation, t, arg_keys ):
+def in_arg_by_lang( page, explanation, t, arg_keys, path ):
     lang = t.arg(0)
     if lang is None:
         lang = t.arg( 'lang' )
@@ -116,30 +121,30 @@ def in_arg_by_lang( page, explanation, t, arg_keys ):
     elif isinstance( arg_keys, dict ):
         for k, definitions in arg_keys.items():
             a = t.arg( k )
-            for v in check( page, explanation, a, definitions ):
+            for v in check( page, explanation, a, definitions, path ):
                 yield ( lang, v )
     else:
         raise Exception("unsupported")
 
 
-def in_any_arg( page, explanation, t, definitions ):
+def in_any_arg( page, explanation, t, definitions, path ):
     for k, defs in definitions.items():
         for a in t.args():
-            yield from check( page, explanation, a, defs )
+            yield from check( page, explanation, a, defs, path )
 
 
-def in_all_positional_args( page, explanation, t: Template, defs ):
+def in_all_positional_args( page, explanation, t: Template, definitions, path ):
     for a in t.positional_args():
         yield a.get_text()
 
 
-def in_all_positional_args_except_lang( page, explanation, t: Template, defs ):
+def in_all_positional_args_except_lang( page, explanation, t: Template, definitions, path ):
     args = list( t.positional_args() )
     for a in args[1:]:
         yield a.get_text()
 
 
-def value_equal( page, explanation, a, expected ):
+def value_equal( page, explanation, a, expected, path ):
     if isinstance(expected, set):
         if a.get_text() in expected:
             yield True
@@ -148,13 +153,13 @@ def value_equal( page, explanation, a, expected ):
             yield True
 
 
-def equal_label( page, explanation, value, definitions ):
+def equal_label( page, explanation, value, definitions, path ):
     expected = page.label
     if value == expected:
         yield True
 
 
-def in_link( page, explanation, context, defs=None ):
+def in_link( page, explanation, context, definitions=None, path=0 ):
     for lexem in context.find_lexem( recursive=True ):
         if isinstance( lexem, Link ):
             yield from lexem.to_words()
@@ -169,36 +174,36 @@ def has_template( page, explanation, context, tnames ):
         raise Exception("unsupported")
 
 
-def in_self( page, explanation, context, definitions ):
-    yield from check( page, explanation, context, definitions )
+def in_self( page, explanation, context, definitions, path ):
+    yield from check( page, explanation, context, definitions, path )
 
 
-def in_parent_explanations( page, explanation, context, definitions ):
+def in_parent_explanations( page, explanation, context, definitions, path ):
     parent = context.parent
 
     while parent is not None and parent.is_explanation:
-        yield from check( page, explanation, parent, definitions )
+        yield from check( page, explanation, parent, definitions, path )
 
         parent = parent.parent
 
 
-def in_all_parent_sections( page, explanation, context, definitions ):
-    parent = context
+def in_all_parent_sections( page, explanation, context, definitions, path ):
+    parent = context.parent
 
     while parent is not None:
         if not isinstance( parent, Explanation ):
-            yield from check( page, explanation, parent, definitions )
+            yield from check( page, explanation, parent, definitions, path )
 
         parent = parent.parent
 
 
-def in_examples( page, explanation, context, definitions ):
+def in_examples( page, explanation, context, definitions, path ):
     for child in context:
         if isinstance(child, ExplanationExample):
-            yield from check( page, explanation, child, definitions )
+            yield from check( page, explanation, child, definitions, path )
 
 
-def by_sense( page, explanation, context, definitions ) -> Iterator:
+def by_sense( page, explanation, context, definitions, path ) -> Iterator:
     # 1. if single explaanation:
     #    get all from section (do next checkers)
     #
@@ -219,7 +224,7 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
         # get all from section (do next checkers)
         container = Container()
         container.childs = section.lexemes
-        yield from check( page, explanation, container, definitions )
+        yield from check( page, explanation, container, definitions, path )
 
     # 2. if many explanations
     elif len( page.explanations ) > 1:
@@ -235,7 +240,7 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
             lexemes = list( lexemes_by_sense.values() )  # all
             container = Container()
             container.childs = lexemes
-            yield from check( page, explanation, container, definitions )  # call next checkers
+            yield from check( page, explanation, container, definitions, path )  # call next checkers
 
         # if section has senses
         elif len( section_senses ) > 0:
@@ -245,12 +250,13 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
             explanation_sense_txts = map( lambda x: x.sense_txt, page.explanations )
 
             # match
+            # current explanation in ( explanations x section_senses )
             matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
 
             # save sense (for debugging)
             explanation.item.Senses[ type(section).__name__ ] = matched_txt
 
-            if matched_txt:
+            if matched_txt is not None:
                 matched_raw = None
 
                 # txt to raw
@@ -265,13 +271,13 @@ def by_sense( page, explanation, context, definitions ) -> Iterator:
                     # get all from sensed block (do next checkers)
                     container = Container()
                     container.childs = lexemes
-                    yield from check( page, explanation, container, definitions )  # call next checkers
+                    yield from check( page, explanation, container, definitions, path )  # call next checkers
 
             else: # no matched senses
                 log.warning(
-                    'PKS-Warning : in word "{}" PKS didnt found : "{}" for "{}"'  \
+                    '  PKS-Warning( {} ) : in word "{}" PKS didnt found : "{}" for "{}"'  \
                         .format(
-                            page.label, section, explanation_sense_txt
+                            path[0], page.label, section, explanation_sense_txt
                         )
                 )
 
@@ -345,18 +351,18 @@ def en_noun( t, label ):
         yield (head, head + "s", is_uncountable)
 
 
-def plural_en_noun( page, explanation, context, definitions ):
+def plural_en_noun( page, explanation, context, definitions, path ):
     t = context
     label = page.label
     (s, p, is_uncountable) = next( en_noun( t, label ) )
 
     if definitions:
-        yield from check( page, explanation, p, definitions )
+        yield from check( page, explanation, p, definitions, path )
     else:
         yield p
 
 
-def single_en_noun( page, explanation, context, definitions ):
+def single_en_noun( page, explanation, context, definitions, path ):
     t = context
     label = page.label
 
@@ -365,15 +371,15 @@ def single_en_noun( page, explanation, context, definitions ):
             (s, p, is_uncountable) = res
 
             if definitions:
-                yield from check( page, explanation, s, definitions )
+                yield from check( page, explanation, s, definitions, path )
             else:
                 yield s
 
 
-def en_verb( page, explanation, context, defs ):
+def en_verb( page, explanation, context, defs, path ):
     yield from ()
 
-def en_adj( page, explanation, context, defs ):
+def en_adj( page, explanation, context, defs, path ):
     yield from ()
 
 
@@ -398,7 +404,7 @@ def check_node( page, node, lm ):
 
             # run checker
             explanation = node
-            generator = filter( None, check( page, explanation, node, definitions ) )
+            generator = filter( None, check( page, explanation, node, definitions, [name] ) )
 
             # save result to item attribute
             store = getattr( node.item, name )
@@ -422,7 +428,7 @@ def check_node( page, node, lm ):
                 raise Exception( "unsupported: " + str( type( store ) ) )
 
 
-def checkers_from( page, explanation, context, definitions ):
+def checkers_from( page, explanation, context, definitions, path ):
     iterator = iter( definitions )
 
     # first. from module
@@ -433,7 +439,7 @@ def checkers_from( page, explanation, context, definitions ):
     for key in iterator:
         defs = defs[ key ]
 
-    yield from check( page, explanation, context, defs )
+    yield from check( page, explanation, context, defs, path )
 
 
 def detuple_dfinition_keys( defs ):

@@ -35,8 +35,8 @@ def parse( title, text ):
         data = response.json()
         return data['parse']['text']['*']
     else:
-        log.error( 'response.status_code: %s', response.status_code )
-        log.error( 'response.text: %s', response.text )
+        log.error( '  response.status_code: %s', response.status_code )
+        log.error( '  response.text: %s', response.text )
 
 
 def expand_templates( title: str, raws: list ) -> list:
@@ -92,11 +92,11 @@ def get_wikitext( title=None ):
         else:
             # no page in DB
             # soup.body.mediawiki.page is None
-            log.error( 'no page: %s', title )
+            log.error( '  no page: %s', title )
 
     else:
-        log.error( 'response.status_code: %s', response.status_code )
-        log.error( 'response.text: %s', response.text )
+        log.error( '  response.status_code: %s', response.status_code )
+        log.error( '  response.text: %s', response.text )
 
 
 @retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
@@ -104,7 +104,7 @@ def _get( params ):
     url = DOMAIN + API_URL
     action = params.get('action', '')
     titles = params.get('titles', params.get('title', ''))
-    log.debug( "Request to: %s: %s(%s)", url, action, titles )
+    log.debug( "  Request to: %s: %s(%s)", url, action, titles )
     response = requests.get(url, params=params, timeout=(15, 27))
     return response
 
@@ -114,7 +114,7 @@ def _post( params ):
     url = DOMAIN + API_URL
     action = params.get('action', '')
     titles = params.get('titles', params.get('title', ''))
-    log.debug( "Request to: %s: %s(%s)", url, action, titles )
+    log.debug( "  Request to: %s: %s(%s)", url, action, titles )
     response = requests.post(url, data=params, timeout=(15, 27))
     return response
 
