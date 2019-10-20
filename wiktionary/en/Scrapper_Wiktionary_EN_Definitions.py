@@ -702,7 +702,7 @@ Labels = {
 }
 
 Categories = {
-    (in_self, in_all_parent_sections): {  # noun / etymology / english
+    (in_self, in_examples): {  # noun / etymology / english
         in_template: {
             ('top', 'topic', 'topics', 'categorize'): {
                 with_lang: {
@@ -765,7 +765,7 @@ Accent = {
 }
 
 Qualifier = {
-    (in_self, in_all_parent_sections): {  # noun / etymology / english
+    (in_self, in_examples): {  # noun / etymology / english
         in_template: {
             ('q','qf',  'i', 'qual', 'qualifier'): {
                 in_arg: { 0, 1, 2, 3, 4 }
