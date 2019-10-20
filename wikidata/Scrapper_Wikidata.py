@@ -10,7 +10,7 @@ import ijson
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
 from Scrapper_Helpers import filterWodsProblems, clean_surrogates, pprint, create_storage
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
-from Scrapper_Downloader import download_with_resume
+from Scrapper_Downloader import download
 
 #
 DB_NAME      = "wikidata.db"
@@ -357,7 +357,7 @@ def download(lang="en", use_cached=True):
 
     # download
     log.info("Downloading (%s)....", remote_file)
-    if download_with_resume( remote_file, local_file ):
+    if download( remote_file, local_file ):
         log.info("Downloaded... [ OK ]")
     else:
         log.error("Downloading... [ FAIL ]")

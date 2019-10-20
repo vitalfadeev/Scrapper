@@ -524,10 +524,12 @@
             <span class="c1"># save result to item attribute</span>
             <span class="n">store</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">item</span><span class="p">,</span> <span class="n">name</span> <span class="p">)</span>
 
+            <span class="c1"># save method depend of type</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">list</span> <span class="p">):</span>
                 <span class="n">filtered</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span> <span class="n">filterWodsProblems</span><span class="p">,</span> <span class="n">generator</span> <span class="p">)</span>
                 <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span> <span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">,</span> <span class="n">filtered</span> <span class="p">)</span>
-                <span class="n">store</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">cleaned</span> <span class="p">)</span>
+                <span class="n">uniqued</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">store</span><span class="p">,</span> <span class="n">cleaned</span> <span class="p">)</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">uniqued</span> <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">):</span>
                 <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">generator</span> <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">store</span><span class="p">,</span> <span class="nb">bool</span> <span class="p">)</span> <span class="ow">or</span> <span class="n">store</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
@@ -537,12 +539,6 @@
                 <span class="n">value</span> <span class="o">=</span> <span class="n">more_itertools</span><span class="o">.</span><span class="n">first_true</span><span class="p">(</span> <span class="n">generator</span> <span class="p">)</span>
                 <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
                     <span class="nb">setattr</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">item</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="p">)</span>
-            <span class="c1"># elif isinstance( store, int ):</span>
-            <span class="c1">#     if value:</span>
-            <span class="c1">#         setattr( node.item, name, value )</span>
-            <span class="c1"># elif isinstance( store, float ):</span>
-            <span class="c1">#     if value:</span>
-            <span class="c1">#         setattr( node.item, name, value )</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;unsupported: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span> <span class="n">store</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span></div>
 

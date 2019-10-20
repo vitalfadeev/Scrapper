@@ -38,7 +38,7 @@
     <link rel="top" title="Scrapper 3.0.0 documentation" href="../index.html"/>
         <link rel="up" title="Scrapper" href="modules.html"/>
         <link rel="next" title="Scrapper_Helpers module" href="Scrapper_Helpers.html"/>
-        <link rel="prev" title="Scrapper module" href="Scrapper.html"/> 
+        <link rel="prev" title="Scrapper_DB module" href="Scrapper_DB.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -86,11 +86,12 @@
                 <p class="caption"><span class="caption-text">Docstring</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Scrapper</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Scrapper.html">Scrapper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_DB.html">Scrapper_DB module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Scrapper_Downloader module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_Helpers.html">Scrapper_Helpers module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_one.html">test_one module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wiktionary.html">wiktionary package</a></li>
 </ul>
 </li>
@@ -142,25 +143,102 @@
             
   <div class="section" id="module-Scrapper_Downloader">
 <span id="scrapper-downloader-module"></span><h1>Scrapper_Downloader module<a class="headerlink" href="#module-Scrapper_Downloader" title="Permalink to this headline">¶</a></h1>
+<p>Download file.</p>
+<div class="figure align-default">
+<img alt="../_images/downloader.png" src="../_images/downloader.png" />
+</div>
+<p>Designed for downloading large files (600 M ~ 36 G).</p>
+<p>Support:</p>
+<ul class="simple">
+<li><p>resume downloading</p></li>
+<li><p>5 retries when link broken</p></li>
+<li><p>show progress bar</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Scrapper_Downloader</span> <span class="k">import</span> <span class="n">download</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;./cached/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="n">download</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">dest</span> <span class="p">)</span>
+</pre></div>
+</div>
 <dl class="function">
-<dt id="Scrapper_Downloader.continue_downloading">
-<code class="sig-prename descclassname">Scrapper_Downloader.</code><code class="sig-name descname">continue_downloading</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">local_file</em>, <em class="sig-param">remote_file_size</em>, <em class="sig-param">resume_byte_pos=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Downloader.html#continue_downloading"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Downloader.continue_downloading" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="Scrapper_Downloader.download_with_resume">
-<code class="sig-prename descclassname">Scrapper_Downloader.</code><code class="sig-name descname">download_with_resume</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">local_file</em>, <em class="sig-param">attempts=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Downloader.html#download_with_resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Downloader.download_with_resume" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="Scrapper_Downloader.download">
+<code class="sig-prename descclassname">Scrapper_Downloader.</code><code class="sig-name descname">download</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">local_file</em>, <em class="sig-param">attempts=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Downloader.html#download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Downloader.download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download file from <cite>url</cite> to <cite>local_file</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>str</em>) – Remote file url</p></li>
+<li><p><strong>local_file</strong> (<em>str</em>) – Local file path and name</p></li>
+<li><p><strong>attempts</strong> (<em>int</em>) – When link is broken retry <cite>attempts</cite> times</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>True</cite> if downloading finished.
+<cite>None</cite> else.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Scrapper_Downloader</span> <span class="k">import</span> <span class="n">download</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;./cached/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="n">download</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">dest</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Downloader.get_http_file_size">
 <code class="sig-prename descclassname">Scrapper_Downloader.</code><code class="sig-name descname">get_http_file_size</code><span class="sig-paren">(</span><em class="sig-param">url</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Downloader.html#get_http_file_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Downloader.get_http_file_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get size of remote file <cite>url</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – Remote file name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(int) file size</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="n">remote_file_size</span> <span class="o">=</span> <span class="n">get_http_file_size</span><span class="p">(</span> <span class="n">url</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Downloader.get_local_file_size">
 <code class="sig-prename descclassname">Scrapper_Downloader.</code><code class="sig-name descname">get_local_file_size</code><span class="sig-paren">(</span><em class="sig-param">file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Downloader.html#get_local_file_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Downloader.get_local_file_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return size of local file <cite>file_name</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – Path to file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(int) file size</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">local_file</span> <span class="o">=</span> <span class="s2">&quot;./cached/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="n">local_file_size</span> <span class="o">=</span> <span class="n">get_local_file_size</span><span class="p">(</span> <span class="n">local_file</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Downloader.requests_retry_session">
+<code class="sig-prename descclassname">Scrapper_Downloader.</code><code class="sig-name descname">requests_retry_session</code><span class="sig-paren">(</span><em class="sig-param">retries=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Downloader.html#requests_retry_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Downloader.requests_retry_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function. It help retry download when link broken. <cite>retries</cite> retries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>retries</strong> (<em>int</em>) – Maximum retries attempts to connect and download file</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns (request.Session):</dt><dd><p>Session object</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">session</span> <span class="o">=</span> <span class="n">requests_retry_session</span><span class="p">(</span> <span class="n">retries</span><span class="o">=</span><span class="mi">5</span> <span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="n">url</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </div>
 
@@ -174,7 +252,7 @@
         <a href="Scrapper_Helpers.html" class="btn btn-neutral float-right" title="Scrapper_Helpers module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Scrapper.html" class="btn btn-neutral" title="Scrapper module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="Scrapper_DB.html" class="btn btn-neutral" title="Scrapper_DB module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

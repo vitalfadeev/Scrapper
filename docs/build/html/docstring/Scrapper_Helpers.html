@@ -86,11 +86,12 @@
                 <p class="caption"><span class="caption-text">Docstring</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Scrapper</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Scrapper.html">Scrapper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Scrapper_DB.html">Scrapper_DB module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_Downloader.html">Scrapper_Downloader module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Scrapper_Helpers module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_one.html">test_one module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wiktionary.html">wiktionary package</a></li>
 </ul>
 </li>
@@ -317,6 +318,29 @@ For efficiency, the stream is buffered.</p>
 <dt id="Scrapper_Helpers.remove_comments">
 <code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">remove_comments</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">startpos=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#remove_comments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.remove_comments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="Scrapper_Helpers.retry">
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">retry</code><span class="sig-paren">(</span><em class="sig-param">ExceptionToCheck</em>, <em class="sig-param">tries=4</em>, <em class="sig-param">delay=3</em>, <em class="sig-param">backoff=2</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#retry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.retry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retry calling the decorated function using an exponential backoff.
+<a class="reference external" href="http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/">http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/</a>
+original from: <a class="reference external" href="http://wiki.python.org/moin/PythonDecoratorLibrary#Retry">http://wiki.python.org/moin/PythonDecoratorLibrary#Retry</a>
+:param ExceptionToCheck: the exception to check. may be a tuple of</p>
+<blockquote>
+<div><p>exceptions to check</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tries</strong> (<em>int</em>) – number of times to try (not retry) before giving up</p></li>
+<li><p><strong>delay</strong> (<em>int</em>) – initial delay between retries in seconds</p></li>
+<li><p><strong>backoff</strong> (<em>int</em>) – backoff multiplier e.g. value of 2 will double the delay
+each retry</p></li>
+<li><p><strong>logger</strong> (<em>logging.Logger instance</em>) – logger to use. If None, print</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.sanitize_filename">

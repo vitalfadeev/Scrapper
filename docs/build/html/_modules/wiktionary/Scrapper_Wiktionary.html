@@ -140,7 +140,8 @@
 <span class="kn">import</span> <span class="nn">sqlite3</span>
 <span class="kn">import</span> <span class="nn">bz2</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">from</span> <span class="nn">Scrapper</span> <span class="k">import</span> <span class="n">DBExecute</span><span class="p">,</span> <span class="n">DBExecuteScript</span><span class="p">,</span> <span class="n">DBWrite</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">from</span> <span class="nn">Scrapper_DB</span> <span class="k">import</span> <span class="n">DBExecute</span><span class="p">,</span> <span class="n">DBExecuteScript</span><span class="p">,</span> <span class="n">DBWrite</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">Scrapper_Wiktionary_WikitextParser</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">Scrapper_Wiktionary_Item</span> <span class="kn">import</span> <span class="nn">WikictionaryItem</span>
 <span class="kn">from</span> <span class="nn">wiktionary</span> <span class="k">import</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span>
@@ -149,6 +150,9 @@
 <span class="n">DBWikictionary</span>  <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">DB_NAME</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">CACHE_FOLDER</span>    <span class="o">=</span> <span class="s2">&quot;cached&quot;</span>  <span class="c1"># folder where stored downloadad dumps</span>
 <span class="n">log</span>             <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">english_table</span>   <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span> <span class="p">)</span> <span class="p">)</span>
+<span class="n">ASCII</span>           <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">printable</span><span class="p">)</span>
+
 
 <span class="c1"># init DB</span>
 <span class="n">DBExecute</span><span class="p">(</span> <span class="n">DBWikictionary</span><span class="p">,</span> <span class="s2">&quot;PRAGMA journal_mode = OFF&quot;</span> <span class="p">)</span>
@@ -217,6 +221,18 @@
         <span class="k">return</span> <span class="s2">&quot;(&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">+</span><span class="s2">&quot;)&quot;</span></div>
 
 
+<div class="viewcode-block" id="isEnglish"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.isEnglish">[docs]</a><span class="k">def</span> <span class="nf">isEnglish</span><span class="p">(</span> <span class="n">s</span> <span class="p">):</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span> <span class="n">english_table</span> <span class="p">)</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="is_ascii"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.is_ascii">[docs]</a><span class="k">def</span> <span class="nf">is_ascii</span><span class="p">(</span> <span class="n">s</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ASCII</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
 <div class="viewcode-block" id="filterPageProblems"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.filterPageProblems">[docs]</a><span class="k">def</span> <span class="nf">filterPageProblems</span><span class="p">(</span><span class="n">page</span><span class="p">:</span> <span class="n">Page</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Filter page. If not correct retirn None</span>
@@ -246,9 +262,9 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># skip single symbols</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: len() == 1: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># if len(page.label) == 1:</span>
+    <span class="c1">#     log.warning(&quot;    filter: %s: len() == 1: [SKIP]&quot;, page)</span>
+    <span class="c1">#     return None</span>
 
     <span class="c1"># skip words contains more than 3 symbol of two dots (ABBR?)</span>
     <span class="c1"># if page.label.count(&#39;.&#39;) &gt; 3:</span>
@@ -268,6 +284,11 @@
     <span class="c1"># skip #</span>
     <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: find(&#39;#&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># skip non ASCII</span>
+    <span class="k">if</span> <span class="n">is_ascii</span><span class="p">(</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span> <span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: non ASCII: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">page</span></div>
@@ -313,9 +334,9 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">Scrapper_Downloader</span> <span class="k">import</span> <span class="n">download_with_resume</span>
+            <span class="kn">from</span> <span class="nn">Scrapper_Downloader</span> <span class="k">import</span> <span class="n">download</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s2">&quot;Downloading: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span> <span class="p">)</span>
-            <span class="n">download_with_resume</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">dest</span> <span class="p">)</span>
+            <span class="n">download</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">dest</span> <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 

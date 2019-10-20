@@ -203,9 +203,9 @@ class Dump:
         if os.path.isfile(dest):
             pass
         else:
-            from Scrapper_Downloader import download_with_resume
+            from Scrapper_Downloader import download
             log.info( "Downloading: %s", url )
-            download_with_resume( url, dest )
+            download( url, dest )
 
         return self
 

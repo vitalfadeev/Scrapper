@@ -139,6 +139,8 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -488,6 +490,46 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span> <span class="o">=</span> <span class="n">merge_dct</span><span class="p">[</span> <span class="n">k</span> <span class="p">]</span></div>
 
+
+<div class="viewcode-block" id="retry"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.retry">[docs]</a><span class="k">def</span> <span class="nf">retry</span><span class="p">(</span><span class="n">ExceptionToCheck</span><span class="p">,</span> <span class="n">tries</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">backoff</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retry calling the decorated function using an exponential backoff.</span>
+<span class="sd">    http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/</span>
+<span class="sd">    original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry</span>
+<span class="sd">    :param ExceptionToCheck: the exception to check. may be a tuple of</span>
+<span class="sd">        exceptions to check</span>
+<span class="sd">    :type ExceptionToCheck: Exception or tuple</span>
+<span class="sd">    :param tries: number of times to try (not retry) before giving up</span>
+<span class="sd">    :type tries: int</span>
+<span class="sd">    :param delay: initial delay between retries in seconds</span>
+<span class="sd">    :type delay: int</span>
+<span class="sd">    :param backoff: backoff multiplier e.g. value of 2 will double the delay</span>
+<span class="sd">        each retry</span>
+<span class="sd">    :type backoff: int</span>
+<span class="sd">    :param logger: logger to use. If None, print</span>
+<span class="sd">    :type logger: logging.Logger instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">deco_retry</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">f_retry</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">mtries</span><span class="p">,</span> <span class="n">mdelay</span> <span class="o">=</span> <span class="n">tries</span><span class="p">,</span> <span class="n">delay</span>
+            <span class="k">while</span> <span class="n">mtries</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">ExceptionToCheck</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, Retrying in </span><span class="si">%d</span><span class="s2"> seconds...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">mdelay</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">mdelay</span><span class="p">)</span>
+                    <span class="n">mtries</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">mdelay</span> <span class="o">*=</span> <span class="n">backoff</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">f_retry</span>  <span class="c1"># true decorator</span>
+
+    <span class="k">return</span> <span class="n">deco_retry</span></div>
 </pre></div>
 
            </div>

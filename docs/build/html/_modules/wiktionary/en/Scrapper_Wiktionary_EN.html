@@ -131,6 +131,7 @@
   <h1>Source code for wiktionary.en.Scrapper_Wiktionary_EN</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">Scrapper_Helpers</span> <span class="k">import</span> <span class="n">convert_to_alnum</span><span class="p">,</span> <span class="n">deduplicate</span><span class="p">,</span> <span class="n">proper</span><span class="p">,</span> <span class="n">get_lognest_word</span>
 <span class="kn">from</span> <span class="nn">wiktionary</span> <span class="k">import</span> <span class="n">Scrapper_Wiktionary</span>
@@ -594,11 +595,14 @@
     <span class="c1"># 2. request page via wiktionary API</span>
     <span class="c1"># 3. parse page -&gt; lexemes + toc</span>
     <span class="c1"># 4. make search index:  dict[ English ][ Noun ][ Translations ] = node</span>
-    <span class="c1"># 5. check: dict[ English ][ Noun ] == current_node.part_of_speech</span>
+    <span class="c1"># 5. check:</span>
+    <span class="c1">#      dict[ English ][ Noun ] == current_node.part_of_speech</span>
+    <span class="c1">#      dict[ Noun ] == current_node.part_of_speech</span>
+    <span class="c1">#      dict[ Translations ]</span>
     <span class="c1"># 6. get trarnslation lexemes. add to node =Translations=</span>
 
     <span class="c1"># 1. find all {{trans-see|...}}</span>
-    <span class="n">node</span><span class="p">:</span> <span class="n">Section</span>
+    <span class="n">node</span><span class="p">:</span> <span class="n">Translations</span>
     <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trans_see_finder</span><span class="p">(</span> <span class="n">toc</span> <span class="p">):</span>
         <span class="c1"># found</span>
         <span class="n">full_url</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span>
@@ -629,36 +633,51 @@
         <span class="c1">#        Translations</span>
         <span class="c1">#          {{trans-top}}</span>
         <span class="c1">#      Verb</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span> <span class="nb">list</span> <span class="p">)</span> <span class="p">)</span>
+
         <span class="c1"># find =Translations=</span>
-        <span class="k">for</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">ts_toc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span> <span class="n">Translations</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
-            <span class="n">ts</span> <span class="o">=</span> <span class="n">nd</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_parent_pos_node</span><span class="p">()</span>
-            <span class="n">lang</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_parent_lang_node</span><span class="p">()</span>
-            <span class="c1"># dict[ English ][ Noun ][ Translations ] = node</span>
-            <span class="n">d</span> \
-                <span class="o">.</span><span class="n">setdefault</span><span class="p">(</span> <span class="n">lang</span><span class="o">.</span><span class="n">title_norm</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span> \
-                <span class="o">.</span><span class="n">setdefault</span><span class="p">(</span> <span class="n">pos</span><span class="o">.</span><span class="n">title_norm</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span> \
-                <span class="o">.</span><span class="n">setdefault</span><span class="p">(</span> <span class="n">ts</span><span class="o">.</span><span class="n">title_norm</span><span class="p">,</span> <span class="n">nd</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">ts_toc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span> <span class="n">Translations</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+            <span class="n">pos</span>  <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_parent_pos_node</span><span class="p">()</span>   <span class="k">if</span> <span class="n">ts</span>  <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>   <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">lang</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_parent_lang_node</span><span class="p">()</span> <span class="k">if</span> <span class="n">pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>   <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="n">spos</span>  <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">title_norm</span>  <span class="k">if</span> <span class="n">pos</span>  <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">slang</span> <span class="o">=</span> <span class="n">lang</span><span class="o">.</span><span class="n">title_norm</span> <span class="k">if</span> <span class="n">lang</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="c1"># dict[ English ][ Noun ] = translations_node</span>
+            <span class="n">d</span><span class="p">[</span> <span class="n">slang</span> <span class="p">][</span> <span class="n">spos</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
+
+            <span class="c1"># English / Verb / Translations     -&gt;      English / Verb / Translations   - is better better better</span>
+            <span class="c1"># Verb / Translations               -&gt;      None    / Verb / Translations   - is better better</span>
+            <span class="c1"># English / Translations            -&gt;      English / None / Translations   - is better</span>
+            <span class="c1"># English / Synonyms / Translations -&gt;      None    / None / Translations   - is good</span>
+            <span class="c1"># Translations                      -&gt;      None    / None / Translations   - is good</span>
+
 
         <span class="c1"># 5. check:</span>
-        <span class="c1">#    dict[ English ][ Noun ][ Translations ]</span>
-        <span class="c1">#    dict[ English ][ Translations ]</span>
-        <span class="c1">#    dict[ Translations ]</span>
-        <span class="c1">#    dict[ English ][ Noun ]</span>
-        <span class="c1">#    dict[ Noun ]</span>
-        <span class="c1">#    dict[ English ]</span>
+        <span class="c1">#    dict[ English ][ Verb ][ Translations ]</span>
+        <span class="c1">#    dict[ English ][ None ][ Translations ]</span>
+        <span class="c1">#    dict[ None    ][ Verb ][ Translations ]</span>
+        <span class="c1">#    dict[ None    ][ None ][ Translations ]</span>
         <span class="c1">#    {{trans-top}}</span>
-        <span class="n">current_ts</span> <span class="o">=</span> <span class="n">node</span>
-        <span class="n">current_pos</span> <span class="o">=</span> <span class="n">current_ts</span><span class="o">.</span><span class="n">get_parent_pos_node</span><span class="p">()</span>
-        <span class="n">current_lang</span> <span class="o">=</span> <span class="n">current_pos</span><span class="o">.</span><span class="n">get_parent_lang_node</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ts_translations_node</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span> <span class="n">current_lang</span><span class="o">.</span><span class="n">title_norm</span> <span class="p">][</span> <span class="n">current_pos</span><span class="o">.</span><span class="n">title_norm</span> <span class="p">][</span> <span class="n">current_ts</span><span class="o">.</span><span class="n">title_norm</span> <span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">ts_translations_node</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">current_ts</span>   <span class="o">=</span> <span class="n">node</span>
+        <span class="n">current_pos</span>  <span class="o">=</span> <span class="n">current_ts</span><span class="o">.</span><span class="n">get_parent_pos_node</span><span class="p">()</span>
+        <span class="n">current_lang</span> <span class="o">=</span> <span class="n">current_pos</span><span class="o">.</span><span class="n">get_parent_lang_node</span><span class="p">()</span>   <span class="k">if</span> <span class="n">current_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>   <span class="k">else</span> <span class="kc">None</span>
 
-        <span class="c1"># 6. get all from =Trarnslations=. add to node =Translations=</span>
-        <span class="k">if</span> <span class="n">ts_translations_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cpos</span>  <span class="o">=</span>  <span class="n">current_pos</span><span class="o">.</span><span class="n">title_norm</span>  <span class="k">if</span> <span class="n">current_pos</span>  <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>   <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">clang</span> <span class="o">=</span>  <span class="n">current_lang</span><span class="o">.</span><span class="n">title_norm</span> <span class="k">if</span> <span class="n">current_lang</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>   <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1">#</span>
+        <span class="n">checks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">d</span><span class="p">[</span> <span class="n">clang</span> <span class="p">][</span> <span class="n">cpos</span> <span class="p">],</span>     <span class="c1"># ib betted betted betted</span>
+            <span class="n">d</span><span class="p">[</span> <span class="n">clang</span> <span class="p">][</span> <span class="kc">None</span> <span class="p">],</span>     <span class="c1"># ib betted betted</span>
+            <span class="n">d</span><span class="p">[</span> <span class="kc">None</span>  <span class="p">][</span> <span class="n">cpos</span> <span class="p">],</span>     <span class="c1"># ib betted</span>
+            <span class="n">d</span><span class="p">[</span> <span class="kc">None</span>  <span class="p">][</span> <span class="kc">None</span> <span class="p">],</span>     <span class="c1"># ib good</span>
+        <span class="p">]</span>
+
+        <span class="c1"># 6. get all from external page =Trarnslations=.</span>
+        <span class="c1">#    add to node =Translations=</span>
+        <span class="n">ts_translations_node</span><span class="p">:</span> <span class="n">Translations</span>
+        <span class="k">for</span> <span class="n">ts_translations_node</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span> <span class="kc">None</span><span class="p">,</span> <span class="n">checks</span> <span class="p">):</span>
             <span class="c1"># append lexemes</span>
             <span class="n">node</span><span class="o">.</span><span class="n">lexemes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">ts_translations_node</span><span class="o">.</span><span class="n">lexemes</span> <span class="p">)</span>
             <span class="c1"># update index</span>
@@ -667,7 +686,7 @@
                 <span class="n">node</span><span class="o">.</span><span class="n">lexemes_by_class</span><span class="p">[</span> <span class="nb">type</span><span class="p">(</span> <span class="n">lexem</span> <span class="p">)</span> <span class="p">][</span> <span class="n">lexem</span><span class="o">.</span><span class="n">name</span> <span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">lexem</span> <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="update_popularity_if_word"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.update_popularity_if_word">[docs]</a><span class="k">def</span> <span class="nf">update_popularity_if_word</span><span class="p">(</span> <span class="n">item</span> <span class="p">):</span>
+<div class="viewcode-block" id="update_popularity_of_word"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.update_popularity_of_word">[docs]</a><span class="k">def</span> <span class="nf">update_popularity_of_word</span><span class="p">(</span> <span class="n">item</span> <span class="p">):</span>
     <span class="n">item</span><span class="o">.</span><span class="n">PopularityOfWord</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">ExplainationExamplesRaw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -784,7 +803,7 @@
             <span class="n">txts_cleaned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">txt</span> <span class="p">)</span>
     <span class="n">txts</span> <span class="o">=</span> <span class="n">txts_cleaned</span>
 
-    <span class="c1"># 3. save</span>
+    <span class="c1"># 3. keep</span>
     <span class="n">page</span><span class="o">.</span><span class="n">text_by_raw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">raws</span><span class="p">,</span> <span class="n">txts</span> <span class="p">)</span> <span class="p">)</span>
 
     <span class="c1"># update explanation raw, txt</span>
@@ -842,8 +861,9 @@
         <span class="n">item</span><span class="o">.</span><span class="n">Type</span> <span class="o">=</span> <span class="n">PART_OF_SPEECH_SECTIONS_INDEX</span><span class="p">[</span> <span class="n">pos_node</span> <span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="p">]</span>
 
         <span class="c1"># explanation text</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">ExplainationRaw</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">sense_raw</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">ExplainationTxt</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">sense_txt</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">ExplainationRaw</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get_sense</span><span class="p">()</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">ExplainationTxt</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">text_by_raw</span><span class="p">[</span> <span class="n">item</span><span class="o">.</span><span class="n">ExplainationRaw</span> <span class="p">]</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">DescriptionTxt</span>  <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">sense_txt</span>
 
         <span class="c1"># Example</span>
         <span class="k">for</span> <span class="n">example_node</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">find_example_sections</span><span class="p">():</span>
@@ -859,7 +879,7 @@
         <span class="n">item</span><span class="o">.</span><span class="n">PrimaryKey</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">LanguageCode</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="n">LabelName</span> <span class="o">+</span> <span class="s2">&quot;§&quot;</span> <span class="o">+</span> <span class="n">label_type</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span> <span class="n">item</span><span class="o">.</span><span class="n">IndexinPage</span> <span class="p">)</span>
 
         <span class="c1"># PopularityOfWord </span>
-        <span class="n">update_popularity_if_word</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span>
+        <span class="n">update_popularity_of_word</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span>
         <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">items</span></div>

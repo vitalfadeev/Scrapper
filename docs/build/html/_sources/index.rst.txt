@@ -6,6 +6,9 @@
 Scrapper
 ====================================
 
+.. image:: ./_static/img/scrapper_main_window.png
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
