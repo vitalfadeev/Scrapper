@@ -466,6 +466,25 @@ RelatedTerms = {
     }
 }
 
+DerivedTerms = {
+    in_all_parent_sections: {  # noun / etymology / english
+        in_section: {
+            'derived terms': {
+                in_template: {
+                    ('der', 'der1', 'der2', 'der3', 'der4'): {
+                        with_lang: {
+                            'en': {
+                                in_all_positional_args_except_lang: {}
+                            },
+                        },
+                    },
+                },
+                in_link: {},
+            }
+        },
+    }
+}
+
 Coordinate = {
     in_all_parent_sections: {  # noun / etymology / english
         in_section: {

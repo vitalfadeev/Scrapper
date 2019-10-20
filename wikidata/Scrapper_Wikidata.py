@@ -5,12 +5,13 @@ import re
 import bz2
 import sqlite3
 import logging
+import logging.config
 import multiprocessing
 import ijson
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
 from Scrapper_Helpers import filterWodsProblems, clean_surrogates, pprint, create_storage
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
-from Scrapper_Downloader import download
+import Scrapper_Downloader
 
 #
 DB_NAME      = "wikidata.db"
@@ -21,6 +22,9 @@ log          = logging.getLogger(__name__)
 # init DB
 DBExecute( DBWWikidata,  "PRAGMA journal_mode = OFF" )
 DBExecuteScript( DBWWikidata, WikidataItem.Meta.DB_INIT )
+
+if os.path.isfile( os.path.join( 'wikidata', 'logging.ini' ) ):
+    logging.config.fileConfig( os.path.join( 'wikidata', 'logging.ini' ) )
 
 
 # WikiDict dump helpers
@@ -338,18 +342,14 @@ def download(lang="en", use_cached=True):
     Out:
         local_file - local cached file name
     """
-    # remove oold localfile
-    old_local_file = os.path.join(CACHE_FOLDER, "wikidata-latest-all.json.bz2")
-    if os.path.exists(old_local_file):
-        os.remove(old_local_file)
-
     # remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2'
     # latest-all.json.bz2 - is not stable link. sometime locate to absent file. 404 - error
-    #remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/20190701/wikidata-20190701-all.json.bz2.not'
-    remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/20190812/wikidata-20190812-all.json.bz2'
+    # remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/20190701/wikidata-20190701-all.json.bz2.not'
+    # remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/20190812/wikidata-20190812-all.json.bz2'
+    remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2'
 
     create_storage(CACHE_FOLDER)
-    local_file = os.path.join(CACHE_FOLDER, "wikidata-20190701-all.json.bz2")
+    local_file = os.path.join(CACHE_FOLDER, "wikidata-latest-all.json.bz2")
 
     # check cache
     if use_cached and os.path.exists(local_file):
@@ -357,7 +357,7 @@ def download(lang="en", use_cached=True):
 
     # download
     log.info("Downloading (%s)....", remote_file)
-    if download( remote_file, local_file ):
+    if Scrapper_Downloader.download( remote_file, local_file ):
         log.info("Downloaded... [ OK ]")
     else:
         log.error("Downloading... [ FAIL ]")
@@ -389,7 +389,7 @@ def check_one(id_, lang):
 
     # delete old record
     if os.path.isfile( DB_NAME ):
-        DBExecute( DBWWikidata, "DELETE FROM {} WHERE CodeInWiki = ".format(WikidataItem.Meta.DB_TABLE_NAME), id_)
+        DBExecute( DBWWikidata, "DELETE FROM wikidata WHERE CodeInWiki = ?", (id_, ))
 
     # process
     process_web_record(data, lang, id_)
@@ -397,7 +397,7 @@ def check_one(id_, lang):
     #log.info("All done. [ OK ]")
 
 
-def run(lang="en", from_point=None, workers=1):
+def scrap(lang="en", from_point=None, workers=1):
     log.info("downloading...")
     local_file = download()
     log.info("downloaded.")
@@ -422,4 +422,4 @@ if __name__ == "__main__":
     #check_one("Q147", "en")
     #check_one("Q729", "en")
     #check_one("Q4847309", "en")
-    run("en", from_point="Q6393585")
+    scrap("en", from_point="Q6393585")

@@ -53,6 +53,7 @@ class WikictionaryItem:
                     Otherwise               TEXT NULL,
                     AlternativeFormsOther   TEXT NULL,
                     RelatedTerms            TEXT NULL,
+                    DerivedTerms            TEXT NULL,
                     Coordinate              TEXT NULL,
                     Translation_EN          TEXT NULL,
                     Translation_FR          TEXT NULL,
@@ -119,6 +120,7 @@ class WikictionaryItem:
         self.Otherwise                  = []
         self.AlternativeFormsOther      = []
         self.RelatedTerms               = []
+        self.DerivedTerms               = []
         self.Coordinate                 = []
         self.Translation_EN             = []
         self.Translation_FR             = []

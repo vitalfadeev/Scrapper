@@ -23,8 +23,8 @@ log             = logging.getLogger(__name__)
 english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
 ASCII           = set(string.printable)
 
-if os.path.isfile('logging.ini'):
-    logging.config.fileConfig('logging.ini')
+if os.path.isfile( os.path.join( 'wiktionary', 'logging.ini' ) ):
+    logging.config.fileConfig( os.path.join( 'wiktionary', 'logging.ini' ) )
 
 
 # init DB

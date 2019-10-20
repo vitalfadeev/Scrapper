@@ -12,8 +12,14 @@ class WikidataItem:
                 LanguageCode               CHAR(2),
                 CodeInWiki                 VARCHAR(255),
                 Description                TEXT NULL,
-                AlsoKnownAs                TEXT
+                AlsoKnownAs                TEXT,
                 WikipediaENURL             VARCHAR(255),
+                WikipediaFRURL             VARCHAR(255),
+                WikipediaDEURL             VARCHAR(255),
+                WikipediaITURL             VARCHAR(255),
+                WikipediaESURL             VARCHAR(255),
+                WikipediaRUURL             VARCHAR(255),
+                WikipediaPTURL             VARCHAR(255),
                 EncyclopediaBritannicaEN   VARCHAR(255),
                 EncyclopediaUniversalisFR  VARCHAR(255),
                 DescriptionUrl             VARCHAR(255),
@@ -31,7 +37,7 @@ class WikidataItem:
                 EncyclopediaGreatRussianRU VARCHAR(255)
             );
             
-            CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktidata (LanguageCode);
+            -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktidata (LanguageCode);
         """
 
     def __init__( self ):
@@ -44,6 +50,12 @@ class WikidataItem:
         self.AlsoKnownAs = [ ]
         self.SelfUrl = ""
         self.WikipediaENURL = ""
+        self.WikipediaFRURL = ""
+        self.WikipediaDEURL = ""
+        self.WikipediaITURL = ""
+        self.WikipediaESURL = ""
+        self.WikipediaRUURL = ""
+        self.WikipediaPTURL = ""
         self.EncyclopediaBritannicaEN = ""
         self.EncyclopediaUniversalisFR = ""
         self.DescriptionUrl = ""
