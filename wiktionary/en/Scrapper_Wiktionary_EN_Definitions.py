@@ -688,7 +688,7 @@ Translation_PT = {
 }
 
 Labels = {
-    (in_self, in_all_parent_sections): {  # noun / etymology / english
+    (in_self, in_examples): {  # noun / etymology / english
         in_template: {
             ('lb', 'lbl', 'label'): {
                 with_lang: {
