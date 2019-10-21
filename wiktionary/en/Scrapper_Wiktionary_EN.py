@@ -887,8 +887,8 @@ def add_translations_from_trans_see( page, toc: Root ):
 
         # 6. get all from external page =Trarnslations=.
         #    add to node =Translations=
-        ts_translations_node: Translations
-        for ts_translations_node in filter( lambda x: isinstance( x, Translations ), checks ):
+        ts_translations_node: Section
+        for ts_translations_node in filter( lambda x: isinstance( x, Section ), checks ):
             # append lexemes
             node.lexemes.extend( ts_translations_node.lexemes )
             # update index
