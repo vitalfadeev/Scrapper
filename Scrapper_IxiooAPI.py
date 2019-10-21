@@ -32,6 +32,25 @@ DOMAIN = 'http://lviv.ixioo.com:8030'
 @lru_cache( maxsize=32 )
 @retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
 def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences: tuple) -> list:
+    """
+    Send explanation sentences list and translation sentences list to the PKS_Matcher and return pairs.
+
+    Each pair is [explanations, translation].
+
+    if matched: [explanations, translation], it not matched: [explanations, None]
+
+    Args:
+        explanations (tuple):           Explanation sentences
+        translation_sentences (tuple):  Tranlation sentences
+
+    Returns:
+        (list) Pairs: [ [Explanation sentences, Tranlation sentences], [...] ]. If matched: [e, s], if not matched: [e, None]
+
+    ::
+
+        matches = Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS( tuple(explanation_senses), tuple(section_senses) )
+
+    """
     url = DOMAIN + '/Match_List_PKS_With_Lists_Of_PKS'
     data = {
         'explanations': explanations,
