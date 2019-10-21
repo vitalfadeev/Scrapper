@@ -1,3 +1,6 @@
 from wikidata import Scrapper_Wikidata
 
-Scrapper_Wikidata.scrap('en')
+
+if __name__ == "__main__":
+    Scrapper_Wikidata.scrap('en')
+

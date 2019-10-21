@@ -181,9 +181,9 @@ class Section(list):
         # print node
         # short. title only
         if show_me is not None and self is show_me:
-            print( "  " * level + self.index_in_toc + ' ' + repr(self) + '  <---  i here' )
+            print( "  " * level + repr(self) + '  <---  i here' )
         else:
-            print( "  " * level + self.index_in_toc + ' ' + repr(self) )
+            print( "  " * level + repr(self) )
 
         # recursive
         for child in self:

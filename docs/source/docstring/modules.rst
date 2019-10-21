@@ -10,4 +10,5 @@ Scrapper
    Scrapper_IxiooAPI
    test
    test_one
+   test_wikidata
    wiktionary

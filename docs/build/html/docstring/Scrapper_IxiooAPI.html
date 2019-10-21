@@ -92,6 +92,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Scrapper_IxiooAPI module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_one.html">test_one module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_wikidata.html">test_wikidata module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wiktionary.html">wiktionary package</a></li>
 </ul>
 </li>
@@ -146,7 +147,27 @@
 <dl class="attribute">
 <dt id="Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS">
 <code class="sig-prename descclassname">Scrapper_IxiooAPI.</code><code class="sig-name descname">Match_List_PKS_With_Lists_Of_PKS</code><a class="reference internal" href="../_modules/Scrapper_IxiooAPI.html#Match_List_PKS_With_Lists_Of_PKS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_IxiooAPI.Match_List_PKS_With_Lists_Of_PKS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send explanation sentences list and translation sentences list to the PKS_Matcher and return pairs.</p>
+<p>Each pair is [explanations, translation].</p>
+<p>if matched: [explanations, translation], it not matched: [explanations, None]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>explanations</strong> (<em>tuple</em>) – Explanation sentences</p></li>
+<li><p><strong>translation_sentences</strong> (<em>tuple</em>) – Tranlation sentences</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[ [Explanation sentences, Tranlation sentences], […] ]. If matched: [e, s], if not matched: [e, None]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(list) Pairs</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">matches</span> <span class="o">=</span> <span class="n">Scrapper_IxiooAPI</span><span class="o">.</span><span class="n">Match_List_PKS_With_Lists_Of_PKS</span><span class="p">(</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">explanation_senses</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">section_senses</span><span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="data">
 <dt id="Scrapper_IxiooAPI.log">

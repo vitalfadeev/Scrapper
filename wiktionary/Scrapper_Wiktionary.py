@@ -93,10 +93,36 @@ class Page:
 
 
 def isEnglish( s ):
+    """
+    Return True if `s` contains only English symbols.
+
+    It uses for filter non-English pages in 'en' Wiktionary.
+
+    Args:
+        s (str):    String for test
+
+    Returns:
+        (bool)
+            - True: `s` is English
+            - False `s` is not English
+
+    """
     return s.translate( english_table ).isalnum()
 
 
 def is_ascii( s ):
+    """
+    Return True if `s` contains only ASCII symbols.
+
+    Args:
+        s (str):    String for test
+
+    Returns:
+        (bool)
+            - True: `s` is ASCII
+            - False `s` is not ASCII
+
+    """
     for c in s:
         if c not in ASCII:
             return False
@@ -106,10 +132,22 @@ def is_ascii( s ):
 
 def filterPageProblems(page: Page):
     """
-    Filter page. If not correct retirn None
+    Filter page. If not correct return None.
+
+    Write record in log.
+
+    Rules:
+
+    - skip None
+    - skip special namespaces. keep terms only
+    - skip #REDIRECT
+    - skip words contains :
+    - skip more than 3 spaces
+    - skip #
+    - skip non ASCII
 
     Args:
-        page:
+        page (Page):    Page instance
 
     Returns:
         Page | None
@@ -195,7 +233,7 @@ class Dump:
 
         ::
 
-            Dump( 'en' ).download()
+            Dump('en').download()
 
         """
         url = self.url

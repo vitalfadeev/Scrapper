@@ -312,9 +312,9 @@
         <span class="c1"># print node</span>
         <span class="c1"># short. title only</span>
         <span class="k">if</span> <span class="n">show_me</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">show_me</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;  &quot;</span> <span class="o">*</span> <span class="n">level</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_in_toc</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  &lt;---  i here&#39;</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;  &quot;</span> <span class="o">*</span> <span class="n">level</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  &lt;---  i here&#39;</span> <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;  &quot;</span> <span class="o">*</span> <span class="n">level</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_in_toc</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;  &quot;</span> <span class="o">*</span> <span class="n">level</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">)</span>
 
         <span class="c1"># recursive</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -322,7 +322,7 @@
 
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_in_toc</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span></div>
 
 
 <div class="viewcode-block" id="Root"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root">[docs]</a><span class="k">class</span> <span class="nc">Root</span><span class="p">(</span><span class="n">Section</span><span class="p">):</span>

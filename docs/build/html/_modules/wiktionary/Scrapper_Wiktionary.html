@@ -137,6 +137,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="kn">import</span> <span class="nn">sqlite3</span>
 <span class="kn">import</span> <span class="nn">bz2</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
@@ -152,6 +153,9 @@
 <span class="n">log</span>             <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">english_table</span>   <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span> <span class="p">)</span> <span class="p">)</span>
 <span class="n">ASCII</span>           <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">printable</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="s1">&#39;wiktionary&#39;</span><span class="p">,</span> <span class="s1">&#39;logging.ini&#39;</span> <span class="p">)</span> <span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="s1">&#39;wiktionary&#39;</span><span class="p">,</span> <span class="s1">&#39;logging.ini&#39;</span> <span class="p">)</span> <span class="p">)</span>
 
 
 <span class="c1"># init DB</span>
@@ -209,8 +213,6 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            (list)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;to_lexems()&quot;</span><span class="p">)</span>
-
         <span class="c1"># parse</span>
         <span class="n">lexems</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_WikitextParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
@@ -222,10 +224,36 @@
 
 
 <div class="viewcode-block" id="isEnglish"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.isEnglish">[docs]</a><span class="k">def</span> <span class="nf">isEnglish</span><span class="p">(</span> <span class="n">s</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True if `s` contains only English symbols.</span>
+
+<span class="sd">    It uses for filter non-English pages in &#39;en&#39; Wiktionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str):    String for test</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool)</span>
+<span class="sd">            - True: `s` is English</span>
+<span class="sd">            - False `s` is not English</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span> <span class="n">english_table</span> <span class="p">)</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="is_ascii"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.is_ascii">[docs]</a><span class="k">def</span> <span class="nf">is_ascii</span><span class="p">(</span> <span class="n">s</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True if `s` contains only ASCII symbols.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str):    String for test</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool)</span>
+<span class="sd">            - True: `s` is ASCII</span>
+<span class="sd">            - False `s` is not ASCII</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ASCII</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -235,15 +263,26 @@
 
 <div class="viewcode-block" id="filterPageProblems"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.filterPageProblems">[docs]</a><span class="k">def</span> <span class="nf">filterPageProblems</span><span class="p">(</span><span class="n">page</span><span class="p">:</span> <span class="n">Page</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Filter page. If not correct retirn None</span>
+<span class="sd">    Filter page. If not correct return None.</span>
+
+<span class="sd">    Write record in log.</span>
+
+<span class="sd">    Rules:</span>
+
+<span class="sd">    - skip None</span>
+<span class="sd">    - skip special namespaces. keep terms only</span>
+<span class="sd">    - skip #REDIRECT</span>
+<span class="sd">    - skip words contains :</span>
+<span class="sd">    - skip more than 3 spaces</span>
+<span class="sd">    - skip #</span>
+<span class="sd">    - skip non ASCII</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        page:</span>
+<span class="sd">        page (Page):    Page instance</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Page | None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#log.warning( &quot;(%s, %s)&quot;, page.ns, page )</span>
 
     <span class="c1"># skip None</span>
     <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -252,7 +291,7 @@
 
     <span class="c1"># skip special namespaces. keep terms only</span>
     <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: ns:</span><span class="si">%s</span><span class="s2"> != 0: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  filter: </span><span class="si">%s</span><span class="s2">: ns:</span><span class="si">%s</span><span class="s2"> != 0: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># skip #REDIRECT</span>
@@ -263,32 +302,32 @@
 
     <span class="c1"># skip single symbols</span>
     <span class="c1"># if len(page.label) == 1:</span>
-    <span class="c1">#     log.warning(&quot;    filter: %s: len() == 1: [SKIP]&quot;, page)</span>
+    <span class="c1">#     log.warning(&quot;  filter: %s: len() == 1: [SKIP]&quot;, page)</span>
     <span class="c1">#     return None</span>
 
     <span class="c1"># skip words contains more than 3 symbol of two dots (ABBR?)</span>
     <span class="c1"># if page.label.count(&#39;.&#39;) &gt; 3:</span>
-    <span class="c1">#    log.warn(&quot;    filter: %s: count(&#39;.&#39;) &gt; 3: [SKIP]&quot;, page.label)</span>
+    <span class="c1">#    log.warn(&quot;  filter: %s: count(&#39;.&#39;) &gt; 3: [SKIP]&quot;, page.label)</span>
     <span class="c1">#    return None</span>
 
     <span class="c1"># skip words contains :</span>
     <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: find(&#39;:&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  filter: </span><span class="si">%s</span><span class="s2">: find(&#39;:&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># skip more than 3 spaces</span>
     <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: count(&#39; &#39;) &gt; 3: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  filter: </span><span class="si">%s</span><span class="s2">: count(&#39; &#39;) &gt; 3: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># skip #</span>
     <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: find(&#39;#&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  filter: </span><span class="si">%s</span><span class="s2">: find(&#39;#&#39;): [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># skip non ASCII</span>
     <span class="k">if</span> <span class="n">is_ascii</span><span class="p">(</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span> <span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    filter: </span><span class="si">%s</span><span class="s2">: non ASCII: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  filter: </span><span class="si">%s</span><span class="s2">: non ASCII: [SKIP]&quot;</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">page</span></div>
@@ -325,7 +364,7 @@
 
 <span class="sd">        ::</span>
 
-<span class="sd">            Dump( &#39;en&#39; ).download()</span>
+<span class="sd">            Dump(&#39;en&#39;).download()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span>
@@ -460,7 +499,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">scrap_one</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span> <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span></div>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;  </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="scrap"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary.scrap">[docs]</a><span class="k">def</span> <span class="nf">scrap</span><span class="p">(</span> <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="n">workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">):</span>

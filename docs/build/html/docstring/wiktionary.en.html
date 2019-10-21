@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_one.html">test_one module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_wikidata.html">test_wikidata module</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="wiktionary.html">wiktionary package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="wiktionary.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">wiktionary.en package</a></li>
@@ -100,7 +101,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="wiktionary.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary">wiktionary.Scrapper_Wiktionary module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_Checkers">wiktionary.Scrapper_Wiktionary_Checkers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wiktionary.html#wiktionary-scrapper-wiktionary-checkers-module">wiktionary.Scrapper_Wiktionary_Checkers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_Item">wiktionary.Scrapper_Wiktionary_Item module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_Matcher">wiktionary.Scrapper_Wiktionary_Matcher module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wiktionary.html#module-wiktionary.Scrapper_Wiktionary_RemoteAPI">wiktionary.Scrapper_Wiktionary_RemoteAPI module</a></li>
@@ -170,11 +171,58 @@
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.add_explanations">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">add_explanations</code><span class="sig-paren">(</span><em class="sig-param">toc: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#add_explanations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.add_explanations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>It :</p>
+<ul class="simple">
+<li><p>get Table of contents tree</p></li>
+<li><p>then find explanations in each Part-of-speech section</p></li>
+<li><p>then from extracted explanations build explanations tree</p></li>
+<li><p>then add explanations tree into source Table of contents tree</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>toc</strong> (<a class="reference internal" href="#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root" title="wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root"><em>Root</em></a>) – Table of contents (toc) root</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>It modified source tree <cite>toc</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.add_translations_from_trans_see">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">add_translations_from_trans_see</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">toc: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#add_translations_from_trans_see"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.add_translations_from_trans_see" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find links to external pages, and fetch page contents, and add translations.</p>
+<p>It make calls to Wiktionary API for fetch page contents. Then contents parsed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">find</span> <span class="nb">all</span> <span class="p">{{</span><span class="n">trans</span><span class="o">-</span><span class="n">see</span><span class="o">|...</span><span class="p">}}</span>
+<span class="mf">2.</span> <span class="n">request</span> <span class="n">page</span> <span class="n">via</span> <span class="n">wiktionary</span> <span class="n">API</span>
+<span class="mf">3.</span> <span class="n">parse</span> <span class="n">page</span> <span class="o">-&gt;</span> <span class="n">lexemes</span> <span class="o">+</span> <span class="n">toc</span>
+<span class="mf">4.</span> <span class="n">make</span> <span class="n">search</span> <span class="n">index</span><span class="p">:</span>  <span class="nb">dict</span><span class="p">[</span> <span class="n">English</span> <span class="p">][</span> <span class="n">Noun</span> <span class="p">]</span> <span class="o">=</span> <span class="n">Translations</span>
+<span class="mf">5.</span> <span class="n">check</span>
+        <span class="o">-</span> <span class="n">English</span> <span class="o">/</span> <span class="n">Verb</span> <span class="o">/</span> <span class="n">Translations</span>     <span class="o">-&gt;</span>      <span class="n">English</span> <span class="o">/</span> <span class="n">Verb</span> <span class="o">/</span> <span class="n">Translations</span>   <span class="o">-</span> <span class="ow">is</span> <span class="n">better</span> <span class="n">better</span> <span class="n">better</span>
+        <span class="o">-</span> <span class="n">Verb</span> <span class="o">/</span> <span class="n">Translations</span>               <span class="o">-&gt;</span>      <span class="kc">None</span>    <span class="o">/</span> <span class="n">Verb</span> <span class="o">/</span> <span class="n">Translations</span>   <span class="o">-</span> <span class="ow">is</span> <span class="n">better</span> <span class="n">better</span>
+        <span class="o">-</span> <span class="n">English</span> <span class="o">/</span> <span class="n">Translations</span>            <span class="o">-&gt;</span>      <span class="n">English</span> <span class="o">/</span> <span class="kc">None</span> <span class="o">/</span> <span class="n">Translations</span>   <span class="o">-</span> <span class="ow">is</span> <span class="n">better</span>
+        <span class="o">-</span> <span class="n">English</span> <span class="o">/</span> <span class="n">Synonyms</span> <span class="o">/</span> <span class="n">Translations</span> <span class="o">-&gt;</span>      <span class="kc">None</span>    <span class="o">/</span> <span class="kc">None</span> <span class="o">/</span> <span class="n">Translations</span>   <span class="o">-</span> <span class="ow">is</span> <span class="n">good</span>
+        <span class="o">-</span> <span class="n">Translations</span>                      <span class="o">-&gt;</span>      <span class="kc">None</span>    <span class="o">/</span> <span class="kc">None</span> <span class="o">/</span> <span class="n">Translations</span>   <span class="o">-</span> <span class="ow">is</span> <span class="n">good</span>
+<span class="mf">6.</span> <span class="n">get</span> <span class="n">trarnslation</span> <span class="n">lexemes</span><span class="o">.</span> <span class="n">add</span> <span class="n">to</span> <span class="n">node</span> <span class="o">=</span><span class="n">Translations</span><span class="o">=</span>
+<span class="mf">7.</span> <span class="n">save</span> <span class="n">fetch</span> <span class="n">page</span> <span class="n">titles</span> <span class="k">for</span> <span class="n">prevent</span> <span class="n">recursion</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page</strong> (<a class="reference internal" href="wiktionary.html#wiktionary.Scrapper_Wiktionary.Page" title="wiktionary.Scrapper_Wiktionary.Page"><em>Page</em></a>) – Page instance</p></li>
+<li><p><strong>toc</strong> – TOC root</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing to return. It change TOC tree.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="wiktionary.en.Scrapper_Wiktionary_EN.check_structure">
+<code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">check_structure</code><span class="sig-paren">(</span><em class="sig-param">toc: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#check_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.check_structure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -185,32 +233,270 @@
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.extract_raw_text">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">extract_raw_text</code><span class="sig-paren">(</span><em class="sig-param">toc: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#extract_raw_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.extract_raw_text" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>It for converting extlanations from ‘# An animal of the family [[Felidae]]:’ to ‘An animal of the family Felidae:’</p>
+<p>It scan all lexemes for:</p>
+<ul class="simple">
+<li><p>explanation, like the:</p></li>
+<li><p>templates: {{en-noun}}, {{en-adj}},…</p></li>
+<li><p>translations: {{trans-see}}, {{trans-top}}</p></li>
+<li><p>senses: {{sense}}, {{ws sense}}</p></li>
+</ul>
+<p>It collect all values raw-text for send to Wiktionary API, for get clean human readable text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>toc</strong> (<a class="reference internal" href="#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root" title="wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root"><em>Root</em></a>) – TOC root.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(list)  raw-text strings</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.get_label_type">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">get_label_type</code><span class="sig-paren">(</span><em class="sig-param">expl</em>, <em class="sig-param">item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#get_label_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.get_label_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return LabelType for item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expl</strong> (<a class="reference internal" href="#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Explanation" title="wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Explanation"><em>Explanation</em></a>) – Explanation</p></li>
+<li><p><strong>item</strong> (<a class="reference internal" href="wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem" title="wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem"><em>WikictionaryItem</em></a>) – WikictionaryItem</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)   LabelType</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LabelType</span> <span class="k">for</span> <span class="s1">&#39;cat&#39;</span> <span class="k">for</span> <span class="n">explanation</span>
+    <span class="c1">## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="ow">is</span><span class="p">:</span>
+    <span class="s2">&quot;Noun_DEFDATE_Subspecies_Silvestris_Feline&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.get_leaf_explanation_nodes">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">get_leaf_explanation_nodes</code><span class="sig-paren">(</span><em class="sig-param">root: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Section</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#get_leaf_explanation_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.get_leaf_explanation_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return all leaf explanations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Section" title="wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Section"><em>Section</em></a>) – Explanations tree root</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(list)  All leaf explanatins</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># for</span>
+  <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># An animal of the family [[Felidae]]:</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#: {{syn|en|felid}}</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span> <span class="c1">## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{RQ:WBsnt IvryGt|II}}</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span> <span class="c1">## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{quote-book|en|year=1977|author=Peter Hathaway Capstick|title=Death in the Long Grass: A Big Game Hunter&#39;s Adventures in the African Bush|publisher=St. Martin&#39;s Press|page=44|passage=I grabbed it and ran over to the lion from behind, the &#39;&#39;&#39;cat&#39;&#39;&#39; still chewing thoughtfully on Silent&#39;s arm.}}</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">2.</span> <span class="c1">##* &#39;&#39;&#39;1985&#39;&#39;&#39; January, George Laycock, &quot;Our American Lion&quot;, in Boy Scouts of America, &#39;&#39;Boy&#39;s Life&#39;&#39;, 28.</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">2.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: If you should someday round a corner on the hiking trail and come face to face with a mountain lion, you would probably never forget the mighty &#39;&#39;&#39;cat&#39;&#39;&#39;.</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">3.</span> <span class="c1">##* {{quote-book|en|year=2014|author=Dale Mayer|title=Rare Find. A Psychic Visions Novel|publisher=Valley Publishing|passage=She felt privileged to be here, living the experience inside the majestic &#39;&#39;&#39;cat&#39;&#39;&#39; [i.e. a tiger]; privileged to be part of their bond, even for only a few hours.}}</span>
+
+<span class="c1"># leafs is:</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span> <span class="c1">## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span> <span class="c1">## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.make_explanations_tree">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">make_explanations_tree</code><span class="sig-paren">(</span><em class="sig-param">lexemes: list</em><span class="sig-paren">)</span> &#x2192; wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.ExplanationsRoot<a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#make_explanations_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.make_explanations_tree" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>It take lexems like the:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># An animal of the family [[Felidae]]:</span>
+<span class="c1">#* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+<span class="c1">#: {{syn|en|felid}}</span>
+<span class="c1">## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="c1">##* {{RQ:WBsnt IvryGt|II}}</span>
+<span class="c1">##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+<span class="c1">##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+<span class="c1">## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+</pre></div>
+</div>
+<p>and build tree like the:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># An animal of the family [[Felidae]]:</span>
+  <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+  <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#: {{syn|en|felid}}</span>
+  <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span> <span class="c1">## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{RQ:WBsnt IvryGt|II}}</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+    <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+  <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span> <span class="c1">## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+</pre></div>
+</div>
+<p>Tree uses for detect child/parent explanations, child examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lexemes</strong> (<em>list</em>) – explanation lexems. It all starts from ‘#’, ‘*’, ‘:’</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(Root)  New table of contents (TOC)  root</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.make_lists_same_length">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">make_lists_same_length</code><span class="sig-paren">(</span><em class="sig-param">a: list</em>, <em class="sig-param">b: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#make_lists_same_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.make_lists_same_length" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Make two lists same length. Add to smaller list items with None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>list</em>) – list 1</p></li>
+<li><p><strong>b</strong> (<em>list</em>) – lsit 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing to return. it modifies source lists.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.make_table_of_contents">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">make_table_of_contents</code><span class="sig-paren">(</span><em class="sig-param">lexemes: list</em><span class="sig-paren">)</span> &#x2192; wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root<a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#make_table_of_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.make_table_of_contents" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create Table of contents for given <cite>lexemes</cite>.</p>
+<p>it search &lt;Header&gt; tokens. In raw-text it ‘=English=’, ‘===Noun===’. Then detect level of header. Then build tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lexemes</strong> (<em>list</em>) – List of lexemes. Lexemes going from raw-text parser (module Scrapper_Wiktionary_WikitextParser)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(Root)  Tree root.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># for &#39;cat&#39;</span>
+<span class="n">toc</span> <span class="o">=</span> <span class="n">make_table_of_contents</span><span class="p">(</span> <span class="n">lexems</span> <span class="p">)</span>
+
+<span class="c1"># result is:</span>
+<span class="n">toc</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+
+<span class="c1"># result:</span>
+  <span class="mf">1.</span> <span class="n">English</span>
+    <span class="mf">1.1</span><span class="o">.</span> <span class="n">Pronunciation</span>
+    <span class="mf">1.2</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">1</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span> <span class="n">Synonyms</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span> <span class="n">Hyponyms</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span> <span class="n">Derived</span> <span class="n">terms</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.4</span><span class="o">.</span> <span class="n">Translations</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># An animal of the family [[Felidae]]:</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#: {{syn|en|felid}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span> <span class="c1">## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{RQ:WBsnt IvryGt|II}}</span>
+                <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span> <span class="c1">## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{quote-book|en|year=1977|author=Peter Hathaway Capstick|title=Death in the Long Grass: A Big Game Hunter&#39;s Adventures in the African Bush|publisher=St. Martin&#39;s Press|page=44|passage=I grabbed it and ran over to the lion from behind, the &#39;&#39;&#39;cat&#39;&#39;&#39; still chewing thoughtfully on Silent&#39;s arm.}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">2.</span> <span class="c1">##* &#39;&#39;&#39;1985&#39;&#39;&#39; January, George Laycock, &quot;Our American Lion&quot;, in Boy Scouts of America, &#39;&#39;Boy&#39;s Life&#39;&#39;, 28.</span>
+                <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">2.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: If you should someday round a corner on the hiking trail and come face to face with a mountain lion, you would probably never forget the mighty &#39;&#39;&#39;cat&#39;&#39;&#39;.</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">3.</span> <span class="c1">##* {{quote-book|en|year=2014|author=Dale Mayer|title=Rare Find. A Psychic Visions Novel|publisher=Valley Publishing|passage=She felt privileged to be here, living the experience inside the majestic &#39;&#39;&#39;cat&#39;&#39;&#39; [i.e. a tiger]; privileged to be part of their bond, even for only a few hours.}}</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.</span> <span class="c1"># A person:</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.1</span><span class="o">.</span> <span class="c1">## {{lb|en|offensive}} A spiteful or angry [[woman]]. {{defdate|from earlier 13&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.1</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* &#39;&#39;&#39;1835&#39;&#39;&#39; September, anonymous, &quot;The Pigs&quot;, in &#39;&#39;The New-England Magazine&#39;&#39;, Vol. 9, 156.</span>
+                <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.1</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: But, ere one rapid moon its tale has told, / He finds his prize — a &#39;&#39;&#39;cat&#39;&#39;&#39; — a slut — a scold.</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.1</span><span class="o">.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##: {{syn|en|bitch}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.2</span><span class="o">.</span> <span class="c1">## An enthusiast or player of [[jazz]].</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.2</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{quote-song|en|year=2008|author={{w|Nick Cave and the Bad Seeds}}|title=Hold on to Yourself|passage=I turn on the radio / There&#39;s some &#39;&#39;&#39;cat&#39;&#39;&#39; on the saxophone / Laying down a litany of excuses}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span> <span class="c1">## {{lb|en|slang}} A person (usually male).</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{quote-song|en|title=Starman|album=The Rise and Fall of Ziggy Stardust and the Spiders from Mars|artist=David Bowie|year=1972|passage=Didn&#39;t know what time it was the lights were low / I leaned back on my radio / Some &#39;&#39;&#39;cat&#39;&#39;&#39; was layin&#39; down some rock&#39;n&#39;roll &#39;lotta soul, he said}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span><span class="mf">2.</span> <span class="c1">##* &#39;&#39;&#39;1973&#39;&#39;&#39; December, &quot;Books Noted&quot;, discussing &#39;&#39;A Dialogue&#39;&#39; (by James Baldwin and Nikki Giovanni), in &#39;&#39;Black World&#39;&#39;, Johnson Publishing Company, 77.</span>
+                <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span><span class="mf">2.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##*: BALDWIN: That&#39;s what we were talking about before. And by the way, you did not have to tell me that you think your father is a groovy &#39;&#39;&#39;cat&#39;&#39;&#39;; I knew that.</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span><span class="mf">3.</span> <span class="c1">##* {{quote-song|en|artist={{w|Shaquille O&#39;Neal}}|title=Fiend|year=1998|album=Respect|passage=What fags are true I know what Mack&#39;s might do&lt;br/&gt;I&#39;m quite familiar with &#39;&#39;&#39;cats&#39;&#39;&#39; like you&lt;br&gt;Provoke to get me give me a good reason to smoke me&lt;br&gt;Try to break me but never wrote me)}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span><span class="mf">4.</span> <span class="c1">##* {{quote-song|en|year=2006|lyricist=Masta Ace|title=Sick of it all|album=Pariah|passage=I am sick of rappers claiming they hot when they really not&lt;br/&gt;I am sick of rappers bragging about shit they ain’t really got&lt;br/&gt;These &#39;&#39;&#39;cats&#39;&#39;&#39; stay rapping about cars they don’t own&lt;br/&gt;I am sick of rappers bragging about models they don’t bone.[…]&lt;br/&gt;And I am sick of all these &#39;&#39;&#39;cats&#39;&#39;&#39; with no talent&lt;br/&gt;That never lived in the hood but yet their lyrics be so violent.}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.3</span><span class="o">.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">##: {{syn|en|bloke|chap|cove|dude|fellow|fella|guy}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.4</span><span class="o">.</span> <span class="c1">## {{lb|en|slang}} A [[prostitute]]. {{defdate|from at least early 15&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+              <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.4</span><span class="o">.</span><span class="mf">1.</span> <span class="c1">##* {{quote-book|en|year=1999|author=Carl P. Eby|title=Hemingway&#39;s Fetishism. Psychoanalysis and the Mirror of Manhood|publisher=State University of New York Press|page=124|passage=&quot;Tell me. Willie said there was a &#39;&#39;&#39;cat&#39;&#39;&#39; in love with you. That isn&#39;t true, is it?&quot; &quot;Yes. It&#39;s true,&quot; Hudson corrects her, letting her think that by &quot;cat&quot; he means prostitute.}}</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">3.</span> <span class="c1"># {{lb|en|nautical}} A strong tackle used to hoist an anchor to the [[cathead]] of a ship.</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">3.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=2009|author=Olof A. Eriksen|title=Constitution - All Sails Up and Flying|publisher=Outskirts Press|page=134|passage=Overhaul down &amp; hook the &#39;&#39;&#39;cat&#39;&#39;&#39;, haul taut. Walk away the &#39;&#39;&#39;cat&#39;&#39;&#39;. When up, pass the &#39;&#39;&#39;cat&#39;&#39;&#39; head stopper. Hook the fish in &amp; fish the anchor.}}</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">4.</span> <span class="c1"># {{lb|en|chiefly|nautical}} {{non-gloss definition|Short form of}} [[cat-o&#39;-nine-tails]].</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">4.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=1839|section=testimony by {{w|Henry L. Pinckney}} (Assembly No. 335)|title=Documents of the Assembly of the State of New York|page=44|passage={{...}}he whipped a black man for disobedience of his orders fifty lashes; and again whipped him with a &#39;&#39;&#39;cat&#39;&#39;&#39;, which he wound with wire, about the same number of stripes;{{...}}he used this &#39;&#39;&#39;cat&#39;&#39;&#39; on one other man, and then destroyed the &#39;&#39;&#39;cat&#39;&#39;&#39; wound with wire.}}</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">5.</span> <span class="c1"># {{lb|en|archaic}} A sturdy merchant sailing vessel {{qualifier|now only in &quot;[[catboat]]&quot;}}.</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">6.</span> <span class="c1"># {{lb|en|archaic|uncountable}} The game of &quot;[[trap and ball]]&quot; (also called &quot;cat and dog&quot;).</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">6.1</span><span class="o">.</span> <span class="c1">## The trap of the game of &quot;trap and ball&quot;.</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">7.</span> <span class="c1"># {{lb|en|archaic}} The pointed piece of wood that is struck in the game of [[tipcat]].</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">8.</span> <span class="c1"># {{lb|en|slang|vulgar|African American Vernacular English}} A [[vagina]], a [[vulva]]; the female external genitalia.</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">8.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=1969|author=Iceberg Slim|title=Pimp: The Story of My Life|publisher=Holloway House Publishing|passage=&quot;What the hell, so this broad&#39;s got a prematurely-gray &#39;&#39;&#39;cat&#39;&#39;&#39;.&quot;}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">8.2</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=2005|author=Carolyn Chambers Sanders|title=Sins &amp; Secrets|publisher=Hachette Digital|passage=As she came up, she tried to put her &#39;&#39;&#39;cat&#39;&#39;&#39; in his face for some licking.}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">8.3</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=2007|author=Franklin White|title=Money for Good|publisher=Simon and Schuster|page=64|passage=I had a notion to walk over to her, rip her apron off, sling her housecoat open and put my finger inside her &#39;&#39;&#39;cat&#39;&#39;&#39; to see if she was wet or freshly fucked because the dream I had earlier was beginning to really annoy me.}}</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">9.</span> <span class="c1"># A [[double]] [[tripod]] (for holding a [[plate]], etc.) with six feet, of which three rest on the ground, in whatever position it is placed.</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">10.</span> <span class="c1"># {{lb|en|historical}} A [[wheel]]ed [[shelter]], used in the [[Middle Ages]] as a [[siege]] weapon to allow [[assailant]]s to approach enemy [[defence]]s.</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">10.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#: {{syn|en|tortoise|Welsh cat}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">10.1</span><span class="o">.</span> <span class="c1">#*{{quote-book|en|year=2000|author=Stephen O&#39;Shea|title=The Perfect Heresy|publisher=Profile Books|page=97|passage=From behind the narrow slits in the walls of Castellar, crossbowmen and archers took aim at the juddering &#39;&#39;&#39;cat&#39;&#39;&#39; as it came closer.}}</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span> <span class="n">Verb</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.1</span><span class="o">.</span> <span class="n">Translations</span>
+        <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|nautical|transitive}} To [[hoist]] (the [[anchor]]) by its [[ring]] so that it hangs at the [[cathead]].</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.</span> <span class="c1"># {{lb|en|nautical|transitive}} To flog with a [[cat-o&#39;-nine-tails]].</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">3.</span> <span class="c1"># {{lb|en|slang}} To [[vomit]] something.</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">4.</span> <span class="c1"># To go [[wander]]ing at [[night]].</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">4.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en |year=1998 |title=Lady&#39;s Wager |author=Mary Spencer |page=324|ISBN=|passage=&quot;He doesn&#39;t realize that I know,&quot; Lord Callan said, &quot;but it&#39;s been pretty obvious that most of his &#39;&#39;&#39;catting&#39;&#39;&#39; about London&#39;s darker alleys has been a search for his origins. }}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">4.2</span><span class="o">.</span> <span class="c1">#* {{quote-book|en |year=2010|title=Manchild in the Promised Land |author=Claude Brown |page=18|ISBN=|passage=This was going to be my first try at &#39;&#39;&#39;catting&#39;&#39;&#39; out. I went looking for somebody to &#39;&#39;&#39;cat&#39;&#39;&#39; with me.}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">4.3</span><span class="o">.</span> <span class="c1">#* {{quote-book|en |year=2012|title=Wages of Sin|author=Valerie Hansen |page=|ISBN=|passage=My own dear wife could have tended to his needs if she hadn&#39;t been out &#39;&#39;&#39;catting&#39;&#39;&#39;.}}</span>
+          <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">5.</span> <span class="c1"># To [[gossip]] in a [[catty]] manner.</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">5.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en |year=1932 |title=Man Made Angry |author=Hugh Brooke |page=134|ISBN=|passage=Men from young to middleaged, with matt faces, vivacious and brightly dressed, &#39;&#39;&#39;catted&#39;&#39;&#39; together in gay groups.}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">5.2</span><span class="o">.</span> <span class="c1">#* {{quote-book|en |year=1996|title=The Unlucky Seven|author=Alistair Boyle |page=|ISBN=|passage=They smiled, touched, rolled their eyes and raised their eyebrows, as they relived the audition and &#39;&#39;&#39;catted&#39;&#39;&#39; about some of their competition.}}</span>
+            <span class="mf">1.2</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">5.3</span><span class="o">.</span> <span class="c1">#* {{quote-book|en |year=2016 |title=The Swans of Fifth Avenue|author=Melanie Benjamin |page=293|ISBN=|passage=In the story, Lady Ina gossiped and &#39;&#39;&#39;catted&#39;&#39;&#39; about a parade of the rich and famous—Jackie Kennedy looking like an exaggerated version of herself, Princess Margaret so boring she made people fall asleep, Gloria Vanderbilt so ditzy she didn&#39;t recognize her first husband.}}</span>
+      <span class="mf">1.2</span><span class="o">.</span><span class="mf">3.</span> <span class="n">See</span> <span class="n">also</span>
+    <span class="mf">1.3</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">2</span>
+      <span class="mf">1.3</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.3</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.3</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># A [[catamaran]].</span>
+    <span class="mf">1.4</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">3</span>
+      <span class="mf">1.4</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.4</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.4</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|computing}} A program and command in [[Unix]] that reads one or more files and directs their content to the standard output.</span>
+      <span class="mf">1.4</span><span class="o">.</span><span class="mf">2.</span> <span class="n">Verb</span>
+        <span class="mf">1.4</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.4</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|computing|transitive}} To [[apply]] the &#39;&#39;&#39;cat&#39;&#39;&#39; [[command]] to (one or more files).</span>
+          <span class="mf">1.4</span><span class="o">.</span><span class="mf">2.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.</span> <span class="c1"># {{lb|en|computing|slang}} To [[dump]] large amounts of data on (an unprepared target) usually with no intention of browsing it carefully.</span>
+    <span class="mf">1.5</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">4</span>
+      <span class="mf">1.5</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Adjective</span>
+        <span class="mf">1.5</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span> <span class="n">Usage</span> <span class="n">notes</span>
+        <span class="mf">1.5</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.5</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|Ireland|informal}} [[terrible|Terrible]], [[disastrous]].</span>
+            <span class="mf">1.5</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#: {{ux|en|The weather was &#39;&#39;&#39;cat&#39;&#39;&#39;, so they returned home early.}}</span>
+    <span class="mf">1.6</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">5</span>
+      <span class="mf">1.6</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.6</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.6</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|slang}} {{non-gloss definition|A street name of the drug [[methcathinone]].}}</span>
+    <span class="mf">1.7</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">6</span>
+      <span class="mf">1.7</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.7</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.7</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|military|naval}} A [[catapult]].</span>
+            <span class="mf">1.7</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#: {{ux|en|a carrier&#39;s bow &#39;&#39;&#39;cats&#39;&#39;&#39;}}</span>
+    <span class="mf">1.8</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">7</span>
+      <span class="mf">1.8</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.8</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.8</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{abbreviation of|en|category}}</span>
+    <span class="mf">1.9</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">8</span>
+      <span class="mf">1.9</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.9</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.9</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{abbreviation of|en|catfish}}</span>
+            <span class="mf">1.9</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.1</span><span class="o">.</span> <span class="c1">#* {{quote-book|en|year=1913|author={{w|Willa Cather}}|title=[[s:O Pioneers!|O Pioneers!]]|chapter=2|passage=She missed the fish diet of her own country, and twice every summer she sent the boys to the river, twenty miles to the southward, to fish for channel &#39;&#39;&#39;cat&#39;&#39;&#39;.}}</span>
+            <span class="mf">1.9</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span> <span class="c1">#* &#39;&#39;&#39;1916&#39;&#39;&#39;, M. Shults, &quot;Fishing for Yellow Cat in the Brazos&quot;, in &#39;&#39;Field and Stream&#39;&#39;, vol. 21, 478.</span>
+              <span class="mf">1.9</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.2</span><span class="o">.</span><span class="p">:</span><span class="mf">1.</span> <span class="c1">#*: Fishing for &#39;&#39;&#39;cat&#39;&#39;&#39; is probably, up to a certain stage, the least exciting of all similar sports.</span>
+    <span class="mf">1.10</span><span class="o">.</span> <span class="n">Etymology</span> <span class="mi">9</span>
+      <span class="mf">1.10</span><span class="o">.</span><span class="mf">1.</span> <span class="n">Noun</span>
+        <span class="mf">1.10</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span> <span class="n">Explanations</span>
+          <span class="mf">1.10</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">1.</span> <span class="c1"># {{lb|en|slang}} Any of a variety of earth-moving [[machine]]s. (from their manufacturer {{w|Caterpillar Inc.}})</span>
+          <span class="mf">1.10</span><span class="o">.</span><span class="mf">1.</span><span class="n">ex</span><span class="o">.</span><span class="mf">2.</span> <span class="c1"># A [[caterpillar drive]] vehicle (a ground vehicle which uses [[caterpillar track]]s), especially tractors, trucks, minibuses, and snow groomers.</span>
+    <span class="mf">1.11</span><span class="o">.</span> <span class="n">References</span>
+    <span class="mf">1.12</span><span class="o">.</span> <span class="n">Anagrams</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.mark_leaf_explanation_nodes">
@@ -220,27 +506,95 @@
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.remove_other_langs">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">remove_other_langs</code><span class="sig-paren">(</span><em class="sig-param">toc: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#remove_other_langs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.remove_other_langs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove non English languages from tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>toc</strong> (<a class="reference internal" href="#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root" title="wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root"><em>Root</em></a>) – TOC tree root</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>nothing to return. it change source tree.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.scrap">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">scrap</code><span class="sig-paren">(</span><em class="sig-param">page: wiktionary.Scrapper_Wiktionary.Page</em><span class="sig-paren">)</span> &#x2192; List[wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem]<a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#scrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.scrap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Main scrap function</p>
+<ol class="arabic simple">
+<li><p>get Page: id, ns, title, raw-text</p></li>
+<li><p>parse raw-text -&gt; take lexemes</p></li>
+<li><p>keep lexemes. make table-of-contents (toc). toc structure is tree. each branch is header. each node hold lexemes</p></li>
+<li><p>take tree. find part-of-speech nodes. take lexemes. find li. convert li to nodes. it is explanations</p></li>
+<li><p>take each node. take lexemes. convert lists to tree, wrap text text block with node.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>page</strong> (<a class="reference internal" href="wiktionary.html#wiktionary.Scrapper_Wiktionary.Page" title="wiktionary.Scrapper_Wiktionary.Page"><em>Page</em></a>) – Page instance</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(list)      list of items</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.trans_see_finder">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">trans_see_finder</code><span class="sig-paren">(</span><em class="sig-param">toc: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#trans_see_finder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.trans_see_finder" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>It helper help find Templates with name ‘trans-see’.</p>
+<p>Uses for get translations from external pages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>toc</strong> (<a class="reference internal" href="#wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root" title="wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Root"><em>Root</em></a>) – Table-of-contents (toc) root</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(node, template)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Iterator of tuples</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.update_index_in_toc">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">update_index_in_toc</code><span class="sig-paren">(</span><em class="sig-param">root: wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents.Section</em>, <em class="sig-param">level=0</em>, <em class="sig-param">prefix=''</em>, <em class="sig-param">index_pos=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#update_index_in_toc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.update_index_in_toc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update string prefix, like the: 1.1. in each section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – TOC root</p></li>
+<li><p><strong>level</strong> – <ul>
+<li><p>used in recursion</p></li>
+</ul>
+</p></li>
+<li><p><strong>prefix</strong> – <ul>
+<li><p>used in recursion</p></li>
+</ul>
+</p></li>
+<li><p><strong>index_pos</strong> – <ul>
+<li><p>used in recursion</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>it change nodes attribute <cite>index_in_toc</cite> in tree</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.en.Scrapper_Wiktionary_EN.update_popularity_of_word">
 <code class="sig-prename descclassname">wiktionary.en.Scrapper_Wiktionary_EN.</code><code class="sig-name descname">update_popularity_of_word</code><span class="sig-paren">(</span><em class="sig-param">item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/en/Scrapper_Wiktionary_EN.html#update_popularity_of_word"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.en.Scrapper_Wiktionary_EN.update_popularity_of_word" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Calculate and update field PopularityOfWord.</p>
+<p>Please, see source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> (<a class="reference internal" href="wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem" title="wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem"><em>WikictionaryItem</em></a>) – item</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-wiktionary.en.Scrapper_Wiktionary_EN_Definitions">

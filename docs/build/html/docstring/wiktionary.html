@@ -38,7 +38,7 @@
     <link rel="top" title="Scrapper 3.0.0 documentation" href="../index.html"/>
         <link rel="up" title="Scrapper" href="modules.html"/>
         <link rel="next" title="wiktionary.en package" href="wiktionary.en.html"/>
-        <link rel="prev" title="test_one module" href="test_one.html"/> 
+        <link rel="prev" title="test_wikidata module" href="test_wikidata.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_one.html">test_one module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_wikidata.html">test_wikidata module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">wiktionary package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="wiktionary.en.html">wiktionary.en package</a></li>
@@ -100,7 +101,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-wiktionary.Scrapper_Wiktionary">wiktionary.Scrapper_Wiktionary module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-wiktionary.Scrapper_Wiktionary_Checkers">wiktionary.Scrapper_Wiktionary_Checkers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wiktionary-scrapper-wiktionary-checkers-module">wiktionary.Scrapper_Wiktionary_Checkers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-wiktionary.Scrapper_Wiktionary_Item">wiktionary.Scrapper_Wiktionary_Item module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-wiktionary.Scrapper_Wiktionary_Matcher">wiktionary.Scrapper_Wiktionary_Matcher module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-wiktionary.Scrapper_Wiktionary_RemoteAPI">wiktionary.Scrapper_Wiktionary_RemoteAPI module</a></li>
@@ -211,7 +212,7 @@
 <dt id="wiktionary.Scrapper_Wiktionary.Dump.download">
 <code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary.html#Dump.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary.Dump.download" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download dump</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dump</span><span class="p">(</span> <span class="s1">&#39;en&#39;</span> <span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dump</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -300,10 +301,21 @@ All folders in path created recursively.</p>
 <dl class="function">
 <dt id="wiktionary.Scrapper_Wiktionary.filterPageProblems">
 <code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary.</code><code class="sig-name descname">filterPageProblems</code><span class="sig-paren">(</span><em class="sig-param">page: wiktionary.Scrapper_Wiktionary.Page</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary.html#filterPageProblems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary.filterPageProblems" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter page. If not correct retirn None</p>
+<dd><p>Filter page. If not correct return None.</p>
+<p>Write record in log.</p>
+<p>Rules:</p>
+<ul class="simple">
+<li><p>skip None</p></li>
+<li><p>skip special namespaces. keep terms only</p></li>
+<li><p>skip #REDIRECT</p></li>
+<li><p>skip words contains :</p></li>
+<li><p>skip more than 3 spaces</p></li>
+<li><p>skip #</p></li>
+<li><p>skip non ASCII</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>page</strong> – </p>
+<dd class="field-odd"><p><strong>page</strong> (<a class="reference internal" href="#wiktionary.Scrapper_Wiktionary.Page" title="wiktionary.Scrapper_Wiktionary.Page"><em>Page</em></a>) – Page instance</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Page | None</p>
@@ -314,12 +326,45 @@ All folders in path created recursively.</p>
 <dl class="function">
 <dt id="wiktionary.Scrapper_Wiktionary.isEnglish">
 <code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary.</code><code class="sig-name descname">isEnglish</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary.html#isEnglish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary.isEnglish" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return True if <cite>s</cite> contains only English symbols.</p>
+<p>It uses for filter non-English pages in ‘en’ Wiktionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – String for test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>(bool)</dt><dd><ul class="simple">
+<li><p>True: <cite>s</cite> is English</p></li>
+<li><p>False <cite>s</cite> is not English</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.Scrapper_Wiktionary.is_ascii">
 <code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary.</code><code class="sig-name descname">is_ascii</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary.html#is_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary.is_ascii" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return True if <cite>s</cite> contains only ASCII symbols.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – String for test</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>(bool)</dt><dd><ul class="simple">
+<li><p>True: <cite>s</cite> is ASCII</p></li>
+<li><p>False <cite>s</cite> is not ASCII</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="wiktionary.Scrapper_Wiktionary.scrap">
@@ -368,168 +413,8 @@ Recommendation: workers = 10 (for parallel network requests)</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-wiktionary.Scrapper_Wiktionary_Checkers">
-<span id="wiktionary-scrapper-wiktionary-checkers-module"></span><h2>wiktionary.Scrapper_Wiktionary_Checkers module<a class="headerlink" href="#module-wiktionary.Scrapper_Wiktionary_Checkers" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.by_sense">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">by_sense</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span> &#x2192; Iterator<a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#by_sense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.by_sense" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.check">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definition</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.check" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.check_node">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">check_node</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">node</em>, <em class="sig-param">lm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#check_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.check_node" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.checkers_from">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">checkers_from</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#checkers_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.checkers_from" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.detuple_dfinition_keys">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">detuple_dfinition_keys</code><span class="sig-paren">(</span><em class="sig-param">defs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#detuple_dfinition_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.detuple_dfinition_keys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.en_adj">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">en_adj</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">defs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#en_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.en_adj" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.en_noun">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">en_noun</code><span class="sig-paren">(</span><em class="sig-param">t</em>, <em class="sig-param">label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#en_noun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.en_noun" title="Permalink to this definition">¶</a></dt>
-<dd><p>{{en-noun}}
-{{en-noun|es}}
-{{en-noun|…}}
-{{en-noun|…|…}}</p>
-<p>out: (single, [plural], is_uncountable)</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.en_verb">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">en_verb</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">defs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#en_verb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.en_verb" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.equal_label">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">equal_label</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">value</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#equal_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.equal_label" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.has_template">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">has_template</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">tnames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#has_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.has_template" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_all_parent_sections">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_all_parent_sections</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_all_parent_sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_all_parent_sections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_all_parents">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_all_parents</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_all_parents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_all_parents" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_all_positional_args">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_all_positional_args</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">t: wiktionary.Scrapper_Wiktionary_WikitextParser.Template</em>, <em class="sig-param">defs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_all_positional_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_all_positional_args" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_all_positional_args_except_lang">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_all_positional_args_except_lang</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">t: wiktionary.Scrapper_Wiktionary_WikitextParser.Template</em>, <em class="sig-param">defs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_all_positional_args_except_lang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_all_positional_args_except_lang" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_any_arg">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_any_arg</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">t</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_any_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_any_arg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_arg">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_arg</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_arg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_arg_by_lang">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_arg_by_lang</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">t</em>, <em class="sig-param">arg_keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_arg_by_lang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_arg_by_lang" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_examples">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_examples</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_examples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_examples" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_language">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_language</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_language" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_link">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_link</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">defs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_link" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_parent_explanations">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_parent_explanations</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_parent_explanations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_parent_explanations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_section">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_section</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_section" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_self">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_self</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_self"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_self" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_template">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_template</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions: dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_template" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.in_template_trans_top">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">in_template_trans_top</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">defs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#in_template_trans_top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.in_template_trans_top" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.plural_en_noun">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">plural_en_noun</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#plural_en_noun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.plural_en_noun" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.single_en_noun">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">single_en_noun</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#single_en_noun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.single_en_noun" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.text_contain">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">text_contain</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#text_contain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.text_contain" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.valid">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">valid</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">context</em>, <em class="sig-param">definition</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.valid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.value_equal">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">value_equal</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">a</em>, <em class="sig-param">expected</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#value_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.value_equal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wiktionary.Scrapper_Wiktionary_Checkers.with_lang">
-<code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Checkers.</code><code class="sig-name descname">with_lang</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">explanation</em>, <em class="sig-param">t</em>, <em class="sig-param">definitions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Checkers.html#with_lang"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Checkers.with_lang" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="wiktionary-scrapper-wiktionary-checkers-module">
+<h2>wiktionary.Scrapper_Wiktionary_Checkers module<a class="headerlink" href="#wiktionary-scrapper-wiktionary-checkers-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-wiktionary.Scrapper_Wiktionary_Item">
 <span id="wiktionary-scrapper-wiktionary-item-module"></span><h2>wiktionary.Scrapper_Wiktionary_Item module<a class="headerlink" href="#module-wiktionary.Scrapper_Wiktionary_Item" title="Permalink to this headline">¶</a></h2>
@@ -543,7 +428,7 @@ Recommendation: workers = 10 (for parallel network requests)</p></li>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="attribute">
 <dt id="wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.Meta.DB_INIT">
-<code class="sig-name descname">DB_INIT</code><em class="property"> = '\n            CREATE TABLE IF NOT EXISTS wiktionary (\n                    PrimaryKey              VARCHAR(255) NOT NULL PRIMARY KEY,\n                    IndexinPage\t\t\t\tINTEGER NULL,\n                    IndexPartOfSpeech\t\tVARCHAR(255) NULL,\n                    IndexinToc \t\t\t\tVARCHAR(255) NULL,\n                    SelfUrl                 VARCHAR(255),\n                    LabelName               VARCHAR(255),\n                    LabelType               VARCHAR(255),\n                    LanguageCode            CHAR(2),\n                    Type                    VARCHAR(255),\n                    TypeLabelName           VARCHAR(255),\n                    ExplainationRaw         TEXT,\n                    ExplainationTxt         TEXT,\n                    ExplainationExamplesRaw TEXT,\n                    ExplainationExamplesTxt TEXT,\n                    DescriptionTxt          TEXT,\n                    IsMale                  INTEGER NULL,\n                    IsFeminine              INTEGER NULL,\n                    IsNeutre                INTEGER NULL,\n                    IsSingle                INTEGER NULL,\n                    IsPlural                INTEGER NULL,\n                    SingleVariant           VARCHAR(255) NULL,\n                    PluralVariant           VARCHAR(255) NULL,\n                    PopularityOfWord        INTEGER NULL,\n                    MaleVariant             VARCHAR(255) NULL,\n                    FemaleVariant           VARCHAR(255) NULL,\n                    IsVerbPast              INTEGER NULL,\n                    IsVerbPresent           INTEGER NULL,\n                    IsVerbFutur             INTEGER NULL,\n                    Conjugation             TEXT NULL,\n                    Synonymy                TEXT NULL,\n                    Antonymy                TEXT NULL,\n                    Hypernymy               TEXT NULL,\n                    Hyponymy                TEXT NULL,\n                    Meronymy                TEXT NULL,\n                    Holonymy                TEXT NULL,\n                    Troponymy               TEXT NULL,\n                    Otherwise               TEXT NULL,\n                    AlternativeFormsOther   TEXT NULL,\n                    RelatedTerms            TEXT NULL,\n                    Coordinate              TEXT NULL,\n                    Translation_EN          TEXT NULL,\n                    Translation_FR          TEXT NULL,\n                    Translation_DE          TEXT NULL,\n                    Translation_IT          TEXT NULL,\n                    Translation_ES          TEXT NULL,\n                    Translation_RU          TEXT NULL,\n                    Translation_PT          TEXT NULL,\n                    TranslationsBySentence  TEXT NULL,\n                    TranslationSentence     TEXT NULL,\n                    TranslationsByLang      TEXT NULL,\n                    TranslationsPairs       TEXT NULL,\n                    DescriptionWiktionaryLinks TEXT NULL,\n                    DescriptionWikipediaLinks  TEXT NULL,\n                    Labels                  TEXT NULL,\n                    Categories              TEXT NULL,\n                    Cognates                TEXT NULL,\n                    Mentions                TEXT NULL,\n                    VerbConjugaisonAdded    INTEGER NULL,\n                    Senses                  TEXT NULL,\n                    SeeAlso                 TEXT NULL,\n                    Accent                  TEXT NULL,\n                    Qualifier               TEXT NULL,\n                    ExternalLinks           TEXT NULL\n            );\n            \n            -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);\n        '</em><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.Meta.DB_INIT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">DB_INIT</code><em class="property"> = '\n            CREATE TABLE IF NOT EXISTS wiktionary (\n                    PrimaryKey                  VARCHAR(255) NOT NULL PRIMARY KEY,\n                    IndexinPage\t\t\t\t    INTEGER NULL,\n                    IndexPartOfSpeech\t\t    VARCHAR(255) NULL,\n                    IndexinToc \t\t\t\t    VARCHAR(255) NULL,\n                    SelfUrl                     VARCHAR(255),\n                    LabelName                   VARCHAR(255),\n                    LabelType                   VARCHAR(255),\n                    LanguageCode                CHAR(2),\n                    Type                        VARCHAR(255),\n                    TypeLabelName               VARCHAR(255),\n                    ExplainationRaw             TEXT,\n                    ExplainationTxt             TEXT,\n                    ExplainationExamplesRaw     TEXT,\n                    ExplainationExamplesTxt     TEXT,\n                    DescriptionTxt              TEXT,\n                    IsMale                      INTEGER NULL,\n                    IsFeminine                  INTEGER NULL,\n                    IsNeutre                    INTEGER NULL,\n                    IsSingle                    INTEGER NULL,\n                    IsPlural                    INTEGER NULL,\n                    SingleVariant               VARCHAR(255) NULL,\n                    PluralVariant               VARCHAR(255) NULL,\n                    PopularityOfWord            INTEGER NULL,\n                    MaleVariant                 VARCHAR(255) NULL,\n                    FemaleVariant               VARCHAR(255) NULL,\n                    IsVerbPast                  INTEGER NULL,\n                    IsVerbPresent               INTEGER NULL,\n                    IsVerbFutur                 INTEGER NULL,\n                    Conjugation                 TEXT NULL,\n                    Synonymy                    TEXT NULL,\n                    Antonymy                    TEXT NULL,\n                    Hypernymy                   TEXT NULL,\n                    Hyponymy                    TEXT NULL,\n                    Meronymy                    TEXT NULL,\n                    Holonymy                    TEXT NULL,\n                    Troponymy                   TEXT NULL,\n                    Otherwise                   TEXT NULL,\n                    AlternativeFormsOther       TEXT NULL,\n                    RelatedTerms                TEXT NULL,\n                    DerivedTerms                TEXT NULL,\n                    Coordinate                  TEXT NULL,\n                    Translation_EN              TEXT NULL,\n                    Translation_FR              TEXT NULL,\n                    Translation_DE              TEXT NULL,\n                    Translation_IT              TEXT NULL,\n                    Translation_ES              TEXT NULL,\n                    Translation_RU              TEXT NULL,\n                    Translation_PT              TEXT NULL,\n                    TranslationsBySentence      TEXT NULL,\n                    TranslationSentence         TEXT NULL,\n                    TranslationsByLang          TEXT NULL,\n                    TranslationsPairs           TEXT NULL,\n                    Labels                      TEXT NULL,\n                    Categories                  TEXT NULL,\n                    Cognates                    TEXT NULL,\n                    Mentions                    TEXT NULL,\n                    VerbConjugaisonAdded        INTEGER NULL,\n                    Senses                      TEXT NULL,\n                    SeeAlsoWiktionaryLinks      TEXT NULL,\n                    SeeAlsoWikipediaLinks       TEXT NULL,\n                    Accent                      TEXT NULL,\n                    Qualifier                   TEXT NULL,\n                    DescriptionWikipediaLinks   TEXT NULL,\n                    DescriptionWiktionaryLinks  TEXT NULL\n            );\n            \n            -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);\n        '</em><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.Meta.DB_INIT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -570,6 +455,8 @@ Recommendation: workers = 10 (for parallel network requests)</p></li>
 </div>
 <div class="section" id="module-wiktionary.Scrapper_Wiktionary_Matcher">
 <span id="wiktionary-scrapper-wiktionary-matcher-module"></span><h2>wiktionary.Scrapper_Wiktionary_Matcher module<a class="headerlink" href="#module-wiktionary.Scrapper_Wiktionary_Matcher" title="Permalink to this headline">¶</a></h2>
+<p>PKS Matcher helper</p>
+<p>It return matched sentence for given <cite>explanation_sense_txt</cite>.</p>
 <dl class="class">
 <dt id="wiktionary.Scrapper_Wiktionary_Matcher.Matcher">
 <em class="property">class </em><code class="sig-prename descclassname">wiktionary.Scrapper_Wiktionary_Matcher.</code><code class="sig-name descname">Matcher</code><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Matcher.html#Matcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Matcher.Matcher" title="Permalink to this definition">¶</a></dt>
@@ -577,7 +464,20 @@ Recommendation: workers = 10 (for parallel network requests)</p></li>
 <dl class="method">
 <dt id="wiktionary.Scrapper_Wiktionary_Matcher.Matcher.match">
 <em class="property">classmethod </em><code class="sig-name descname">match</code><span class="sig-paren">(</span><em class="sig-param">explanation_sense_txt</em>, <em class="sig-param">explanation_senses</em>, <em class="sig-param">section_senses</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_Matcher.html#Matcher.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_Matcher.Matcher.match" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>It return matched sentence for given <cite>explanation_sense_txt</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>explanation_sense_txt</strong> (<em>str</em>) – Explanations string</p></li>
+<li><p><strong>(</strong><strong>list        All explanation sentences</strong> (<em>explanation_senses</em>) – </p></li>
+<li><p><strong>section_senses</strong> (<em>list</em>) – All Translation (or synonyms/hyponums/…) sentences</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)   Matched sentence.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -1288,6 +1188,11 @@ a[[b]] gives ab.
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="wiktionary.Scrapper_Wiktionary_WikitextParser.Template.positional_arg">
+<code class="sig-name descname">positional_arg</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_WikitextParser.html#Template.positional_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_WikitextParser.Template.positional_arg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="wiktionary.Scrapper_Wiktionary_WikitextParser.Template.positional_args">
 <code class="sig-name descname">positional_args</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/wiktionary/Scrapper_Wiktionary_WikitextParser.html#Template.positional_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiktionary.Scrapper_Wiktionary_WikitextParser.Template.positional_args" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1794,7 +1699,7 @@ a[[b]] gives ab.
         <a href="wiktionary.en.html" class="btn btn-neutral float-right" title="wiktionary.en package" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="test_one.html" class="btn btn-neutral" title="test_one module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="test_wikidata.html" class="btn btn-neutral" title="test_wikidata module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

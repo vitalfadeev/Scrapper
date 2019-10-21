@@ -131,6 +131,7 @@
   <h1>Source code for wiktionary.en.Scrapper_Wiktionary_EN</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">Scrapper_Helpers</span> <span class="k">import</span> <span class="n">convert_to_alnum</span><span class="p">,</span> <span class="n">deduplicate</span><span class="p">,</span> <span class="n">proper</span><span class="p">,</span> <span class="n">get_lognest_word</span>
@@ -143,10 +144,145 @@
 <span class="kn">from</span> <span class="nn">wiktionary.en.Scrapper_Wiktionary_EN_Sections</span> <span class="k">import</span> <span class="n">LANG_SECTIONS_INDEX</span><span class="p">,</span> <span class="n">PART_OF_SPEECH_SECTIONS_INDEX</span><span class="p">,</span> <span class="n">VALUED_SECTIONS_INDEX</span><span class="p">,</span> <span class="n">VALUED_SECTIONS</span>
 <span class="kn">from</span> <span class="nn">wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents</span> <span class="k">import</span> \
     <span class="n">Section</span><span class="p">,</span> <span class="n">Root</span><span class="p">,</span> <span class="n">Lang</span><span class="p">,</span> <span class="n">PartOfSpeech</span><span class="p">,</span> <span class="n">ExplanationsRoot</span><span class="p">,</span> <span class="n">section_map</span><span class="p">,</span> <span class="n">Explanation</span><span class="p">,</span> <span class="n">ExplanationExample</span><span class="p">,</span> <span class="n">Translations</span><span class="p">,</span> \
-    <span class="n">ExplanationLi</span>
+    <span class="n">ExplanationLi</span><span class="p">,</span> <span class="n">Synonyms</span>
 
 
 <div class="viewcode-block" id="make_table_of_contents"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.make_table_of_contents">[docs]</a><span class="k">def</span> <span class="nf">make_table_of_contents</span><span class="p">(</span> <span class="n">lexemes</span><span class="p">:</span> <span class="nb">list</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Root</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create Table of contents for given `lexemes`.</span>
+
+<span class="sd">    it search &lt;Header&gt; tokens. In raw-text it &#39;=English=&#39;, &#39;===Noun===&#39;. Then detect level of header. Then build tree.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lexemes (list):     List of lexemes. Lexemes going from raw-text parser (module Scrapper_Wiktionary_WikitextParser)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (Root)  Tree root.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        # for &#39;cat&#39;</span>
+<span class="sd">        toc = make_table_of_contents( lexems )</span>
+
+<span class="sd">        # result is:</span>
+<span class="sd">        toc.dump()</span>
+
+<span class="sd">        # result:</span>
+<span class="sd">          1. English</span>
+<span class="sd">            1.1. Pronunciation</span>
+<span class="sd">            1.2. Etymology 1</span>
+<span class="sd">              1.2.1. Noun</span>
+<span class="sd">                1.2.1.1. Synonyms</span>
+<span class="sd">                1.2.1.2. Hyponyms</span>
+<span class="sd">                1.2.1.3. Derived terms</span>
+<span class="sd">                1.2.1.4. Translations</span>
+<span class="sd">                1.2.1.ex. Explanations</span>
+<span class="sd">                  1.2.1.ex.1. # An animal of the family [[Felidae]]:</span>
+<span class="sd">                    1.2.1.ex.1.1. #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+<span class="sd">                    1.2.1.ex.1.:1. #: {{syn|en|felid}}</span>
+<span class="sd">                    1.2.1.ex.1.2. ## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">                      1.2.1.ex.1.2.1. ##* {{RQ:WBsnt IvryGt|II}}</span>
+<span class="sd">                        1.2.1.ex.1.2.1.:1. ##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+<span class="sd">                      1.2.1.ex.1.2.:1. ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+<span class="sd">                    1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+<span class="sd">                      1.2.1.ex.1.3.1. ##* {{quote-book|en|year=1977|author=Peter Hathaway Capstick|title=Death in the Long Grass: A Big Game Hunter&#39;s Adventures in the African Bush|publisher=St. Martin&#39;s Press|page=44|passage=I grabbed it and ran over to the lion from behind, the &#39;&#39;&#39;cat&#39;&#39;&#39; still chewing thoughtfully on Silent&#39;s arm.}}</span>
+<span class="sd">                      1.2.1.ex.1.3.2. ##* &#39;&#39;&#39;1985&#39;&#39;&#39; January, George Laycock, &quot;Our American Lion&quot;, in Boy Scouts of America, &#39;&#39;Boy&#39;s Life&#39;&#39;, 28.</span>
+<span class="sd">                        1.2.1.ex.1.3.2.:1. ##*: If you should someday round a corner on the hiking trail and come face to face with a mountain lion, you would probably never forget the mighty &#39;&#39;&#39;cat&#39;&#39;&#39;.</span>
+<span class="sd">                      1.2.1.ex.1.3.3. ##* {{quote-book|en|year=2014|author=Dale Mayer|title=Rare Find. A Psychic Visions Novel|publisher=Valley Publishing|passage=She felt privileged to be here, living the experience inside the majestic &#39;&#39;&#39;cat&#39;&#39;&#39; [i.e. a tiger]; privileged to be part of their bond, even for only a few hours.}}</span>
+<span class="sd">                  1.2.1.ex.2. # A person:</span>
+<span class="sd">                    1.2.1.ex.2.1. ## {{lb|en|offensive}} A spiteful or angry [[woman]]. {{defdate|from earlier 13&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">                      1.2.1.ex.2.1.1. ##* &#39;&#39;&#39;1835&#39;&#39;&#39; September, anonymous, &quot;The Pigs&quot;, in &#39;&#39;The New-England Magazine&#39;&#39;, Vol. 9, 156.</span>
+<span class="sd">                        1.2.1.ex.2.1.1.:1. ##*: But, ere one rapid moon its tale has told, / He finds his prize — a &#39;&#39;&#39;cat&#39;&#39;&#39; — a slut — a scold.</span>
+<span class="sd">                      1.2.1.ex.2.1.:1. ##: {{syn|en|bitch}}</span>
+<span class="sd">                    1.2.1.ex.2.2. ## An enthusiast or player of [[jazz]].</span>
+<span class="sd">                      1.2.1.ex.2.2.1. ##* {{quote-song|en|year=2008|author={{w|Nick Cave and the Bad Seeds}}|title=Hold on to Yourself|passage=I turn on the radio / There&#39;s some &#39;&#39;&#39;cat&#39;&#39;&#39; on the saxophone / Laying down a litany of excuses}}</span>
+<span class="sd">                    1.2.1.ex.2.3. ## {{lb|en|slang}} A person (usually male).</span>
+<span class="sd">                      1.2.1.ex.2.3.1. ##* {{quote-song|en|title=Starman|album=The Rise and Fall of Ziggy Stardust and the Spiders from Mars|artist=David Bowie|year=1972|passage=Didn&#39;t know what time it was the lights were low / I leaned back on my radio / Some &#39;&#39;&#39;cat&#39;&#39;&#39; was layin&#39; down some rock&#39;n&#39;roll &#39;lotta soul, he said}}</span>
+<span class="sd">                      1.2.1.ex.2.3.2. ##* &#39;&#39;&#39;1973&#39;&#39;&#39; December, &quot;Books Noted&quot;, discussing &#39;&#39;A Dialogue&#39;&#39; (by James Baldwin and Nikki Giovanni), in &#39;&#39;Black World&#39;&#39;, Johnson Publishing Company, 77.</span>
+<span class="sd">                        1.2.1.ex.2.3.2.:1. ##*: BALDWIN: That&#39;s what we were talking about before. And by the way, you did not have to tell me that you think your father is a groovy &#39;&#39;&#39;cat&#39;&#39;&#39;; I knew that.</span>
+<span class="sd">                      1.2.1.ex.2.3.3. ##* {{quote-song|en|artist={{w|Shaquille O&#39;Neal}}|title=Fiend|year=1998|album=Respect|passage=What fags are true I know what Mack&#39;s might do&lt;br/&gt;I&#39;m quite familiar with &#39;&#39;&#39;cats&#39;&#39;&#39; like you&lt;br&gt;Provoke to get me give me a good reason to smoke me&lt;br&gt;Try to break me but never wrote me)}}</span>
+<span class="sd">                      1.2.1.ex.2.3.4. ##* {{quote-song|en|year=2006|lyricist=Masta Ace|title=Sick of it all|album=Pariah|passage=I am sick of rappers claiming they hot when they really not&lt;br/&gt;I am sick of rappers bragging about shit they ain’t really got&lt;br/&gt;These &#39;&#39;&#39;cats&#39;&#39;&#39; stay rapping about cars they don’t own&lt;br/&gt;I am sick of rappers bragging about models they don’t bone.[…]&lt;br/&gt;And I am sick of all these &#39;&#39;&#39;cats&#39;&#39;&#39; with no talent&lt;br/&gt;That never lived in the hood but yet their lyrics be so violent.}}</span>
+<span class="sd">                      1.2.1.ex.2.3.:1. ##: {{syn|en|bloke|chap|cove|dude|fellow|fella|guy}}</span>
+<span class="sd">                    1.2.1.ex.2.4. ## {{lb|en|slang}} A [[prostitute]]. {{defdate|from at least early 15&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">                      1.2.1.ex.2.4.1. ##* {{quote-book|en|year=1999|author=Carl P. Eby|title=Hemingway&#39;s Fetishism. Psychoanalysis and the Mirror of Manhood|publisher=State University of New York Press|page=124|passage=&quot;Tell me. Willie said there was a &#39;&#39;&#39;cat&#39;&#39;&#39; in love with you. That isn&#39;t true, is it?&quot; &quot;Yes. It&#39;s true,&quot; Hudson corrects her, letting her think that by &quot;cat&quot; he means prostitute.}}</span>
+<span class="sd">                  1.2.1.ex.3. # {{lb|en|nautical}} A strong tackle used to hoist an anchor to the [[cathead]] of a ship.</span>
+<span class="sd">                    1.2.1.ex.3.1. #* {{quote-book|en|year=2009|author=Olof A. Eriksen|title=Constitution - All Sails Up and Flying|publisher=Outskirts Press|page=134|passage=Overhaul down &amp; hook the &#39;&#39;&#39;cat&#39;&#39;&#39;, haul taut. Walk away the &#39;&#39;&#39;cat&#39;&#39;&#39;. When up, pass the &#39;&#39;&#39;cat&#39;&#39;&#39; head stopper. Hook the fish in &amp; fish the anchor.}}</span>
+<span class="sd">                  1.2.1.ex.4. # {{lb|en|chiefly|nautical}} {{non-gloss definition|Short form of}} [[cat-o&#39;-nine-tails]].</span>
+<span class="sd">                    1.2.1.ex.4.1. #* {{quote-book|en|year=1839|section=testimony by {{w|Henry L. Pinckney}} (Assembly No. 335)|title=Documents of the Assembly of the State of New York|page=44|passage={{...}}he whipped a black man for disobedience of his orders fifty lashes; and again whipped him with a &#39;&#39;&#39;cat&#39;&#39;&#39;, which he wound with wire, about the same number of stripes;{{...}}he used this &#39;&#39;&#39;cat&#39;&#39;&#39; on one other man, and then destroyed the &#39;&#39;&#39;cat&#39;&#39;&#39; wound with wire.}}</span>
+<span class="sd">                  1.2.1.ex.5. # {{lb|en|archaic}} A sturdy merchant sailing vessel {{qualifier|now only in &quot;[[catboat]]&quot;}}.</span>
+<span class="sd">                  1.2.1.ex.6. # {{lb|en|archaic|uncountable}} The game of &quot;[[trap and ball]]&quot; (also called &quot;cat and dog&quot;).</span>
+<span class="sd">                    1.2.1.ex.6.1. ## The trap of the game of &quot;trap and ball&quot;.</span>
+<span class="sd">                  1.2.1.ex.7. # {{lb|en|archaic}} The pointed piece of wood that is struck in the game of [[tipcat]].</span>
+<span class="sd">                  1.2.1.ex.8. # {{lb|en|slang|vulgar|African American Vernacular English}} A [[vagina]], a [[vulva]]; the female external genitalia.</span>
+<span class="sd">                    1.2.1.ex.8.1. #* {{quote-book|en|year=1969|author=Iceberg Slim|title=Pimp: The Story of My Life|publisher=Holloway House Publishing|passage=&quot;What the hell, so this broad&#39;s got a prematurely-gray &#39;&#39;&#39;cat&#39;&#39;&#39;.&quot;}}</span>
+<span class="sd">                    1.2.1.ex.8.2. #* {{quote-book|en|year=2005|author=Carolyn Chambers Sanders|title=Sins &amp; Secrets|publisher=Hachette Digital|passage=As she came up, she tried to put her &#39;&#39;&#39;cat&#39;&#39;&#39; in his face for some licking.}}</span>
+<span class="sd">                    1.2.1.ex.8.3. #* {{quote-book|en|year=2007|author=Franklin White|title=Money for Good|publisher=Simon and Schuster|page=64|passage=I had a notion to walk over to her, rip her apron off, sling her housecoat open and put my finger inside her &#39;&#39;&#39;cat&#39;&#39;&#39; to see if she was wet or freshly fucked because the dream I had earlier was beginning to really annoy me.}}</span>
+<span class="sd">                  1.2.1.ex.9. # A [[double]] [[tripod]] (for holding a [[plate]], etc.) with six feet, of which three rest on the ground, in whatever position it is placed.</span>
+<span class="sd">                  1.2.1.ex.10. # {{lb|en|historical}} A [[wheel]]ed [[shelter]], used in the [[Middle Ages]] as a [[siege]] weapon to allow [[assailant]]s to approach enemy [[defence]]s.</span>
+<span class="sd">                    1.2.1.ex.10.:1. #: {{syn|en|tortoise|Welsh cat}}</span>
+<span class="sd">                    1.2.1.ex.10.1. #*{{quote-book|en|year=2000|author=Stephen O&#39;Shea|title=The Perfect Heresy|publisher=Profile Books|page=97|passage=From behind the narrow slits in the walls of Castellar, crossbowmen and archers took aim at the juddering &#39;&#39;&#39;cat&#39;&#39;&#39; as it came closer.}}</span>
+<span class="sd">              1.2.2. Verb</span>
+<span class="sd">                1.2.2.1. Translations</span>
+<span class="sd">                1.2.2.ex. Explanations</span>
+<span class="sd">                  1.2.2.ex.1. # {{lb|en|nautical|transitive}} To [[hoist]] (the [[anchor]]) by its [[ring]] so that it hangs at the [[cathead]].</span>
+<span class="sd">                  1.2.2.ex.2. # {{lb|en|nautical|transitive}} To flog with a [[cat-o&#39;-nine-tails]].</span>
+<span class="sd">                  1.2.2.ex.3. # {{lb|en|slang}} To [[vomit]] something.</span>
+<span class="sd">                  1.2.2.ex.4. # To go [[wander]]ing at [[night]].</span>
+<span class="sd">                    1.2.2.ex.4.1. #* {{quote-book|en |year=1998 |title=Lady&#39;s Wager |author=Mary Spencer |page=324|ISBN=|passage=&quot;He doesn&#39;t realize that I know,&quot; Lord Callan said, &quot;but it&#39;s been pretty obvious that most of his &#39;&#39;&#39;catting&#39;&#39;&#39; about London&#39;s darker alleys has been a search for his origins. }}</span>
+<span class="sd">                    1.2.2.ex.4.2. #* {{quote-book|en |year=2010|title=Manchild in the Promised Land |author=Claude Brown |page=18|ISBN=|passage=This was going to be my first try at &#39;&#39;&#39;catting&#39;&#39;&#39; out. I went looking for somebody to &#39;&#39;&#39;cat&#39;&#39;&#39; with me.}}</span>
+<span class="sd">                    1.2.2.ex.4.3. #* {{quote-book|en |year=2012|title=Wages of Sin|author=Valerie Hansen |page=|ISBN=|passage=My own dear wife could have tended to his needs if she hadn&#39;t been out &#39;&#39;&#39;catting&#39;&#39;&#39;.}}</span>
+<span class="sd">                  1.2.2.ex.5. # To [[gossip]] in a [[catty]] manner.</span>
+<span class="sd">                    1.2.2.ex.5.1. #* {{quote-book|en |year=1932 |title=Man Made Angry |author=Hugh Brooke |page=134|ISBN=|passage=Men from young to middleaged, with matt faces, vivacious and brightly dressed, &#39;&#39;&#39;catted&#39;&#39;&#39; together in gay groups.}}</span>
+<span class="sd">                    1.2.2.ex.5.2. #* {{quote-book|en |year=1996|title=The Unlucky Seven|author=Alistair Boyle |page=|ISBN=|passage=They smiled, touched, rolled their eyes and raised their eyebrows, as they relived the audition and &#39;&#39;&#39;catted&#39;&#39;&#39; about some of their competition.}}</span>
+<span class="sd">                    1.2.2.ex.5.3. #* {{quote-book|en |year=2016 |title=The Swans of Fifth Avenue|author=Melanie Benjamin |page=293|ISBN=|passage=In the story, Lady Ina gossiped and &#39;&#39;&#39;catted&#39;&#39;&#39; about a parade of the rich and famous—Jackie Kennedy looking like an exaggerated version of herself, Princess Margaret so boring she made people fall asleep, Gloria Vanderbilt so ditzy she didn&#39;t recognize her first husband.}}</span>
+<span class="sd">              1.2.3. See also</span>
+<span class="sd">            1.3. Etymology 2</span>
+<span class="sd">              1.3.1. Noun</span>
+<span class="sd">                1.3.1.ex. Explanations</span>
+<span class="sd">                  1.3.1.ex.1. # A [[catamaran]].</span>
+<span class="sd">            1.4. Etymology 3</span>
+<span class="sd">              1.4.1. Noun</span>
+<span class="sd">                1.4.1.ex. Explanations</span>
+<span class="sd">                  1.4.1.ex.1. # {{lb|en|computing}} A program and command in [[Unix]] that reads one or more files and directs their content to the standard output.</span>
+<span class="sd">              1.4.2. Verb</span>
+<span class="sd">                1.4.2.ex. Explanations</span>
+<span class="sd">                  1.4.2.ex.1. # {{lb|en|computing|transitive}} To [[apply]] the &#39;&#39;&#39;cat&#39;&#39;&#39; [[command]] to (one or more files).</span>
+<span class="sd">                  1.4.2.ex.2. # {{lb|en|computing|slang}} To [[dump]] large amounts of data on (an unprepared target) usually with no intention of browsing it carefully.</span>
+<span class="sd">            1.5. Etymology 4</span>
+<span class="sd">              1.5.1. Adjective</span>
+<span class="sd">                1.5.1.1. Usage notes</span>
+<span class="sd">                1.5.1.ex. Explanations</span>
+<span class="sd">                  1.5.1.ex.1. # {{lb|en|Ireland|informal}} [[terrible|Terrible]], [[disastrous]].</span>
+<span class="sd">                    1.5.1.ex.1.:1. #: {{ux|en|The weather was &#39;&#39;&#39;cat&#39;&#39;&#39;, so they returned home early.}}</span>
+<span class="sd">            1.6. Etymology 5</span>
+<span class="sd">              1.6.1. Noun</span>
+<span class="sd">                1.6.1.ex. Explanations</span>
+<span class="sd">                  1.6.1.ex.1. # {{lb|en|slang}} {{non-gloss definition|A street name of the drug [[methcathinone]].}}</span>
+<span class="sd">            1.7. Etymology 6</span>
+<span class="sd">              1.7.1. Noun</span>
+<span class="sd">                1.7.1.ex. Explanations</span>
+<span class="sd">                  1.7.1.ex.1. # {{lb|en|military|naval}} A [[catapult]].</span>
+<span class="sd">                    1.7.1.ex.1.:1. #: {{ux|en|a carrier&#39;s bow &#39;&#39;&#39;cats&#39;&#39;&#39;}}</span>
+<span class="sd">            1.8. Etymology 7</span>
+<span class="sd">              1.8.1. Noun</span>
+<span class="sd">                1.8.1.ex. Explanations</span>
+<span class="sd">                  1.8.1.ex.1. # {{abbreviation of|en|category}}</span>
+<span class="sd">            1.9. Etymology 8</span>
+<span class="sd">              1.9.1. Noun</span>
+<span class="sd">                1.9.1.ex. Explanations</span>
+<span class="sd">                  1.9.1.ex.1. # {{abbreviation of|en|catfish}}</span>
+<span class="sd">                    1.9.1.ex.1.1. #* {{quote-book|en|year=1913|author={{w|Willa Cather}}|title=[[s:O Pioneers!|O Pioneers!]]|chapter=2|passage=She missed the fish diet of her own country, and twice every summer she sent the boys to the river, twenty miles to the southward, to fish for channel &#39;&#39;&#39;cat&#39;&#39;&#39;.}}</span>
+<span class="sd">                    1.9.1.ex.1.2. #* &#39;&#39;&#39;1916&#39;&#39;&#39;, M. Shults, &quot;Fishing for Yellow Cat in the Brazos&quot;, in &#39;&#39;Field and Stream&#39;&#39;, vol. 21, 478.</span>
+<span class="sd">                      1.9.1.ex.1.2.:1. #*: Fishing for &#39;&#39;&#39;cat&#39;&#39;&#39; is probably, up to a certain stage, the least exciting of all similar sports.</span>
+<span class="sd">            1.10. Etymology 9</span>
+<span class="sd">              1.10.1. Noun</span>
+<span class="sd">                1.10.1.ex. Explanations</span>
+<span class="sd">                  1.10.1.ex.1. # {{lb|en|slang}} Any of a variety of earth-moving [[machine]]s. (from their manufacturer {{w|Caterpillar Inc.}})</span>
+<span class="sd">                  1.10.1.ex.2. # A [[caterpillar drive]] vehicle (a ground vehicle which uses [[caterpillar track]]s), especially tractors, trucks, minibuses, and snow groomers.</span>
+<span class="sd">            1.11. References</span>
+<span class="sd">            1.12. Anagrams</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Root</span><span class="p">()</span>
     <span class="n">last</span> <span class="o">=</span> <span class="n">root</span>
 
@@ -239,6 +375,24 @@
 
 
 <div class="viewcode-block" id="extract_raw_text"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.extract_raw_text">[docs]</a><span class="k">def</span> <span class="nf">extract_raw_text</span><span class="p">(</span> <span class="n">toc</span><span class="p">:</span> <span class="n">Root</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It for converting extlanations from &#39;# An animal of the family [[Felidae]]:&#39; to &#39;An animal of the family Felidae:&#39;</span>
+
+<span class="sd">    It scan all lexemes for:</span>
+
+<span class="sd">    - explanation, like the:</span>
+<span class="sd">    - templates: {{en-noun}}, {{en-adj}},...</span>
+<span class="sd">    - translations: {{trans-see}}, {{trans-top}}</span>
+<span class="sd">    - senses: {{sense}}, {{ws sense}}</span>
+
+<span class="sd">    It collect all values raw-text for send to Wiktionary API, for get clean human readable text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        toc (Root):     TOC root.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list)  raw-text strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#     extract sense raw-text</span>
     <span class="c1">#       nodes for convert raw to text</span>
     <span class="c1">#       explanation</span>
@@ -335,6 +489,42 @@
 
 
 <div class="viewcode-block" id="make_explanations_tree"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.make_explanations_tree">[docs]</a><span class="k">def</span> <span class="nf">make_explanations_tree</span><span class="p">(</span> <span class="n">lexemes</span><span class="p">:</span> <span class="nb">list</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExplanationsRoot</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It take lexems like the:</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        # An animal of the family [[Felidae]]:</span>
+<span class="sd">        #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+<span class="sd">        #: {{syn|en|felid}}</span>
+<span class="sd">        ## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">        ##* {{RQ:WBsnt IvryGt|II}}</span>
+<span class="sd">        ##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+<span class="sd">        ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+<span class="sd">        ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+
+<span class="sd">    and build tree like the:</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">          1.2.1.ex.1. # An animal of the family [[Felidae]]:</span>
+<span class="sd">            1.2.1.ex.1.1. #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+<span class="sd">            1.2.1.ex.1.:1. #: {{syn|en|felid}}</span>
+<span class="sd">            1.2.1.ex.1.2. ## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">              1.2.1.ex.1.2.1. ##* {{RQ:WBsnt IvryGt|II}}</span>
+<span class="sd">                1.2.1.ex.1.2.1.:1. ##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+<span class="sd">              1.2.1.ex.1.2.:1. ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+<span class="sd">            1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+
+<span class="sd">    Tree uses for detect child/parent explanations, child examples.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lexemes (list):  explanation lexems. It all starts from &#39;#&#39;, &#39;*&#39;, &#39;:&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (Root)  New table of contents (TOC)  root</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># make toc</span>
     <span class="c1"># Add childs to parents</span>
     <span class="c1"># Add examples to explanations</span>
@@ -398,6 +588,24 @@
 
 
 <div class="viewcode-block" id="get_label_type"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.get_label_type">[docs]</a><span class="k">def</span> <span class="nf">get_label_type</span><span class="p">(</span> <span class="n">expl</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return LabelType for item.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        expl (Explanation):         Explanation</span>
+<span class="sd">        item (WikictionaryItem):    WikictionaryItem</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str)   LabelType</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        LabelType for &#39;cat&#39; for explanation</span>
+<span class="sd">            ## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">        is:</span>
+<span class="sd">            &quot;Noun_DEFDATE_Subspecies_Silvestris_Feline&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wt</span> <span class="o">=</span> <span class="n">proper</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">Type</span><span class="p">)</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">Type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># Extract the list of item enclosed in {{ }}</span>
@@ -469,6 +677,36 @@
 
 
 <div class="viewcode-block" id="get_leaf_explanation_nodes"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.get_leaf_explanation_nodes">[docs]</a><span class="k">def</span> <span class="nf">get_leaf_explanation_nodes</span><span class="p">(</span> <span class="n">root</span><span class="p">:</span> <span class="n">Section</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return all leaf explanations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root (Section):     Explanations tree root</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list)  All leaf explanatins</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        # for</span>
+<span class="sd">          1.2.1.ex.1. # An animal of the family [[Felidae]]:</span>
+<span class="sd">            1.2.1.ex.1.1. #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various &#39;&#39;&#39;cats&#39;&#39;&#39; (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}</span>
+<span class="sd">            1.2.1.ex.1.:1. #: {{syn|en|felid}}</span>
+<span class="sd">            1.2.1.ex.1.2. ## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">              1.2.1.ex.1.2.1. ##* {{RQ:WBsnt IvryGt|II}}</span>
+<span class="sd">                1.2.1.ex.1.2.1.:1. ##*: At twilight in the summer there is never anybody to fear—man, woman, or &#39;&#39;&#39;cat&#39;&#39;&#39;—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.</span>
+<span class="sd">              1.2.1.ex.1.2.:1. ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}</span>
+<span class="sd">            1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+<span class="sd">              1.2.1.ex.1.3.1. ##* {{quote-book|en|year=1977|author=Peter Hathaway Capstick|title=Death in the Long Grass: A Big Game Hunter&#39;s Adventures in the African Bush|publisher=St. Martin&#39;s Press|page=44|passage=I grabbed it and ran over to the lion from behind, the &#39;&#39;&#39;cat&#39;&#39;&#39; still chewing thoughtfully on Silent&#39;s arm.}}</span>
+<span class="sd">              1.2.1.ex.1.3.2. ##* &#39;&#39;&#39;1985&#39;&#39;&#39; January, George Laycock, &quot;Our American Lion&quot;, in Boy Scouts of America, &#39;&#39;Boy&#39;s Life&#39;&#39;, 28.</span>
+<span class="sd">                1.2.1.ex.1.3.2.:1. ##*: If you should someday round a corner on the hiking trail and come face to face with a mountain lion, you would probably never forget the mighty &#39;&#39;&#39;cat&#39;&#39;&#39;.</span>
+<span class="sd">              1.2.1.ex.1.3.3. ##* {{quote-book|en|year=2014|author=Dale Mayer|title=Rare Find. A Psychic Visions Novel|publisher=Valley Publishing|passage=She felt privileged to be here, living the experience inside the majestic &#39;&#39;&#39;cat&#39;&#39;&#39; [i.e. a tiger]; privileged to be part of their bond, even for only a few hours.}}</span>
+
+<span class="sd">        # leafs is:</span>
+<span class="sd">            1.2.1.ex.1.2. ## A domesticated [[subspecies]] (&#39;&#39;[[Felis silvestris catus]]&#39;&#39;) of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8&lt;sup&gt;th&lt;/sup&gt;c.}}</span>
+<span class="sd">            1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">leaf_explanations</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">find_explanation_sections</span><span class="p">():</span>
@@ -479,6 +717,21 @@
 
 
 <div class="viewcode-block" id="add_explanations"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.add_explanations">[docs]</a><span class="k">def</span> <span class="nf">add_explanations</span><span class="p">(</span> <span class="n">toc</span><span class="p">:</span> <span class="n">Root</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It :</span>
+
+<span class="sd">    - get Table of contents tree</span>
+<span class="sd">    - then find explanations in each Part-of-speech section</span>
+<span class="sd">    - then from extracted explanations build explanations tree</span>
+<span class="sd">    - then add explanations tree into source Table of contents tree</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        toc (Root):  Table of contents (toc) root</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        It modified source tree `toc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">toc</span><span class="o">.</span><span class="n">find_part_of_speech_sections</span><span class="p">():</span>
         <span class="p">(</span><span class="n">explanations</span><span class="p">,</span> <span class="n">lexems2</span><span class="p">)</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">extract_explanations</span><span class="p">()</span>
 
@@ -490,6 +743,16 @@
 
 
 <div class="viewcode-block" id="make_lists_same_length"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.make_lists_same_length">[docs]</a><span class="k">def</span> <span class="nf">make_lists_same_length</span><span class="p">(</span> <span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">list</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make two lists same length. Add to smaller list items with None.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        a (list):   list 1</span>
+<span class="sd">        b (list):   lsit 2</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nothing to return. it modifies source lists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span> <span class="n">b</span> <span class="p">):</span>
         <span class="k">return</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span> <span class="n">b</span> <span class="p">):</span>
@@ -522,6 +785,18 @@
 
 
 <div class="viewcode-block" id="update_index_in_toc"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.update_index_in_toc">[docs]</a><span class="k">def</span> <span class="nf">update_index_in_toc</span><span class="p">(</span> <span class="n">root</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">index_pos</span><span class="o">=</span><span class="s1">&#39;&#39;</span>  <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update string prefix, like the: 1.1. in each section.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root:       TOC root</span>
+<span class="sd">        level:      - used in recursion</span>
+<span class="sd">        prefix:     - used in recursion</span>
+<span class="sd">        index_pos:  - used in recursion</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        it change nodes attribute `index_in_toc` in tree</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># text counter</span>
     <span class="c1"># list counter</span>
     <span class="c1"># header counter</span>
@@ -560,6 +835,15 @@
 
 
 <div class="viewcode-block" id="remove_other_langs"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.remove_other_langs">[docs]</a><span class="k">def</span> <span class="nf">remove_other_langs</span><span class="p">(</span> <span class="n">toc</span><span class="p">:</span> <span class="n">Root</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove non English languages from tree</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        toc (Root): TOC tree root</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nothing to return. it change source tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">to_keep</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -586,11 +870,49 @@
 
 
 <div class="viewcode-block" id="trans_see_finder"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.trans_see_finder">[docs]</a><span class="k">def</span> <span class="nf">trans_see_finder</span><span class="p">(</span> <span class="n">toc</span><span class="p">:</span> <span class="n">Root</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It helper help find Templates with name &#39;trans-see&#39;.</span>
+
+<span class="sd">    Uses for get translations from external pages.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        toc (Root): Table-of-contents (toc) root</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Iterator of tuples: (node, template)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">toc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span> <span class="n">Translations</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">lexemes_by_class</span><span class="p">[</span> <span class="n">Template</span> <span class="p">][</span> <span class="s1">&#39;trans-see&#39;</span> <span class="p">]:</span>
             <span class="k">yield</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="add_translations_from_trans_see"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.add_translations_from_trans_see">[docs]</a><span class="k">def</span> <span class="nf">add_translations_from_trans_see</span><span class="p">(</span> <span class="n">page</span><span class="p">,</span> <span class="n">toc</span><span class="p">:</span> <span class="n">Root</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find links to external pages, and fetch page contents, and add translations.</span>
+
+<span class="sd">    It make calls to Wiktionary API for fetch page contents. Then contents parsed.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        1. find all {{trans-see|...}}</span>
+<span class="sd">        2. request page via wiktionary API</span>
+<span class="sd">        3. parse page -&gt; lexemes + toc</span>
+<span class="sd">        4. make search index:  dict[ English ][ Noun ] = Translations</span>
+<span class="sd">        5. check</span>
+<span class="sd">                - English / Verb / Translations     -&gt;      English / Verb / Translations   - is better better better</span>
+<span class="sd">                - Verb / Translations               -&gt;      None    / Verb / Translations   - is better better</span>
+<span class="sd">                - English / Translations            -&gt;      English / None / Translations   - is better</span>
+<span class="sd">                - English / Synonyms / Translations -&gt;      None    / None / Translations   - is good</span>
+<span class="sd">                - Translations                      -&gt;      None    / None / Translations   - is good</span>
+<span class="sd">        6. get trarnslation lexemes. add to node =Translations=</span>
+<span class="sd">        7. save fetch page titles for prevent recursion</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        page (Page):    Page instance</span>
+<span class="sd">        toc:            TOC root</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nothing to return. It change TOC tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># 1. find all {{trans-see|...}}</span>
     <span class="c1"># 2. request page via wiktionary API</span>
     <span class="c1"># 3. parse page -&gt; lexemes + toc</span>
@@ -600,6 +922,8 @@
     <span class="c1">#      dict[ Noun ] == current_node.part_of_speech</span>
     <span class="c1">#      dict[ Translations ]</span>
     <span class="c1"># 6. get trarnslation lexemes. add to node =Translations=</span>
+    <span class="c1"># save fetch page titles for prevent recursion</span>
+    <span class="n">pages</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="c1"># 1. find all {{trans-see|...}}</span>
     <span class="n">node</span><span class="p">:</span> <span class="n">Translations</span>
@@ -617,8 +941,19 @@
         <span class="k">if</span> <span class="n">page_url</span> <span class="o">==</span> <span class="n">page</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
             <span class="k">continue</span>
 
+        <span class="c1"># skip already fetched</span>
+        <span class="k">if</span> <span class="n">page_url</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
+            <span class="k">continue</span>
+
         <span class="c1"># 2. request to wiktionary API</span>
         <span class="n">raw_text</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_RemoteAPI</span><span class="o">.</span><span class="n">get_wikitext</span><span class="p">(</span> <span class="n">page_url</span> <span class="p">)</span>
+
+        <span class="c1"># keep fetched title</span>
+        <span class="n">pages</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="n">page_url</span> <span class="p">)</span>
+
+        <span class="c1"># if page not exists - next</span>
+        <span class="k">if</span> <span class="n">raw_text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
 
         <span class="c1"># 3. parse page -&gt; lexemes + toc</span>
         <span class="n">ts_lexemes</span> <span class="o">=</span> <span class="n">Scrapper_Wiktionary_WikitextParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span> <span class="n">raw_text</span> <span class="p">)</span>
@@ -677,7 +1012,7 @@
         <span class="c1"># 6. get all from external page =Trarnslations=.</span>
         <span class="c1">#    add to node =Translations=</span>
         <span class="n">ts_translations_node</span><span class="p">:</span> <span class="n">Translations</span>
-        <span class="k">for</span> <span class="n">ts_translations_node</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span> <span class="kc">None</span><span class="p">,</span> <span class="n">checks</span> <span class="p">):</span>
+        <span class="k">for</span> <span class="n">ts_translations_node</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">x</span><span class="p">,</span> <span class="n">Translations</span> <span class="p">),</span> <span class="n">checks</span> <span class="p">):</span>
             <span class="c1"># append lexemes</span>
             <span class="n">node</span><span class="o">.</span><span class="n">lexemes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">ts_translations_node</span><span class="o">.</span><span class="n">lexemes</span> <span class="p">)</span>
             <span class="c1"># update index</span>
@@ -687,6 +1022,14 @@
 
 
 <div class="viewcode-block" id="update_popularity_of_word"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.update_popularity_of_word">[docs]</a><span class="k">def</span> <span class="nf">update_popularity_of_word</span><span class="p">(</span> <span class="n">item</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate and update field PopularityOfWord.</span>
+
+<span class="sd">    Please, see source.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        item (WikictionaryItem):    item</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">item</span><span class="o">.</span><span class="n">PopularityOfWord</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">ExplainationExamplesRaw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -742,8 +1085,29 @@
     <span class="n">item</span><span class="o">.</span><span class="n">PopularityOfWord</span> <span class="o">+=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">other_cost</span> <span class="k">else</span> <span class="mi">0</span></div>
 
 
+<div class="viewcode-block" id="check_structure"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.check_structure">[docs]</a><span class="k">def</span> <span class="nf">check_structure</span><span class="p">(</span> <span class="n">toc</span><span class="p">:</span> <span class="n">Root</span> <span class="p">):</span>
+    <span class="c1"># for each valuable section</span>
+    <span class="c1">#   check parent: parent must not can be same valuable section</span>
+    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">toc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span> <span class="p">(</span><span class="n">Translations</span><span class="p">,</span> <span class="n">Synonyms</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+        <span class="k">pass</span></div>
+
 
 <div class="viewcode-block" id="scrap"><a class="viewcode-back" href="../../../docstring/wiktionary.en.html#wiktionary.en.Scrapper_Wiktionary_EN.scrap">[docs]</a><span class="k">def</span> <span class="nf">scrap</span><span class="p">(</span> <span class="n">page</span><span class="p">:</span> <span class="n">Scrapper_Wiktionary</span><span class="o">.</span><span class="n">Page</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">WikictionaryItem</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main scrap function</span>
+
+<span class="sd">    #. get Page: id, ns, title, raw-text</span>
+<span class="sd">    #. parse raw-text -&gt; take lexemes</span>
+<span class="sd">    #. keep lexemes. make table-of-contents (toc). toc structure is tree. each branch is header. each node hold lexemes</span>
+<span class="sd">    #. take tree. find part-of-speech nodes. take lexemes. find li. convert li to nodes. it is explanations</span>
+<span class="sd">    #. take each node. take lexemes. convert lists to tree, wrap text text block with node.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        page (Page): Page instance</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list)      list of items</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># 1. get Page: id, ns, title, raw-text</span>
     <span class="c1"># 2. parse raw-text -&gt; take lexemes</span>
     <span class="c1"># 3. keep lexemes. make table-of-contents (toc). toc structure is tree. each branch is header. each node hold lexemes</span>

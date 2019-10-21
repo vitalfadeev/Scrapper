@@ -145,138 +145,142 @@
         <span class="n">DB_TABLE_NAME</span> <span class="o">=</span> <span class="s2">&quot;wiktionary&quot;</span>
         <span class="n">DB_INIT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">            CREATE TABLE IF NOT EXISTS wiktionary (</span>
-<span class="s2">                    PrimaryKey              VARCHAR(255) NOT NULL PRIMARY KEY,</span>
-<span class="s2">                    IndexinPage				INTEGER NULL,</span>
-<span class="s2">                    IndexPartOfSpeech		VARCHAR(255) NULL,</span>
-<span class="s2">                    IndexinToc 				VARCHAR(255) NULL,</span>
-<span class="s2">                    SelfUrl                 VARCHAR(255),</span>
-<span class="s2">                    LabelName               VARCHAR(255),</span>
-<span class="s2">                    LabelType               VARCHAR(255),</span>
-<span class="s2">                    LanguageCode            CHAR(2),</span>
-<span class="s2">                    Type                    VARCHAR(255),</span>
-<span class="s2">                    TypeLabelName           VARCHAR(255),</span>
-<span class="s2">                    ExplainationRaw         TEXT,</span>
-<span class="s2">                    ExplainationTxt         TEXT,</span>
-<span class="s2">                    ExplainationExamplesRaw TEXT,</span>
-<span class="s2">                    ExplainationExamplesTxt TEXT,</span>
-<span class="s2">                    DescriptionTxt          TEXT,</span>
-<span class="s2">                    IsMale                  INTEGER NULL,</span>
-<span class="s2">                    IsFeminine              INTEGER NULL,</span>
-<span class="s2">                    IsNeutre                INTEGER NULL,</span>
-<span class="s2">                    IsSingle                INTEGER NULL,</span>
-<span class="s2">                    IsPlural                INTEGER NULL,</span>
-<span class="s2">                    SingleVariant           VARCHAR(255) NULL,</span>
-<span class="s2">                    PluralVariant           VARCHAR(255) NULL,</span>
-<span class="s2">                    PopularityOfWord        INTEGER NULL,</span>
-<span class="s2">                    MaleVariant             VARCHAR(255) NULL,</span>
-<span class="s2">                    FemaleVariant           VARCHAR(255) NULL,</span>
-<span class="s2">                    IsVerbPast              INTEGER NULL,</span>
-<span class="s2">                    IsVerbPresent           INTEGER NULL,</span>
-<span class="s2">                    IsVerbFutur             INTEGER NULL,</span>
-<span class="s2">                    Conjugation             TEXT NULL,</span>
-<span class="s2">                    Synonymy                TEXT NULL,</span>
-<span class="s2">                    Antonymy                TEXT NULL,</span>
-<span class="s2">                    Hypernymy               TEXT NULL,</span>
-<span class="s2">                    Hyponymy                TEXT NULL,</span>
-<span class="s2">                    Meronymy                TEXT NULL,</span>
-<span class="s2">                    Holonymy                TEXT NULL,</span>
-<span class="s2">                    Troponymy               TEXT NULL,</span>
-<span class="s2">                    Otherwise               TEXT NULL,</span>
-<span class="s2">                    AlternativeFormsOther   TEXT NULL,</span>
-<span class="s2">                    RelatedTerms            TEXT NULL,</span>
-<span class="s2">                    Coordinate              TEXT NULL,</span>
-<span class="s2">                    Translation_EN          TEXT NULL,</span>
-<span class="s2">                    Translation_FR          TEXT NULL,</span>
-<span class="s2">                    Translation_DE          TEXT NULL,</span>
-<span class="s2">                    Translation_IT          TEXT NULL,</span>
-<span class="s2">                    Translation_ES          TEXT NULL,</span>
-<span class="s2">                    Translation_RU          TEXT NULL,</span>
-<span class="s2">                    Translation_PT          TEXT NULL,</span>
-<span class="s2">                    TranslationsBySentence  TEXT NULL,</span>
-<span class="s2">                    TranslationSentence     TEXT NULL,</span>
-<span class="s2">                    TranslationsByLang      TEXT NULL,</span>
-<span class="s2">                    TranslationsPairs       TEXT NULL,</span>
-<span class="s2">                    DescriptionWiktionaryLinks TEXT NULL,</span>
-<span class="s2">                    DescriptionWikipediaLinks  TEXT NULL,</span>
-<span class="s2">                    Labels                  TEXT NULL,</span>
-<span class="s2">                    Categories              TEXT NULL,</span>
-<span class="s2">                    Cognates                TEXT NULL,</span>
-<span class="s2">                    Mentions                TEXT NULL,</span>
-<span class="s2">                    VerbConjugaisonAdded    INTEGER NULL,</span>
-<span class="s2">                    Senses                  TEXT NULL,</span>
-<span class="s2">                    SeeAlso                 TEXT NULL,</span>
-<span class="s2">                    Accent                  TEXT NULL,</span>
-<span class="s2">                    Qualifier               TEXT NULL,</span>
-<span class="s2">                    ExternalLinks           TEXT NULL</span>
+<span class="s2">                    PrimaryKey                  VARCHAR(255) NOT NULL PRIMARY KEY,</span>
+<span class="s2">                    IndexinPage				    INTEGER NULL,</span>
+<span class="s2">                    IndexPartOfSpeech		    VARCHAR(255) NULL,</span>
+<span class="s2">                    IndexinToc 				    VARCHAR(255) NULL,</span>
+<span class="s2">                    SelfUrl                     VARCHAR(255),</span>
+<span class="s2">                    LabelName                   VARCHAR(255),</span>
+<span class="s2">                    LabelType                   VARCHAR(255),</span>
+<span class="s2">                    LanguageCode                CHAR(2),</span>
+<span class="s2">                    Type                        VARCHAR(255),</span>
+<span class="s2">                    TypeLabelName               VARCHAR(255),</span>
+<span class="s2">                    ExplainationRaw             TEXT,</span>
+<span class="s2">                    ExplainationTxt             TEXT,</span>
+<span class="s2">                    ExplainationExamplesRaw     TEXT,</span>
+<span class="s2">                    ExplainationExamplesTxt     TEXT,</span>
+<span class="s2">                    DescriptionTxt              TEXT,</span>
+<span class="s2">                    IsMale                      INTEGER NULL,</span>
+<span class="s2">                    IsFeminine                  INTEGER NULL,</span>
+<span class="s2">                    IsNeutre                    INTEGER NULL,</span>
+<span class="s2">                    IsSingle                    INTEGER NULL,</span>
+<span class="s2">                    IsPlural                    INTEGER NULL,</span>
+<span class="s2">                    SingleVariant               VARCHAR(255) NULL,</span>
+<span class="s2">                    PluralVariant               VARCHAR(255) NULL,</span>
+<span class="s2">                    PopularityOfWord            INTEGER NULL,</span>
+<span class="s2">                    MaleVariant                 VARCHAR(255) NULL,</span>
+<span class="s2">                    FemaleVariant               VARCHAR(255) NULL,</span>
+<span class="s2">                    IsVerbPast                  INTEGER NULL,</span>
+<span class="s2">                    IsVerbPresent               INTEGER NULL,</span>
+<span class="s2">                    IsVerbFutur                 INTEGER NULL,</span>
+<span class="s2">                    Conjugation                 TEXT NULL,</span>
+<span class="s2">                    Synonymy                    TEXT NULL,</span>
+<span class="s2">                    Antonymy                    TEXT NULL,</span>
+<span class="s2">                    Hypernymy                   TEXT NULL,</span>
+<span class="s2">                    Hyponymy                    TEXT NULL,</span>
+<span class="s2">                    Meronymy                    TEXT NULL,</span>
+<span class="s2">                    Holonymy                    TEXT NULL,</span>
+<span class="s2">                    Troponymy                   TEXT NULL,</span>
+<span class="s2">                    Otherwise                   TEXT NULL,</span>
+<span class="s2">                    AlternativeFormsOther       TEXT NULL,</span>
+<span class="s2">                    RelatedTerms                TEXT NULL,</span>
+<span class="s2">                    DerivedTerms                TEXT NULL,</span>
+<span class="s2">                    Coordinate                  TEXT NULL,</span>
+<span class="s2">                    Translation_EN              TEXT NULL,</span>
+<span class="s2">                    Translation_FR              TEXT NULL,</span>
+<span class="s2">                    Translation_DE              TEXT NULL,</span>
+<span class="s2">                    Translation_IT              TEXT NULL,</span>
+<span class="s2">                    Translation_ES              TEXT NULL,</span>
+<span class="s2">                    Translation_RU              TEXT NULL,</span>
+<span class="s2">                    Translation_PT              TEXT NULL,</span>
+<span class="s2">                    TranslationsBySentence      TEXT NULL,</span>
+<span class="s2">                    TranslationSentence         TEXT NULL,</span>
+<span class="s2">                    TranslationsByLang          TEXT NULL,</span>
+<span class="s2">                    TranslationsPairs           TEXT NULL,</span>
+<span class="s2">                    Labels                      TEXT NULL,</span>
+<span class="s2">                    Categories                  TEXT NULL,</span>
+<span class="s2">                    Cognates                    TEXT NULL,</span>
+<span class="s2">                    Mentions                    TEXT NULL,</span>
+<span class="s2">                    VerbConjugaisonAdded        INTEGER NULL,</span>
+<span class="s2">                    Senses                      TEXT NULL,</span>
+<span class="s2">                    SeeAlsoWiktionaryLinks      TEXT NULL,</span>
+<span class="s2">                    SeeAlsoWikipediaLinks       TEXT NULL,</span>
+<span class="s2">                    Accent                      TEXT NULL,</span>
+<span class="s2">                    Qualifier                   TEXT NULL,</span>
+<span class="s2">                    DescriptionWikipediaLinks   TEXT NULL,</span>
+<span class="s2">                    DescriptionWiktionaryLinks  TEXT NULL</span>
 <span class="s2">            );</span>
 <span class="s2">            </span>
 <span class="s2">            -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);</span>
 <span class="s2">        &quot;&quot;&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">PrimaryKey</span>                 <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">SelfUrl</span>                    <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">LabelName</span>                  <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">LabelType</span>                  <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">LanguageCode</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># (EN,FR,…)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Type</span>                       <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#                        = noun,verb… see = WORD_TYPES</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TypeLabelName</span>              <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># chatt for verb of chat</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationRaw</span>            <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationTxt</span>            <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationExamplesRaw</span>    <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationExamplesTxt</span>    <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionTxt</span>             <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsMale</span>                     <span class="o">=</span> <span class="nb">bool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsFeminine</span>                 <span class="o">=</span> <span class="nb">bool</span>  <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsNeutre</span>                   <span class="o">=</span> <span class="nb">bool</span>  <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsSingle</span>                   <span class="o">=</span> <span class="nb">bool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsPlural</span>                   <span class="o">=</span> <span class="nb">bool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">SingleVariant</span>              <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">PluralVariant</span>              <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">PopularityOfWord</span>           <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">MaleVariant</span>                <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">FemaleVariant</span>              <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbPast</span>                 <span class="o">=</span> <span class="nb">bool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbPresent</span>              <span class="o">=</span> <span class="nb">bool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbFutur</span>                <span class="o">=</span> <span class="nb">bool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Conjugation</span>                <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Synonymy</span>                   <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Antonymy</span>                   <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Hypernymy</span>                  <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Hyponymy</span>                   <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Meronymy</span>                   <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Holonymy</span>                   <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Troponymy</span>                  <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Otherwise</span>                  <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">AlternativeFormsOther</span>      <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">RelatedTerms</span>               <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Coordinate</span>                 <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_EN</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_FR</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_DE</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_IT</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_ES</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_RU</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_PT</span>             <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IndexinPage</span>                <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IndexinToc</span>                 <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">IndexPartOfSpeech</span>          <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># &quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsBySentence</span>     <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationSentence</span>        <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsByLang</span>         <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsPairs</span>          <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWiktionaryLinks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWikipediaLinks</span>  <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Labels</span>                     <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Categories</span>                 <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Cognates</span>                   <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Mentions</span>                   <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">VerbConjugaisonAdded</span>       <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Senses</span>                     <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">SeeAlso</span>                    <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Accent</span>                     <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Qualifier</span>                  <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ExternalLinks</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PrimaryKey</span>                  <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SelfUrl</span>                     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LabelName</span>                   <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LabelType</span>                   <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LanguageCode</span>                <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># (EN,FR,…)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Type</span>                        <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#                        = noun,verb… see = WORD_TYPES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TypeLabelName</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># chatt for verb of chat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationRaw</span>             <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationTxt</span>             <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationExamplesRaw</span>     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationExamplesTxt</span>     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionTxt</span>              <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsMale</span>                      <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsFeminine</span>                  <span class="o">=</span> <span class="nb">bool</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsNeutre</span>                    <span class="o">=</span> <span class="nb">bool</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsSingle</span>                    <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsPlural</span>                    <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SingleVariant</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PluralVariant</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PopularityOfWord</span>            <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MaleVariant</span>                 <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FemaleVariant</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbPast</span>                  <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbPresent</span>               <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbFutur</span>                 <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Conjugation</span>                 <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Synonymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Antonymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hypernymy</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hyponymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Meronymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Holonymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Troponymy</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Otherwise</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AlternativeFormsOther</span>       <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelatedTerms</span>                <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DerivedTerms</span>                <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Coordinate</span>                  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_EN</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_FR</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_DE</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_IT</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_ES</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_RU</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_PT</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndexinPage</span>                 <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndexinToc</span>                  <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndexPartOfSpeech</span>           <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsBySentence</span>      <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationSentence</span>         <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsByLang</span>          <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsPairs</span>           <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWiktionaryLinks</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWikipediaLinks</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Labels</span>                      <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Categories</span>                  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cognates</span>                    <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Mentions</span>                    <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VerbConjugaisonAdded</span>        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Senses</span>                      <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SeeAlsoWiktionaryLinks</span>      <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SeeAlsoWikipediaLinks</span>       <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Accent</span>                      <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qualifier</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWikipediaLinks</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWiktionaryLinks</span>  <span class="o">=</span> <span class="p">[]</span>
 
             
 <div class="viewcode-block" id="WikictionaryItem.dump"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

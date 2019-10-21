@@ -35,6 +35,7 @@ def scrap_one_test(lang="en", label="cat"):
     items = Scrapper_Wiktionary.scrap_one( lang, page )
     return  items
 
+
 if __name__ == "__main__":
     lang = 'en'
     title = 'cat'

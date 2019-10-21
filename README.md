@@ -1,7 +1,7 @@
 # Scrapper
 
 Scheme 1: 
-[big-scheme](https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Scrapper-Public-Diagram.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D19y62Yo3xMtZLr7PJkdcB7iO2Ueh51eEi%26export%3Ddownload)
+[big scheme](https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Scrapper-Public-Diagram.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D19y62Yo3xMtZLr7PJkdcB7iO2Ueh51eEi%26export%3Ddownload)
 
 Scheme 2:
 [scan section scheme](https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Scrapper-search-sub-synonyms#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1740jTkqI4XR-dgzVL68azChHlQw4W3zU%26export%3Ddownload)

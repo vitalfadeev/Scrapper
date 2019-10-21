@@ -17,6 +17,141 @@ from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import \
 
 
 def make_table_of_contents( lexemes: list ) -> Root:
+    """
+    Create Table of contents for given `lexemes`.
+
+    it search <Header> tokens. In raw-text it '=English=', '===Noun==='. Then detect level of header. Then build tree.
+
+    Args:
+        lexemes (list):     List of lexemes. Lexemes going from raw-text parser (module Scrapper_Wiktionary_WikitextParser)
+
+    Returns:
+        (Root)  Tree root.
+
+    ::
+
+        # for 'cat'
+        toc = make_table_of_contents( lexems )
+
+        # result is:
+        toc.dump()
+
+        # result:
+          1. English
+            1.1. Pronunciation
+            1.2. Etymology 1
+              1.2.1. Noun
+                1.2.1.1. Synonyms
+                1.2.1.2. Hyponyms
+                1.2.1.3. Derived terms
+                1.2.1.4. Translations
+                1.2.1.ex. Explanations
+                  1.2.1.ex.1. # An animal of the family [[Felidae]]:
+                    1.2.1.ex.1.1. #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various '''cats''' (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}
+                    1.2.1.ex.1.:1. #: {{syn|en|felid}}
+                    1.2.1.ex.1.2. ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+                      1.2.1.ex.1.2.1. ##* {{RQ:WBsnt IvryGt|II}}
+                        1.2.1.ex.1.2.1.:1. ##*: At twilight in the summer there is never anybody to fear—man, woman, or '''cat'''—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.
+                      1.2.1.ex.1.2.:1. ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}
+                    1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.
+                      1.2.1.ex.1.3.1. ##* {{quote-book|en|year=1977|author=Peter Hathaway Capstick|title=Death in the Long Grass: A Big Game Hunter's Adventures in the African Bush|publisher=St. Martin's Press|page=44|passage=I grabbed it and ran over to the lion from behind, the '''cat''' still chewing thoughtfully on Silent's arm.}}
+                      1.2.1.ex.1.3.2. ##* '''1985''' January, George Laycock, "Our American Lion", in Boy Scouts of America, ''Boy's Life'', 28.
+                        1.2.1.ex.1.3.2.:1. ##*: If you should someday round a corner on the hiking trail and come face to face with a mountain lion, you would probably never forget the mighty '''cat'''.
+                      1.2.1.ex.1.3.3. ##* {{quote-book|en|year=2014|author=Dale Mayer|title=Rare Find. A Psychic Visions Novel|publisher=Valley Publishing|passage=She felt privileged to be here, living the experience inside the majestic '''cat''' [i.e. a tiger]; privileged to be part of their bond, even for only a few hours.}}
+                  1.2.1.ex.2. # A person:
+                    1.2.1.ex.2.1. ## {{lb|en|offensive}} A spiteful or angry [[woman]]. {{defdate|from earlier 13<sup>th</sup>c.}}
+                      1.2.1.ex.2.1.1. ##* '''1835''' September, anonymous, "The Pigs", in ''The New-England Magazine'', Vol. 9, 156.
+                        1.2.1.ex.2.1.1.:1. ##*: But, ere one rapid moon its tale has told, / He finds his prize — a '''cat''' — a slut — a scold.
+                      1.2.1.ex.2.1.:1. ##: {{syn|en|bitch}}
+                    1.2.1.ex.2.2. ## An enthusiast or player of [[jazz]].
+                      1.2.1.ex.2.2.1. ##* {{quote-song|en|year=2008|author={{w|Nick Cave and the Bad Seeds}}|title=Hold on to Yourself|passage=I turn on the radio / There's some '''cat''' on the saxophone / Laying down a litany of excuses}}
+                    1.2.1.ex.2.3. ## {{lb|en|slang}} A person (usually male).
+                      1.2.1.ex.2.3.1. ##* {{quote-song|en|title=Starman|album=The Rise and Fall of Ziggy Stardust and the Spiders from Mars|artist=David Bowie|year=1972|passage=Didn't know what time it was the lights were low / I leaned back on my radio / Some '''cat''' was layin' down some rock'n'roll 'lotta soul, he said}}
+                      1.2.1.ex.2.3.2. ##* '''1973''' December, "Books Noted", discussing ''A Dialogue'' (by James Baldwin and Nikki Giovanni), in ''Black World'', Johnson Publishing Company, 77.
+                        1.2.1.ex.2.3.2.:1. ##*: BALDWIN: That's what we were talking about before. And by the way, you did not have to tell me that you think your father is a groovy '''cat'''; I knew that.
+                      1.2.1.ex.2.3.3. ##* {{quote-song|en|artist={{w|Shaquille O'Neal}}|title=Fiend|year=1998|album=Respect|passage=What fags are true I know what Mack's might do<br/>I'm quite familiar with '''cats''' like you<br>Provoke to get me give me a good reason to smoke me<br>Try to break me but never wrote me)}}
+                      1.2.1.ex.2.3.4. ##* {{quote-song|en|year=2006|lyricist=Masta Ace|title=Sick of it all|album=Pariah|passage=I am sick of rappers claiming they hot when they really not<br/>I am sick of rappers bragging about shit they ain’t really got<br/>These '''cats''' stay rapping about cars they don’t own<br/>I am sick of rappers bragging about models they don’t bone.[…]<br/>And I am sick of all these '''cats''' with no talent<br/>That never lived in the hood but yet their lyrics be so violent.}}
+                      1.2.1.ex.2.3.:1. ##: {{syn|en|bloke|chap|cove|dude|fellow|fella|guy}}
+                    1.2.1.ex.2.4. ## {{lb|en|slang}} A [[prostitute]]. {{defdate|from at least early 15<sup>th</sup>c.}}
+                      1.2.1.ex.2.4.1. ##* {{quote-book|en|year=1999|author=Carl P. Eby|title=Hemingway's Fetishism. Psychoanalysis and the Mirror of Manhood|publisher=State University of New York Press|page=124|passage="Tell me. Willie said there was a '''cat''' in love with you. That isn't true, is it?" "Yes. It's true," Hudson corrects her, letting her think that by "cat" he means prostitute.}}
+                  1.2.1.ex.3. # {{lb|en|nautical}} A strong tackle used to hoist an anchor to the [[cathead]] of a ship.
+                    1.2.1.ex.3.1. #* {{quote-book|en|year=2009|author=Olof A. Eriksen|title=Constitution - All Sails Up and Flying|publisher=Outskirts Press|page=134|passage=Overhaul down & hook the '''cat''', haul taut. Walk away the '''cat'''. When up, pass the '''cat''' head stopper. Hook the fish in & fish the anchor.}}
+                  1.2.1.ex.4. # {{lb|en|chiefly|nautical}} {{non-gloss definition|Short form of}} [[cat-o'-nine-tails]].
+                    1.2.1.ex.4.1. #* {{quote-book|en|year=1839|section=testimony by {{w|Henry L. Pinckney}} (Assembly No. 335)|title=Documents of the Assembly of the State of New York|page=44|passage={{...}}he whipped a black man for disobedience of his orders fifty lashes; and again whipped him with a '''cat''', which he wound with wire, about the same number of stripes;{{...}}he used this '''cat''' on one other man, and then destroyed the '''cat''' wound with wire.}}
+                  1.2.1.ex.5. # {{lb|en|archaic}} A sturdy merchant sailing vessel {{qualifier|now only in "[[catboat]]"}}.
+                  1.2.1.ex.6. # {{lb|en|archaic|uncountable}} The game of "[[trap and ball]]" (also called "cat and dog").
+                    1.2.1.ex.6.1. ## The trap of the game of "trap and ball".
+                  1.2.1.ex.7. # {{lb|en|archaic}} The pointed piece of wood that is struck in the game of [[tipcat]].
+                  1.2.1.ex.8. # {{lb|en|slang|vulgar|African American Vernacular English}} A [[vagina]], a [[vulva]]; the female external genitalia.
+                    1.2.1.ex.8.1. #* {{quote-book|en|year=1969|author=Iceberg Slim|title=Pimp: The Story of My Life|publisher=Holloway House Publishing|passage="What the hell, so this broad's got a prematurely-gray '''cat'''."}}
+                    1.2.1.ex.8.2. #* {{quote-book|en|year=2005|author=Carolyn Chambers Sanders|title=Sins & Secrets|publisher=Hachette Digital|passage=As she came up, she tried to put her '''cat''' in his face for some licking.}}
+                    1.2.1.ex.8.3. #* {{quote-book|en|year=2007|author=Franklin White|title=Money for Good|publisher=Simon and Schuster|page=64|passage=I had a notion to walk over to her, rip her apron off, sling her housecoat open and put my finger inside her '''cat''' to see if she was wet or freshly fucked because the dream I had earlier was beginning to really annoy me.}}
+                  1.2.1.ex.9. # A [[double]] [[tripod]] (for holding a [[plate]], etc.) with six feet, of which three rest on the ground, in whatever position it is placed.
+                  1.2.1.ex.10. # {{lb|en|historical}} A [[wheel]]ed [[shelter]], used in the [[Middle Ages]] as a [[siege]] weapon to allow [[assailant]]s to approach enemy [[defence]]s.
+                    1.2.1.ex.10.:1. #: {{syn|en|tortoise|Welsh cat}}
+                    1.2.1.ex.10.1. #*{{quote-book|en|year=2000|author=Stephen O'Shea|title=The Perfect Heresy|publisher=Profile Books|page=97|passage=From behind the narrow slits in the walls of Castellar, crossbowmen and archers took aim at the juddering '''cat''' as it came closer.}}
+              1.2.2. Verb
+                1.2.2.1. Translations
+                1.2.2.ex. Explanations
+                  1.2.2.ex.1. # {{lb|en|nautical|transitive}} To [[hoist]] (the [[anchor]]) by its [[ring]] so that it hangs at the [[cathead]].
+                  1.2.2.ex.2. # {{lb|en|nautical|transitive}} To flog with a [[cat-o'-nine-tails]].
+                  1.2.2.ex.3. # {{lb|en|slang}} To [[vomit]] something.
+                  1.2.2.ex.4. # To go [[wander]]ing at [[night]].
+                    1.2.2.ex.4.1. #* {{quote-book|en |year=1998 |title=Lady's Wager |author=Mary Spencer |page=324|ISBN=|passage="He doesn't realize that I know," Lord Callan said, "but it's been pretty obvious that most of his '''catting''' about London's darker alleys has been a search for his origins. }}
+                    1.2.2.ex.4.2. #* {{quote-book|en |year=2010|title=Manchild in the Promised Land |author=Claude Brown |page=18|ISBN=|passage=This was going to be my first try at '''catting''' out. I went looking for somebody to '''cat''' with me.}}
+                    1.2.2.ex.4.3. #* {{quote-book|en |year=2012|title=Wages of Sin|author=Valerie Hansen |page=|ISBN=|passage=My own dear wife could have tended to his needs if she hadn't been out '''catting'''.}}
+                  1.2.2.ex.5. # To [[gossip]] in a [[catty]] manner.
+                    1.2.2.ex.5.1. #* {{quote-book|en |year=1932 |title=Man Made Angry |author=Hugh Brooke |page=134|ISBN=|passage=Men from young to middleaged, with matt faces, vivacious and brightly dressed, '''catted''' together in gay groups.}}
+                    1.2.2.ex.5.2. #* {{quote-book|en |year=1996|title=The Unlucky Seven|author=Alistair Boyle |page=|ISBN=|passage=They smiled, touched, rolled their eyes and raised their eyebrows, as they relived the audition and '''catted''' about some of their competition.}}
+                    1.2.2.ex.5.3. #* {{quote-book|en |year=2016 |title=The Swans of Fifth Avenue|author=Melanie Benjamin |page=293|ISBN=|passage=In the story, Lady Ina gossiped and '''catted''' about a parade of the rich and famous—Jackie Kennedy looking like an exaggerated version of herself, Princess Margaret so boring she made people fall asleep, Gloria Vanderbilt so ditzy she didn't recognize her first husband.}}
+              1.2.3. See also
+            1.3. Etymology 2
+              1.3.1. Noun
+                1.3.1.ex. Explanations
+                  1.3.1.ex.1. # A [[catamaran]].
+            1.4. Etymology 3
+              1.4.1. Noun
+                1.4.1.ex. Explanations
+                  1.4.1.ex.1. # {{lb|en|computing}} A program and command in [[Unix]] that reads one or more files and directs their content to the standard output.
+              1.4.2. Verb
+                1.4.2.ex. Explanations
+                  1.4.2.ex.1. # {{lb|en|computing|transitive}} To [[apply]] the '''cat''' [[command]] to (one or more files).
+                  1.4.2.ex.2. # {{lb|en|computing|slang}} To [[dump]] large amounts of data on (an unprepared target) usually with no intention of browsing it carefully.
+            1.5. Etymology 4
+              1.5.1. Adjective
+                1.5.1.1. Usage notes
+                1.5.1.ex. Explanations
+                  1.5.1.ex.1. # {{lb|en|Ireland|informal}} [[terrible|Terrible]], [[disastrous]].
+                    1.5.1.ex.1.:1. #: {{ux|en|The weather was '''cat''', so they returned home early.}}
+            1.6. Etymology 5
+              1.6.1. Noun
+                1.6.1.ex. Explanations
+                  1.6.1.ex.1. # {{lb|en|slang}} {{non-gloss definition|A street name of the drug [[methcathinone]].}}
+            1.7. Etymology 6
+              1.7.1. Noun
+                1.7.1.ex. Explanations
+                  1.7.1.ex.1. # {{lb|en|military|naval}} A [[catapult]].
+                    1.7.1.ex.1.:1. #: {{ux|en|a carrier's bow '''cats'''}}
+            1.8. Etymology 7
+              1.8.1. Noun
+                1.8.1.ex. Explanations
+                  1.8.1.ex.1. # {{abbreviation of|en|category}}
+            1.9. Etymology 8
+              1.9.1. Noun
+                1.9.1.ex. Explanations
+                  1.9.1.ex.1. # {{abbreviation of|en|catfish}}
+                    1.9.1.ex.1.1. #* {{quote-book|en|year=1913|author={{w|Willa Cather}}|title=[[s:O Pioneers!|O Pioneers!]]|chapter=2|passage=She missed the fish diet of her own country, and twice every summer she sent the boys to the river, twenty miles to the southward, to fish for channel '''cat'''.}}
+                    1.9.1.ex.1.2. #* '''1916''', M. Shults, "Fishing for Yellow Cat in the Brazos", in ''Field and Stream'', vol. 21, 478.
+                      1.9.1.ex.1.2.:1. #*: Fishing for '''cat''' is probably, up to a certain stage, the least exciting of all similar sports.
+            1.10. Etymology 9
+              1.10.1. Noun
+                1.10.1.ex. Explanations
+                  1.10.1.ex.1. # {{lb|en|slang}} Any of a variety of earth-moving [[machine]]s. (from their manufacturer {{w|Caterpillar Inc.}})
+                  1.10.1.ex.2. # A [[caterpillar drive]] vehicle (a ground vehicle which uses [[caterpillar track]]s), especially tractors, trucks, minibuses, and snow groomers.
+            1.11. References
+            1.12. Anagrams
+
+    """
     root = Root()
     last = root
 
@@ -109,6 +244,24 @@ def make_table_of_contents( lexemes: list ) -> Root:
 
 
 def extract_raw_text( toc: Root ) -> list:
+    """
+    It for converting extlanations from '# An animal of the family [[Felidae]]:' to 'An animal of the family Felidae:'
+
+    It scan all lexemes for:
+
+    - explanation, like the:
+    - templates: {{en-noun}}, {{en-adj}},...
+    - translations: {{trans-see}}, {{trans-top}}
+    - senses: {{sense}}, {{ws sense}}
+
+    It collect all values raw-text for send to Wiktionary API, for get clean human readable text.
+
+    Args:
+        toc (Root):     TOC root.
+
+    Returns:
+        (list)  raw-text strings
+    """
     #     extract sense raw-text
     #       nodes for convert raw to text
     #       explanation
@@ -205,6 +358,42 @@ def extract_raw_text( toc: Root ) -> list:
 
 
 def make_explanations_tree( lexemes: list ) -> ExplanationsRoot:
+    """
+    It take lexems like the:
+
+    ::
+
+        # An animal of the family [[Felidae]]:
+        #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various '''cats''' (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}
+        #: {{syn|en|felid}}
+        ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+        ##* {{RQ:WBsnt IvryGt|II}}
+        ##*: At twilight in the summer there is never anybody to fear—man, woman, or '''cat'''—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.
+        ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}
+        ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.
+
+    and build tree like the:
+
+    ::
+
+          1.2.1.ex.1. # An animal of the family [[Felidae]]:
+            1.2.1.ex.1.1. #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various '''cats''' (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}
+            1.2.1.ex.1.:1. #: {{syn|en|felid}}
+            1.2.1.ex.1.2. ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+              1.2.1.ex.1.2.1. ##* {{RQ:WBsnt IvryGt|II}}
+                1.2.1.ex.1.2.1.:1. ##*: At twilight in the summer there is never anybody to fear—man, woman, or '''cat'''—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.
+              1.2.1.ex.1.2.:1. ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}
+            1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.
+
+    Tree uses for detect child/parent explanations, child examples.
+
+    Args:
+        lexemes (list):  explanation lexems. It all starts from '#', '*', ':'
+
+    Returns:
+        (Root)  New table of contents (TOC)  root
+
+    """
     # make toc
     # Add childs to parents
     # Add examples to explanations
@@ -268,6 +457,24 @@ def make_explanations_tree( lexemes: list ) -> ExplanationsRoot:
 
 
 def get_label_type( expl, item ):
+    """
+    Return LabelType for item.
+
+    Args:
+        expl (Explanation):         Explanation
+        item (WikictionaryItem):    WikictionaryItem
+
+    Returns:
+        (str)   LabelType
+
+    ::
+
+        LabelType for 'cat' for explanation
+            ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+        is:
+            "Noun_DEFDATE_Subspecies_Silvestris_Feline"
+
+    """
     wt = proper(item.Type) if item.Type is not None else ""
 
     # Extract the list of item enclosed in {{ }}
@@ -339,6 +546,36 @@ def get_label_type( expl, item ):
 
 
 def get_leaf_explanation_nodes( root: Section ) -> list:
+    """
+    Return all leaf explanations.
+
+    Args:
+        root (Section):     Explanations tree root
+
+    Returns:
+        (list)  All leaf explanatins
+
+    ::
+
+        # for
+          1.2.1.ex.1. # An animal of the family [[Felidae]]:
+            1.2.1.ex.1.1. #* {{quote-book|en|year=2011|author=Karl Kruszelnicki|title=Brain Food|isbn=1466828129|page=53|passage=Mammals need two genes to make the taste receptor for sugar. Studies in various '''cats''' (tigers, cheetahs and domestic cats) showed that one of these genes has mutated and no longer works.}}
+            1.2.1.ex.1.:1. #: {{syn|en|felid}}
+            1.2.1.ex.1.2. ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+              1.2.1.ex.1.2.1. ##* {{RQ:WBsnt IvryGt|II}}
+                1.2.1.ex.1.2.1.:1. ##*: At twilight in the summer there is never anybody to fear—man, woman, or '''cat'''—in the chambers and at that hour the mice come out. They do not eat parchment or foolscap or red tape, but they eat the luncheon crumbs.
+              1.2.1.ex.1.2.:1. ##: {{syn|en|puss|pussy|malkin|kitty|pussy-cat|grimalkin|Thesaurus:cat}}
+            1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.
+              1.2.1.ex.1.3.1. ##* {{quote-book|en|year=1977|author=Peter Hathaway Capstick|title=Death in the Long Grass: A Big Game Hunter's Adventures in the African Bush|publisher=St. Martin's Press|page=44|passage=I grabbed it and ran over to the lion from behind, the '''cat''' still chewing thoughtfully on Silent's arm.}}
+              1.2.1.ex.1.3.2. ##* '''1985''' January, George Laycock, "Our American Lion", in Boy Scouts of America, ''Boy's Life'', 28.
+                1.2.1.ex.1.3.2.:1. ##*: If you should someday round a corner on the hiking trail and come face to face with a mountain lion, you would probably never forget the mighty '''cat'''.
+              1.2.1.ex.1.3.3. ##* {{quote-book|en|year=2014|author=Dale Mayer|title=Rare Find. A Psychic Visions Novel|publisher=Valley Publishing|passage=She felt privileged to be here, living the experience inside the majestic '''cat''' [i.e. a tiger]; privileged to be part of their bond, even for only a few hours.}}
+
+        # leafs is:
+            1.2.1.ex.1.2. ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+            1.2.1.ex.1.3. ## Any similar animal of the family [[Felidae]], which includes [[lion]]s, [[tiger]]s, bobcats, etc.
+
+    """
     leaf_explanations = []
 
     for node in root.find_explanation_sections():
@@ -349,6 +586,21 @@ def get_leaf_explanation_nodes( root: Section ) -> list:
 
 
 def add_explanations( toc: Root ):
+    """
+    It :
+
+    - get Table of contents tree
+    - then find explanations in each Part-of-speech section
+    - then from extracted explanations build explanations tree
+    - then add explanations tree into source Table of contents tree
+
+    Args:
+        toc (Root):  Table of contents (toc) root
+
+    Returns:
+        It modified source tree `toc`
+
+    """
     for node in toc.find_part_of_speech_sections():
         (explanations, lexems2) = node.extract_explanations()
 
@@ -360,6 +612,16 @@ def add_explanations( toc: Root ):
 
 
 def make_lists_same_length( a: list, b: list ):
+    """
+    Make two lists same length. Add to smaller list items with None.
+
+    Args:
+        a (list):   list 1
+        b (list):   lsit 2
+
+    Returns:
+        nothing to return. it modifies source lists.
+    """
     if len( a ) == len( b ):
         return
     elif len( a ) > len( b ):
@@ -392,6 +654,18 @@ def mark_leaf_explanation_nodes( root: Root ):
 
 
 def update_index_in_toc( root: Section, level=0, prefix="", index_pos=''  ):
+    """
+    Update string prefix, like the: 1.1. in each section.
+
+    Args:
+        root:       TOC root
+        level:      - used in recursion
+        prefix:     - used in recursion
+        index_pos:  - used in recursion
+
+    Returns:
+        it change nodes attribute `index_in_toc` in tree
+    """
     # text counter
     # list counter
     # header counter
@@ -430,6 +704,15 @@ def update_index_in_toc( root: Section, level=0, prefix="", index_pos=''  ):
 
 
 def remove_other_langs( toc: Root ):
+    """
+    Remove non English languages from tree
+
+    Args:
+        toc (Root): TOC tree root
+
+    Returns:
+        nothing to return. it change source tree.
+    """
     to_remove = []
     to_keep = []
 
@@ -456,11 +739,49 @@ def remove_other_langs( toc: Root ):
 
 
 def trans_see_finder( toc: Root ):
+    """
+    It helper help find Templates with name 'trans-see'.
+
+    Uses for get translations from external pages.
+
+    Args:
+        toc (Root): Table-of-contents (toc) root
+
+    Returns:
+        Iterator of tuples: (node, template)
+    """
     for node in toc.find_all( Translations, recursive=True ):
         for t in node.lexemes_by_class[ Template ][ 'trans-see' ]:
             yield (node, t)
 
 def add_translations_from_trans_see( page, toc: Root ):
+    """
+    Find links to external pages, and fetch page contents, and add translations.
+
+    It make calls to Wiktionary API for fetch page contents. Then contents parsed.
+
+    ::
+
+        1. find all {{trans-see|...}}
+        2. request page via wiktionary API
+        3. parse page -> lexemes + toc
+        4. make search index:  dict[ English ][ Noun ] = Translations
+        5. check
+                - English / Verb / Translations     ->      English / Verb / Translations   - is better better better
+                - Verb / Translations               ->      None    / Verb / Translations   - is better better
+                - English / Translations            ->      English / None / Translations   - is better
+                - English / Synonyms / Translations ->      None    / None / Translations   - is good
+                - Translations                      ->      None    / None / Translations   - is good
+        6. get trarnslation lexemes. add to node =Translations=
+        7. save fetch page titles for prevent recursion
+
+    Args:
+        page (Page):    Page instance
+        toc:            TOC root
+
+    Returns:
+        nothing to return. It change TOC tree.
+    """
     # 1. find all {{trans-see|...}}
     # 2. request page via wiktionary API
     # 3. parse page -> lexemes + toc
@@ -570,6 +891,14 @@ def add_translations_from_trans_see( page, toc: Root ):
 
 
 def update_popularity_of_word( item ):
+    """
+    Calculate and update field PopularityOfWord.
+
+    Please, see source.
+
+    Args:
+        item (WikictionaryItem):    item
+    """
     item.PopularityOfWord = 0
 
     if item.ExplainationExamplesRaw is not None:
@@ -633,6 +962,21 @@ def check_structure( toc: Root ):
 
 
 def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
+    """
+    Main scrap function
+
+    #. get Page: id, ns, title, raw-text
+    #. parse raw-text -> take lexemes
+    #. keep lexemes. make table-of-contents (toc). toc structure is tree. each branch is header. each node hold lexemes
+    #. take tree. find part-of-speech nodes. take lexemes. find li. convert li to nodes. it is explanations
+    #. take each node. take lexemes. convert lists to tree, wrap text text block with node.
+
+    Args:
+        page (Page): Page instance
+
+    Returns:
+        (list)      list of items
+    """
     # 1. get Page: id, ns, title, raw-text
     # 2. parse raw-text -> take lexemes
     # 3. keep lexemes. make table-of-contents (toc). toc structure is tree. each branch is header. each node hold lexemes
