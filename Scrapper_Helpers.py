@@ -369,48 +369,6 @@ def is_ascii( s :str ) -> bool:
     return all(ord(c) < 128 for c in s)
 
 
-class Store:
-    templates = {}
-    sections = {}
-    counter = 0
-    
-
-def add_template(s, t):
-    # add template
-    lst = Store.sections.get(s.name, None)
-    if lst is None:
-        lst = []
-        Store.sections[s.name] = lst
-    if t.name not in lst:
-        lst.append(t.name)
-        lst.sort()
-        
-    # add section
-    lst = Store.templates.get(t.name, None)
-    if lst is None:
-        lst = []
-        Store.templates[t.name] = lst
-    if s.name not in lst:
-        lst.append(s.name)
-        lst.sort()
-    
-    # periodically save
-    if Store.counter > 100000:
-        save()
-        Store.counter = 0
-        
-    # update counter
-    Store.counter += 1
-
-
-def save():
-    js = json.dumps(Store.templates, sort_keys=False, indent=4, ensure_ascii=False)
-    put_contents("templates.json", js)
-    
-    js = json.dumps(Store.sections, sort_keys=False, indent=4, ensure_ascii=False)
-    put_contents("sections.json", js)
-
-
 def save_to_json( obj, filename ):
     """
     Sve object `obj` to file in JSON format.
@@ -425,9 +383,12 @@ def save_to_json( obj, filename ):
 
         >>> Scrapper_Helpers.save_to_json( [1,2,3], '123.json' )
         >>> with open('123.json' , 'r') as f:
-        ...  f.read()
-        ...
-        '[\n    1,\n    2,\n    3\n]'
+              f.read()
+        '[
+            1,
+            2,
+            3
+        ]'
 
     """
     js = json.dumps( obj, sort_keys=False, indent=4, ensure_ascii=False )
@@ -440,13 +401,6 @@ def merge_two_dicts(x, y):
     return z
 
 
-def check_flag(s, flags):
-    for flag in flags:
-        if s.find(flag) != -1:
-            return True
-    return None
-    
-    
 def first_true(iterable, default=False, pred=None):
     """Returns the first true value in the iterable.
 
@@ -510,7 +464,21 @@ def filterWodsProblems(s: str, context=None) -> str:
     return s
 
 
-def clean_surrogates(s):
+def clean_surrogates( s: str ) -> str:
+    """
+    Decode large unicode symbols (surrogates)
+
+    Args:
+        s (str): source string
+
+    Returns:
+        (str) decoded string
+
+    ::
+        >>> Scrapper_Helpers.clean_surrogates(  "This is \ud83d\ude4f, an emoji." )
+        'This is 🙏, an emoji.'
+
+    """
     return str(s.encode('utf-16', 'surrogatepass').decode('utf-16'))
 
 
