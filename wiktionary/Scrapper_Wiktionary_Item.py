@@ -72,7 +72,8 @@ class WikictionaryItem:
                     Mentions                    TEXT NULL,
                     VerbConjugaisonAdded        INTEGER NULL,
                     Senses                      TEXT NULL,
-                    SeeAlso                     TEXT NULL,
+                    SeeAlsoWiktionaryLinks      TEXT NULL,
+                    SeeAlsoWikipediaLinks       TEXT NULL,
                     Accent                      TEXT NULL,
                     Qualifier                   TEXT NULL,
                     DescriptionWikipediaLinks   TEXT NULL,
@@ -143,7 +144,8 @@ class WikictionaryItem:
         self.Mentions                    = {}
         self.VerbConjugaisonAdded        = None
         self.Senses                      = {}
-        self.SeeAlso                     = []
+        self.SeeAlsoWiktionaryLinks      = []
+        self.SeeAlsoWikipediaLinks       = []
         self.Accent                      = []
         self.Qualifier                   = []
         self.DescriptionWikipediaLinks   = []

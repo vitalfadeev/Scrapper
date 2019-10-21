@@ -54,6 +54,8 @@ def text_contain( page, explanation, context, definitions, path ):
 
 
 def in_template( page, explanation, context, definitions: dict, path ):
+    node = context
+
     for t in context.find_lexem( recursive=True ):
         if isinstance(t, Template):
             defs = definitions.get( t.name, None )
@@ -179,10 +181,10 @@ def in_link( page, explanation, context, definitions=None, path=0 ):
             yield from lexem.to_words()
 
 
-def has_template( page, explanation, context, tnames ):
-    if isinstance( tnames, set ):
-        for t in context.find_all( Template, recursive=True):
-            if t.name in tnames:
+def has_template( page, explanation, context, definitions, path ):
+    if isinstance( definitions, set ):
+        for t in context.find_lexem( recursive=True ):
+            if t.name in definitions:
                 yield True
     else:
         raise Exception("unsupported")
@@ -405,7 +407,7 @@ def check_node( page, node, lm ):
     # 3. recursive
     # 4 .run function with arguments. return words
     for name in filter( lambda s: s[0].isupper(), vars( node.item ) ):
-        # if name == 'Translation_IT':
+        # if name == 'SingleVariant':
         #     pass
         # else:
         #     continue

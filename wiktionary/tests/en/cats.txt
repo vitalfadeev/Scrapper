@@ -1,0 +1,19 @@
+{{also|Cats}}
+==English==
+
+===Pronunciation===
+* {{enPR|kăts}}, {{IPA|en|/kæts/}}
+* {{rhymes|en|æts}}
+
+===Noun===
+{{head|en|noun form}}
+
+# {{plural of|en|cat}}
+
+===Verb===
+{{head|en|verb form}}
+
+# {{en-third-person singular of|cat}}
+
+===Anagrams===
+* {{anagrams|en|a=acst|-cast|ACTs|ATCs|ATSC|Acts|Cast|STCA|TACS|TCAS|TCAs|TSCA|acts|cast|scat}}

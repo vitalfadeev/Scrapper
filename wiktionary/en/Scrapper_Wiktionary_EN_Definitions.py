@@ -51,20 +51,24 @@ IsSingle = {
 }
 
 IsPlural = {
-    (in_self, in_all_parent_sections): {  # noun / etymology / english
+    (in_self, in_all_parents): {  # noun / etymology / english
         in_template: {
             'fi-form of': { in_arg: { 'pl': { value_equal: { 'plural'  } } } },
             'en-plural noun': {},
             'en-noun': { plural_en_noun: { equal_label: { } } },
+        },
+        has_template: {
+            'plural of',
         }
     }
 }
 
 SingleVariant = {
-    in_all_parent_sections: {  # noun / etymology / english
+    (in_self, in_all_parents): {  # noun / etymology / english
         in_template: {
             'en-plural noun': { in_arg: { 'sg' } },
             'en-noun': { single_en_noun: { } },
+            'plural of': { in_arg: { 1 } },
         }
     }
 }
@@ -731,7 +735,8 @@ Mentions = {
     },
 }
 
-SeeAlso = {
+
+SeeAlsoWiktionaryLinks = {
     (in_self, in_all_parents): {  # noun / etymology / english / root
         in_section: {
             'see also': {
@@ -745,11 +750,34 @@ SeeAlso = {
                     },
                 },
             },
-            in_template: {
-                ('see', 'also', 'see also'): {
-                    in_arg: { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
-                }
+        },
+        in_template: {
+            ('see', 'also', 'see also'): {
+                in_arg: { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
             }
+        }
+    }
+}
+
+SeeAlsoWikipediaLinks = {
+    (in_self, in_all_parents): {  # noun / etymology / english / root
+        in_section: {
+            'see also': {
+                in_template: {
+                    'soplink': {
+                        in_all_positional_args: {}
+                    },
+                    ('w', 'wikipedia'): {
+                        in_arg: { 0 }
+                    },
+                    'pedia': {
+                        in_arg: { 0 }
+                    },
+                    'projectlink/Wikipedia': {
+                        in_arg: { 0 }
+                    }
+                }
+            },
         }
     }
 }
@@ -817,4 +845,3 @@ DescriptionWiktionaryLinks = {
         in_link: {},
     }
 }
-
