@@ -1,0 +1,7 @@
+Scrapper\_DB module
+===================
+
+.. automodule:: Scrapper_DB
+   :members:
+   :undoc-members:
+   :show-inheritance:

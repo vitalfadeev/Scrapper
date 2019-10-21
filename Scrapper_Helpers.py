@@ -475,7 +475,8 @@ def clean_surrogates( s: str ) -> str:
         (str) decoded string
 
     ::
-        >>> Scrapper_Helpers.clean_surrogates(  "This is \ud83d\ude4f, an emoji." )
+
+        >>> Scrapper_Helpers.clean_surrogates(  "This is \\ud83d\\ude4f, an emoji." )
         'This is 🙏, an emoji.'
 
     """

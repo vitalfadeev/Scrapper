@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wiktionary.Scrapper_Wiktionary_Item &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>wiktionary.Scrapper_Wiktionary_Item</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wiktionary.Scrapper_Wiktionary_Item</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="k">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">Scrapper_Helpers</span> <span class="k">import</span> <span class="n">remove_comments</span><span class="p">,</span> <span class="n">extract_from_link</span><span class="p">,</span> <span class="n">filterWodsProblems</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WikictionaryItem"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem">[docs]</a><span class="k">class</span> <span class="nc">WikictionaryItem</span><span class="p">:</span>
+<div class="viewcode-block" id="WikictionaryItem.Meta"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">DB_TABLE_NAME</span> <span class="o">=</span> <span class="s2">&quot;wiktionary&quot;</span>
+        <span class="n">DB_INIT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            CREATE TABLE IF NOT EXISTS wiktionary (</span>
+<span class="s2">                    PrimaryKey                  VARCHAR(255) NOT NULL PRIMARY KEY,</span>
+<span class="s2">                    IndexinPage				    INTEGER NULL,</span>
+<span class="s2">                    IndexPartOfSpeech		    VARCHAR(255) NULL,</span>
+<span class="s2">                    IndexinToc 				    VARCHAR(255) NULL,</span>
+<span class="s2">                    SelfUrl                     VARCHAR(255),</span>
+<span class="s2">                    LabelName                   VARCHAR(255),</span>
+<span class="s2">                    LabelType                   VARCHAR(255),</span>
+<span class="s2">                    LanguageCode                CHAR(2),</span>
+<span class="s2">                    Type                        VARCHAR(255),</span>
+<span class="s2">                    TypeLabelName               VARCHAR(255),</span>
+<span class="s2">                    ExplainationRaw             TEXT,</span>
+<span class="s2">                    ExplainationTxt             TEXT,</span>
+<span class="s2">                    ExplainationExamplesRaw     TEXT,</span>
+<span class="s2">                    ExplainationExamplesTxt     TEXT,</span>
+<span class="s2">                    DescriptionTxt              TEXT,</span>
+<span class="s2">                    IsMale                      INTEGER NULL,</span>
+<span class="s2">                    IsFeminine                  INTEGER NULL,</span>
+<span class="s2">                    IsNeutre                    INTEGER NULL,</span>
+<span class="s2">                    IsSingle                    INTEGER NULL,</span>
+<span class="s2">                    IsPlural                    INTEGER NULL,</span>
+<span class="s2">                    SingleVariant               VARCHAR(255) NULL,</span>
+<span class="s2">                    PluralVariant               VARCHAR(255) NULL,</span>
+<span class="s2">                    PopularityOfWord            INTEGER NULL,</span>
+<span class="s2">                    MaleVariant                 VARCHAR(255) NULL,</span>
+<span class="s2">                    FemaleVariant               VARCHAR(255) NULL,</span>
+<span class="s2">                    IsVerbPast                  INTEGER NULL,</span>
+<span class="s2">                    IsVerbPresent               INTEGER NULL,</span>
+<span class="s2">                    IsVerbFutur                 INTEGER NULL,</span>
+<span class="s2">                    Conjugation                 TEXT NULL,</span>
+<span class="s2">                    Synonymy                    TEXT NULL,</span>
+<span class="s2">                    Antonymy                    TEXT NULL,</span>
+<span class="s2">                    Hypernymy                   TEXT NULL,</span>
+<span class="s2">                    Hyponymy                    TEXT NULL,</span>
+<span class="s2">                    Meronymy                    TEXT NULL,</span>
+<span class="s2">                    Holonymy                    TEXT NULL,</span>
+<span class="s2">                    Troponymy                   TEXT NULL,</span>
+<span class="s2">                    Otherwise                   TEXT NULL,</span>
+<span class="s2">                    AlternativeFormsOther       TEXT NULL,</span>
+<span class="s2">                    RelatedTerms                TEXT NULL,</span>
+<span class="s2">                    DerivedTerms                TEXT NULL,</span>
+<span class="s2">                    Coordinate                  TEXT NULL,</span>
+<span class="s2">                    Translation_EN              TEXT NULL,</span>
+<span class="s2">                    Translation_FR              TEXT NULL,</span>
+<span class="s2">                    Translation_DE              TEXT NULL,</span>
+<span class="s2">                    Translation_IT              TEXT NULL,</span>
+<span class="s2">                    Translation_ES              TEXT NULL,</span>
+<span class="s2">                    Translation_RU              TEXT NULL,</span>
+<span class="s2">                    Translation_PT              TEXT NULL,</span>
+<span class="s2">                    TranslationsBySentence      TEXT NULL,</span>
+<span class="s2">                    TranslationSentence         TEXT NULL,</span>
+<span class="s2">                    TranslationsByLang          TEXT NULL,</span>
+<span class="s2">                    TranslationsPairs           TEXT NULL,</span>
+<span class="s2">                    Labels                      TEXT NULL,</span>
+<span class="s2">                    Categories                  TEXT NULL,</span>
+<span class="s2">                    Cognates                    TEXT NULL,</span>
+<span class="s2">                    Mentions                    TEXT NULL,</span>
+<span class="s2">                    VerbConjugaisonAdded        INTEGER NULL,</span>
+<span class="s2">                    Senses                      TEXT NULL,</span>
+<span class="s2">                    SeeAlsoWiktionaryLinks      TEXT NULL,</span>
+<span class="s2">                    SeeAlsoWikipediaLinks       TEXT NULL,</span>
+<span class="s2">                    Accent                      TEXT NULL,</span>
+<span class="s2">                    Qualifier                   TEXT NULL,</span>
+<span class="s2">                    DescriptionWikipediaLinks   TEXT NULL,</span>
+<span class="s2">                    DescriptionWiktionaryLinks  TEXT NULL</span>
+<span class="s2">            );</span>
+<span class="s2">            </span>
+<span class="s2">            -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PrimaryKey</span>                  <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SelfUrl</span>                     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LabelName</span>                   <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LabelType</span>                   <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LanguageCode</span>                <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># (EN,FR,…)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Type</span>                        <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#                        = noun,verb… see = WORD_TYPES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TypeLabelName</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># chatt for verb of chat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationRaw</span>             <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationTxt</span>             <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationExamplesRaw</span>     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ExplainationExamplesTxt</span>     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionTxt</span>              <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsMale</span>                      <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsFeminine</span>                  <span class="o">=</span> <span class="nb">bool</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsNeutre</span>                    <span class="o">=</span> <span class="nb">bool</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsSingle</span>                    <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsPlural</span>                    <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SingleVariant</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PluralVariant</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PopularityOfWord</span>            <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MaleVariant</span>                 <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FemaleVariant</span>               <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbPast</span>                  <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbPresent</span>               <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IsVerbFutur</span>                 <span class="o">=</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Conjugation</span>                 <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Synonymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Antonymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hypernymy</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hyponymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Meronymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Holonymy</span>                    <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Troponymy</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Otherwise</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AlternativeFormsOther</span>       <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RelatedTerms</span>                <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DerivedTerms</span>                <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Coordinate</span>                  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_EN</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_FR</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_DE</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_IT</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_ES</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_RU</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Translation_PT</span>              <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndexinPage</span>                 <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndexinToc</span>                  <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IndexPartOfSpeech</span>           <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># &quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsBySentence</span>      <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationSentence</span>         <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsByLang</span>          <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TranslationsPairs</span>           <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWiktionaryLinks</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWikipediaLinks</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Labels</span>                      <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Categories</span>                  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cognates</span>                    <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Mentions</span>                    <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VerbConjugaisonAdded</span>        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Senses</span>                      <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SeeAlsoWiktionaryLinks</span>      <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SeeAlsoWikipediaLinks</span>       <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Accent</span>                      <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Qualifier</span>                   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWikipediaLinks</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DescriptionWiktionaryLinks</span>  <span class="o">=</span> <span class="p">[]</span>
+
+            
+<div class="viewcode-block" id="WikictionaryItem.dump"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Beauty logging tool &quot;&quot;&quot;</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;LabelName&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LabelType&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LanguageCode&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ExplainationRaw&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ExplainationTxt&quot;</span><span class="p">,</span>
+            <span class="c1"># &quot;ExplainationExamplesRaw&quot;,</span>
+            <span class="c1"># &quot;ExplainationExamplesTxt&quot;,</span>
+            <span class="s2">&quot;IsMale&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsFeminine&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsNeutre&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsSingle&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsPlural&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SingleVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PluralVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MaleVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FemaleVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsVerbPast&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsVerbPresent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsVerbFutur&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Conjugation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Synonymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Antonymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Hypernymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Hyponymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Meronymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Holonymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Troponymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Otherwise&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;AlternativeFormsOther&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RelatedTerms&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Coordinate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_EN&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_FR&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_DE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_IT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_ES&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_RU&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_PT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TranslationsBySentence&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;TranslationsByLang&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DescriptionWiktionaryLinks&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DescriptionWikipediaLinks&quot;</span>
+        <span class="p">]</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">print_header</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="n">c</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">break</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+                <span class="k">elif</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">PrimaryKey</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WikictionaryItem.dumps"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_Item.WikictionaryItem.dumps">[docs]</a>    <span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Beauty logging tool &quot;&quot;&quot;</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;LabelType&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ExplainationRaw&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ExplainationTxt&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ExplainationExamplesRaw&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ExplainationExamplesTxt&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsMale&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsFeminine&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsNeutre&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsSingle&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsPlural&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;SingleVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PluralVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MaleVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FemaleVariant&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsVerbPast&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsVerbPresent&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;IsVerbFutur&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Conjugation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Synonymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Antonymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Hypernymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Hyponymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Meronymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Holonymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Troponymy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Otherwise&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;AlternativeFormsOther&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RelatedTerms&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Coordinate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_EN&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_FR&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_DE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_IT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_ES&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_RU&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Translation_PT&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;   &quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">print_header</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="n">c</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">break</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+            <span class="c1">#log.info(&quot; &quot;.join(header))</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">s</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">IndexinPage</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="c1">#log.info(&quot; &quot;.join(row) + &quot; &quot; + self.PrimaryKey)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">PrimaryKey</span>
+        <span class="c1">#s = &quot; &quot;.join(row)</span>
+
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;WikictionaryItem(&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">LabelName</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">PrimaryKey</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wiktionary.Scrapper_Wiktionary_WordTypes &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>wiktionary.Scrapper_Wiktionary_WordTypes</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for wiktionary.Scrapper_Wiktionary_WordTypes</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="WORD_TYPES"><a class="viewcode-back" href="../../docstring/wiktionary.html#wiktionary.Scrapper_Wiktionary_WordTypes.WORD_TYPES">[docs]</a><span></span><span class="k">class</span> <span class="nc">WORD_TYPES</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Word type of speech&quot;&quot;&quot;</span>
+    <span class="n">ROOT</span>        <span class="o">=</span> <span class="s2">&quot;root&quot;</span>  <span class="c1"># also ===Proper noun=== {{en-proper noun}}</span>
+    <span class="n">NOUN</span>        <span class="o">=</span> <span class="s2">&quot;noun&quot;</span>  <span class="c1"># also ===Proper noun=== {{en-proper noun}}</span>
+    <span class="n">VERB</span>        <span class="o">=</span> <span class="s2">&quot;verb&quot;</span>
+    <span class="n">PROVERB</span>     <span class="o">=</span> <span class="s2">&quot;proverb&quot;</span>
+    <span class="n">CONVERB</span>     <span class="o">=</span> <span class="s2">&quot;converb&quot;</span>
+    <span class="n">ADJECTIVE</span>   <span class="o">=</span> <span class="s2">&quot;adjective&quot;</span>
+    <span class="n">ADVERB</span>      <span class="o">=</span> <span class="s2">&quot;adverb&quot;</span>
+    <span class="n">ADNOUN</span>      <span class="o">=</span> <span class="s2">&quot;adj_noun&quot;</span>
+    <span class="n">PRONOUN</span>     <span class="o">=</span> <span class="s2">&quot;pronoun&quot;</span>
+    <span class="n">PREPOSITION</span> <span class="o">=</span> <span class="s2">&quot;preposition&quot;</span>
+    <span class="n">CONJUNCTION</span> <span class="o">=</span> <span class="s2">&quot;conjunction&quot;</span>
+    <span class="n">DETERMINER</span>  <span class="o">=</span> <span class="s2">&quot;determiner&quot;</span>
+    <span class="n">EXCLAMATION</span> <span class="o">=</span> <span class="s2">&quot;exclamation&quot;</span>
+    <span class="n">INTERJECTION</span><span class="o">=</span> <span class="s2">&quot;interjection&quot;</span>
+    <span class="n">NUMERAL</span>     <span class="o">=</span> <span class="s2">&quot;num&quot;</span>
+    <span class="n">PARTICLE</span>    <span class="o">=</span> <span class="s2">&quot;part&quot;</span>
+    <span class="n">PARTICIPLE</span>  <span class="o">=</span> <span class="s2">&quot;participle&quot;</span>
+    <span class="n">POSTPOSITION</span><span class="o">=</span> <span class="s2">&quot;postp&quot;</span>
+    <span class="n">CHARACTER</span>   <span class="o">=</span> <span class="s2">&quot;character&quot;</span>
+    <span class="n">DIGIT</span>       <span class="o">=</span> <span class="s2">&quot;digit&quot;</span>
+    <span class="n">ABBREV</span>      <span class="o">=</span> <span class="s2">&quot;abbrev&quot;</span>
+    <span class="n">AFFIX</span>       <span class="o">=</span> <span class="s2">&quot;affix&quot;</span>
+    <span class="n">INFIX</span>       <span class="o">=</span> <span class="s2">&quot;infix&quot;</span>
+    <span class="n">NAME</span>        <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+    <span class="n">PREFIX</span>      <span class="o">=</span> <span class="s2">&quot;prefix&quot;</span>
+    <span class="n">INTERFIX</span>    <span class="o">=</span> <span class="s2">&quot;interfix&quot;</span>
+    <span class="n">SUFFIX</span>      <span class="o">=</span> <span class="s2">&quot;suffix&quot;</span>
+    <span class="n">SYMBOL</span>      <span class="o">=</span> <span class="s2">&quot;symbol&quot;</span>
+    <span class="n">PUNCT</span>       <span class="o">=</span> <span class="s2">&quot;punct&quot;</span>
+    <span class="n">NUMBER</span>      <span class="o">=</span> <span class="s2">&quot;number&quot;</span>
+    <span class="n">PHRASE</span>      <span class="o">=</span> <span class="s2">&quot;phrase&quot;</span>
+    <span class="n">ARTICLE</span>     <span class="o">=</span> <span class="s2">&quot;article&quot;</span>
+    <span class="n">COUNTER</span>     <span class="o">=</span> <span class="s2">&quot;counter&quot;</span>
+    <span class="n">CLITIC</span>      <span class="o">=</span> <span class="s2">&quot;clitic&quot;</span>
+    <span class="n">CIRCUMFIX</span>   <span class="o">=</span> <span class="s2">&quot;circumfix&quot;</span>
+    <span class="n">CIRCUMPOS</span>   <span class="o">=</span> <span class="s2">&quot;circumpos&quot;</span>
+    <span class="n">CLASSIFIER</span>  <span class="o">=</span> <span class="s2">&quot;classifier&quot;</span>
+    <span class="n">PREDICATIVE</span> <span class="o">=</span> <span class="s2">&quot;predicative&quot;</span>
+    <span class="n">POSTP</span>       <span class="o">=</span> <span class="s2">&quot;postp&quot;</span>
+    <span class="n">ORDINAL</span>     <span class="o">=</span> <span class="s2">&quot;ordinal&quot;</span>
+    <span class="n">CLAUSE</span>      <span class="o">=</span> <span class="s2">&quot;clause&quot;</span>
+    <span class="n">LETTER</span>      <span class="o">=</span> <span class="s2">&quot;letter&quot;</span>
+    <span class="n">GERUND</span>      <span class="o">=</span> <span class="s2">&quot;gerund&quot;</span>
+    <span class="n">CMD</span>         <span class="o">=</span> <span class="s2">&quot;cmd&quot;</span>
+    <span class="n">COMBINING_FORM</span> <span class="o">=</span> <span class="s2">&quot;combining_form&quot;</span>
+    <span class="n">ADJ_COMP</span>    <span class="o">=</span> <span class="s2">&quot;adj_comp&quot;</span>
+    <span class="n">INTRO</span>       <span class="o">=</span> <span class="s2">&quot;intro&quot;</span>
+    <span class="n">VOCATIVO</span>    <span class="o">=</span> <span class="s2">&quot;vocativo&quot;</span>
+    <span class="n">PREVERB</span>     <span class="o">=</span> <span class="s2">&quot;preverb&quot;</span>
+    <span class="n">PROPERNOUN</span>  <span class="o">=</span> <span class="s2">&quot;propernoun&quot;</span>
+    <span class="n">ACRONYM</span>     <span class="o">=</span> <span class="s2">&quot;acronym&quot;</span>
+    <span class="n">CONTRACTION</span> <span class="o">=</span> <span class="s2">&quot;contraction&quot;</span>
+    <span class="n">HYPHENATION</span> <span class="o">=</span> <span class="s1">&#39;hyphenation&#39;</span>
+    <span class="n">PREPOSITIONAL_PHRASE</span> <span class="o">=</span> <span class="s1">&#39;prepositional_phrase&#39;</span>
+    <span class="n">PUNCTUATION_MARK</span> <span class="o">=</span> <span class="s1">&#39;punctuation mark&#39;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

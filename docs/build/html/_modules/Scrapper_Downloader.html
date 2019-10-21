@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scrapper_Downloader &mdash; Scrapper 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Scrapper 3.0.0 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Scrapper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Docstring</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../docstring/modules.html">Scrapper</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Scrapper</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>Scrapper_Downloader</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for Scrapper_Downloader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Download file.</span>
+
+<span class="sd">.. figure:: ../_static/img/downloader.png</span>
+
+<span class="sd">Designed for downloading large files (600 M ~ 36 G).</span>
+
+<span class="sd">Support:</span>
+
+<span class="sd">- resume downloading</span>
+<span class="sd">- 5 retries when link broken</span>
+<span class="sd">- show progress bar</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    from Scrapper_Downloader import download</span>
+<span class="sd">    url = &quot;https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="sd">    dest = &quot;./cached/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="sd">    download( url, dest )</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">requests.adapters</span> <span class="k">import</span> <span class="n">HTTPAdapter</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">DOWNLOAD_TIMEOUT</span> <span class="o">=</span> <span class="mi">33</span>   <span class="c1"># maximum time to connect and fetch data block</span>
+<span class="n">DOWNLOAD_RETRY</span> <span class="o">=</span> <span class="mi">5</span>      <span class="c1"># maximum retries attempts to connect and download file</span>
+
+
+<div class="viewcode-block" id="requests_retry_session"><a class="viewcode-back" href="../docstring/Scrapper_Downloader.html#Scrapper_Downloader.requests_retry_session">[docs]</a><span class="k">def</span> <span class="nf">requests_retry_session</span><span class="p">(</span> <span class="n">retries</span><span class="o">=</span><span class="mi">5</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function. It help retry download when link broken. `retries` retries.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        retries (int):  Maximum retries attempts to connect and download file</span>
+
+<span class="sd">    Returns (request.Session):</span>
+<span class="sd">        Session object</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        session = requests_retry_session( retries=5 )</span>
+<span class="sd">        response = session.get( url )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">adapter</span> <span class="o">=</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="n">retries</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">&#39;http://&#39;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">&#39;https://&#39;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">session</span></div>
+
+
+<div class="viewcode-block" id="get_http_file_size"><a class="viewcode-back" href="../docstring/Scrapper_Downloader.html#Scrapper_Downloader.get_http_file_size">[docs]</a><span class="k">def</span> <span class="nf">get_http_file_size</span><span class="p">(</span> <span class="n">url</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get size of remote file `url`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): Remote file name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (int) file size</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        url = &quot;https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="sd">        remote_file_size = get_http_file_size( url )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">requests_retry_session</span><span class="p">(</span> <span class="n">retries</span><span class="o">=</span><span class="n">DOWNLOAD_RETRY</span> <span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">DOWNLOAD_TIMEOUT</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-length&#39;</span><span class="p">]</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_local_file_size"><a class="viewcode-back" href="../docstring/Scrapper_Downloader.html#Scrapper_Downloader.get_local_file_size">[docs]</a><span class="k">def</span> <span class="nf">get_local_file_size</span><span class="p">(</span> <span class="n">file_name</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return size of local file `file_name`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_name (str):  Path to file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (int) file size</span>
+
+
+<span class="sd">    ::</span>
+
+<span class="sd">        local_file = &quot;./cached/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="sd">        local_file_size = get_local_file_size( local_file )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_download_with_progress</span><span class="p">(</span> <span class="n">response</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">remote_file_size</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">resume_byte_pos</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download and show progress bar.</span>
+
+<span class="sd">    It internal function.</span>
+
+<span class="sd">    It read chunks from stream  `response` and save to the file `f`.</span>
+
+<span class="sd">    It show progress bar each 1 M.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (request stream object):</span>
+<span class="sd">        f (file object:</span>
+<span class="sd">        remote_file_size (int):</span>
+<span class="sd">        file_name (str):</span>
+<span class="sd">        resume_byte_pos (int):</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">readed</span> <span class="o">=</span> <span class="n">resume_byte_pos</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode_content</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">readeed_pos</span> <span class="o">=</span> <span class="n">readed</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+
+    <span class="c1"># download</span>
+    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">chunk</span> <span class="p">)</span>
+
+        <span class="n">readed</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">chunk</span> <span class="p">)</span>
+
+        <span class="c1"># progress bar</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">readed</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">!=</span> <span class="n">readeed_pos</span><span class="p">:</span>
+            <span class="n">PROGRESS_BAR_WIDTH</span> <span class="o">=</span> <span class="mi">40</span>
+
+            <span class="n">fill_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="nb">round</span><span class="p">(</span> <span class="n">PROGRESS_BAR_WIDTH</span> <span class="o">*</span> <span class="n">readed</span> <span class="o">/</span> <span class="n">remote_file_size</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="n">rest_size</span> <span class="o">=</span> <span class="n">PROGRESS_BAR_WIDTH</span> <span class="o">-</span> <span class="n">fill_size</span>
+
+            <span class="n">fill_bar</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span> <span class="o">*</span> <span class="n">fill_size</span>
+            <span class="n">rest_bar</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="n">rest_size</span>
+
+            <span class="n">bar</span> <span class="o">=</span> <span class="n">fill_bar</span> <span class="o">+</span> <span class="n">rest_bar</span>
+
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2"> Download progress: [</span><span class="si">{}</span><span class="s2">] </span><span class="si">{}</span><span class="s2"> M / </span><span class="si">{}</span><span class="s2"> M&quot;</span> \
+                   <span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">bar</span><span class="p">,</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">readed</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">remote_file_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">)</span>
+                    <span class="p">),</span>
+                    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">readeed_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">readed</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_continue_downloading</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">local_file</span><span class="p">,</span> <span class="n">remote_file_size</span><span class="p">,</span> <span class="n">resume_byte_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Continue download `url` to `local_file`</span>
+
+<span class="sd">    It function for internal use.</span>
+
+<span class="sd">    It compare sizes: remote and local. And download file if need. Or resume downloading.</span>
+
+<span class="sd">    It retry `DOWNLOAD_RETRY` times when link broken.</span>
+
+<span class="sd">    It wait `DOWNLOAD_TIMEOUT` for connection and retrieve data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str):                  Remote file url</span>
+<span class="sd">        local_file (str):           Local file path and name</span>
+<span class="sd">        remote_file_size (int):     Remote file size</span>
+<span class="sd">        resume_byte_pos (int):      Resume from this position. Also it mean local file size.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span> <span class="n">local_file</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">resume_byte_pos</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># new file</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">requests_retry_session</span><span class="p">(</span> <span class="n">retries</span><span class="o">=</span><span class="n">DOWNLOAD_RETRY</span> <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">DOWNLOAD_TIMEOUT</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">_download_with_progress</span><span class="p">(</span> <span class="n">response</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">remote_file_size</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">resume_byte_pos</span> <span class="p">)</span>
+
+        <span class="n">response</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># append</span>
+        <span class="n">resume_header</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;Range&#39;</span><span class="p">:</span> <span class="s1">&#39;bytes=</span><span class="si">%d</span><span class="s1">-&#39;</span> <span class="o">%</span> <span class="n">resume_byte_pos</span> <span class="p">}</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">requests_retry_session</span><span class="p">(</span> <span class="n">retries</span><span class="o">=</span><span class="n">DOWNLOAD_RETRY</span> <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">DOWNLOAD_TIMEOUT</span><span class="p">,</span>
+                         <span class="n">headers</span><span class="o">=</span><span class="n">resume_header</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_file</span><span class="p">,</span> <span class="s1">&#39;ab&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span> <span class="n">resume_byte_pos</span> <span class="p">)</span>
+            <span class="n">_download_with_progress</span><span class="p">(</span> <span class="n">response</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">remote_file_size</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">resume_byte_pos</span> <span class="p">)</span>
+
+        <span class="n">response</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_download_with_resume</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">local_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download `url` to `local_file`.</span>
+
+<span class="sd">    It internal function.</span>
+
+<span class="sd">    It create local file with &#39;.part&#39; at end. When download finished successfully &#39;.part&#39; will removed.</span>
+
+<span class="sd">    It can resume downloading. It get file size of remote file. Compare with local file size. And download rest.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str):          Remote file url</span>
+<span class="sd">        local_file (str):   Local file path and name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `True` if downloaded</span>
+<span class="sd">        `None` else</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check already downloaded</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local_file</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># check part file</span>
+    <span class="n">part_file</span> <span class="o">=</span> <span class="n">local_file</span> <span class="o">+</span> <span class="s2">&quot;.part&quot;</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">part_file</span><span class="p">):</span> <span class="c1"># file exists</span>
+        <span class="c1"># check size</span>
+        <span class="n">local</span> <span class="o">=</span> <span class="n">get_local_file_size</span><span class="p">(</span><span class="n">part_file</span><span class="p">)</span>
+        <span class="n">remote</span> <span class="o">=</span> <span class="n">get_http_file_size</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">local</span> <span class="o">==</span> <span class="n">remote</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># OK</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># continue downloading</span>
+            <span class="n">resume_pos</span> <span class="o">=</span> <span class="n">local</span> <span class="o">-</span> <span class="mi">4096</span>   <span class="c1"># delete 4096 Bytes tail</span>
+            <span class="k">if</span> <span class="n">resume_pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">resume_pos</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">_continue_downloading</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">part_file</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="n">resume_pos</span> <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># no local file</span>
+        <span class="c1"># downloading</span>
+        <span class="n">remote</span> <span class="o">=</span> <span class="n">get_http_file_size</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>   <span class="c1"># for progress bar</span>
+        <span class="n">_continue_downloading</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">part_file</span><span class="p">,</span> <span class="n">remote</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span>
+
+    <span class="c1"># rename part_file to local_file</span>
+    <span class="n">local</span> <span class="o">=</span> <span class="n">get_local_file_size</span><span class="p">(</span><span class="n">part_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">local</span> <span class="o">==</span> <span class="n">remote</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">part_file</span><span class="p">,</span> <span class="n">local_file</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="download"><a class="viewcode-back" href="../docstring/Scrapper_Downloader.html#Scrapper_Downloader.download">[docs]</a><span class="k">def</span> <span class="nf">download</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">local_file</span><span class="p">,</span> <span class="n">attempts</span><span class="o">=</span><span class="mi">5</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download file from `url` to `local_file`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str):          Remote file url</span>
+<span class="sd">        local_file (str):   Local file path and name</span>
+<span class="sd">        attempts (int):     When link is broken retry `attempts` times</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `True` if downloading finished.</span>
+<span class="sd">        `None` else.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        from Scrapper_Downloader import download</span>
+<span class="sd">        url = &quot;https://dumps.wikimedia.org/enwiktionary/latest/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="sd">        dest = &quot;./cached/enwiktionary-latest-pages-articles.xml.bz2&quot;</span>
+<span class="sd">        download( url, dest )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s2">&quot;download: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">attempts</span> <span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_download_with_resume</span><span class="p">(</span> <span class="n">url</span><span class="p">,</span> <span class="n">local_file</span> <span class="p">)</span>
+            <span class="k">return</span>  <span class="kc">True</span>
+
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">except</span> <span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ReadTimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Vital Fadeev.
+
+    </p>
+  </div>
+  &copy; 2015 HPED LP | <a href="http://www8.hp.com/us/en/hpe/legal/terms-of-use.html">Terms of Use</a> | <a href="https://www.hpe.com/us/en/legal/privacy.html">Privacy</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
