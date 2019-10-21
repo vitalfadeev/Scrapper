@@ -1,5 +1,5 @@
 import unittest
-from conjugator.Scrapper_Wiktionary_Conjugations import  check_connection, get_conjugations
+from conjugator.Scrapper_Conjugator import  check_connection, get_conjugations
 
 
 class MyTestCase(unittest.TestCase):
