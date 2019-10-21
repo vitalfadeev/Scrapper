@@ -37,7 +37,7 @@ def scrap_one_test(lang="en", label="cat"):
 
 if __name__ == "__main__":
     lang = 'en'
-    title = 'cats'
+    title = 'cat'
 
     setUp()
     items = scrap_one_test( lang, title )

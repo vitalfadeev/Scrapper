@@ -1,5 +1,6 @@
 import itertools
 import collections
+import pprint
 from collections import defaultdict
 from typing import List
 from Scrapper_Helpers import convert_to_alnum, deduplicate, proper, get_lognest_word
@@ -12,7 +13,7 @@ from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, 
 from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX, VALUED_SECTIONS
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import \
     Section, Root, Lang, PartOfSpeech, ExplanationsRoot, section_map, Explanation, ExplanationExample, Translations, \
-    ExplanationLi
+    ExplanationLi, Synonyms
 
 
 def make_table_of_contents( lexemes: list ) -> Root:
@@ -469,6 +470,8 @@ def add_translations_from_trans_see( page, toc: Root ):
     #      dict[ Noun ] == current_node.part_of_speech
     #      dict[ Translations ]
     # 6. get trarnslation lexemes. add to node =Translations=
+    # save fetch page titles for prevent recursion
+    pages = set()
 
     # 1. find all {{trans-see|...}}
     node: Translations
@@ -486,8 +489,15 @@ def add_translations_from_trans_see( page, toc: Root ):
         if page_url == page.label:
             continue
 
+        # skip already fetched
+        if page_url in pages:
+            continue
+
         # 2. request to wiktionary API
         raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( page_url )
+
+        # keep fetched title
+        pages.add( page_url )
 
         # if page not exists - next
         if raw_text is None:
@@ -550,7 +560,7 @@ def add_translations_from_trans_see( page, toc: Root ):
         # 6. get all from external page =Trarnslations=.
         #    add to node =Translations=
         ts_translations_node: Translations
-        for ts_translations_node in filter( None, checks ):
+        for ts_translations_node in filter( lambda x: isinstance( x, Translations ), checks ):
             # append lexemes
             node.lexemes.extend( ts_translations_node.lexemes )
             # update index
@@ -614,6 +624,12 @@ def update_popularity_of_word( item ):
 
     item.PopularityOfWord += 1 if other_cost else 0
 
+
+def check_structure( toc: Root ):
+    # for each valuable section
+    #   check parent: parent must not can be same valuable section
+    for section in toc.find_all( (Translations, Synonyms), recursive=True ):
+        pass
 
 
 def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:

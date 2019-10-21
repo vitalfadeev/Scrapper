@@ -1,0 +1,101 @@
+{{also|Kitty}}
+==English==
+[[Image:Stray_kitten_Rambo002.jpg|thumb|220px|right|A kitty (feline kitten).]]
+
+===Alternative forms===
+* {{l|en|kittie}} {{qualifier|young cat}}
+
+===Etymology===
+{{suf|en|kit|y|id2=diminutive noun}}.
+
+===Pronunciation===
+* {{a|UK}} {{IPA|en|/ˈkɪti/}}
+* {{a|US|CA}} {{IPA|en|/ˈkɪti/|[ˈkʰɪɾi]}}
+* {{audio|en|En-au-kitty.ogg|Audio (AU)}}
+* {{a|US|CA}} {{homophones|en|kiddie|kiddy}}
+* {{rhymes|en|ɪti}}
+
+===Noun===
+{{en-noun|kitties}}
+
+# {{lb|en|informal}} A [[kitten]] or young [[cat]].
+# {{lb|en|childish|sometimes capitalized}} {{n-g|A pet name for a cat.}}
+#: ''Aw, look at the '''kitty'''!''
+#* '''2007''', Pam Johnson-Bennett, ''Starting from Scratch: How to Correct Behavior Problems in Your Adult Cat''
+#*: Even how a child picks up and handles the cat can make the '''kitty''' begin to fear the very sight of the youngster.
+# A money [[pool]], as for a card game, or for shared expenses.
+# {{lb|en|poker|slang}} In a home game, a small, specified amount taken from each [[pot]] to pay the host's expenses.
+# {{lb|en|slang|vulgar}} Female genitals. {{qualifier|Euphemistic form of ''[[pussy]]''.}}
+# {{lb|en|card games}} A set of [[additional]] [[card]]s dealt face down in some games.
+
+====Synonyms====
+* {{sense|money pool}} {{l|en|pot}}
+
+====Related terms====
+* {{l|en|kitteh}}
+* {{l|en|kitten}}
+* {{l|en|kittenish}}, {{l|en|kittenlike}}
+* {{l|en|kitty litter}}
+
+====Translations====
+{{trans-top|kitten, small cat}}
+* Bulgarian: {{t|bg|котенце|n}}
+* Chinese:
+*: Cantonese: {{t|yue|貓仔|sc=Hani}}, {{t|yue|猫仔|tr=maau1 zai2|sc=Hani}}
+*: Mandarin: {{t+|cmn|貓咪|sc=Hani}}, {{t+|cmn|猫咪|tr=māomī|sc=Hani}}
+* Danish: {{t+|da|kattekilling}}, {{t+|da|killing}}
+* Dutch: {{t+|nl|katje}}, {{t|nl|kattenjong}}
+* Esperanto: {{qualifier|male}} {{t+|eo|kaĉjo}}, {{qualifier|female}} {{t+|eo|kanjo}}, {{t|eo|kateto}}, {{t+|eo|katido}}
+* Estonian: {{t+|et|kiisu}}
+* Finnish: {{t+|fi|kisu}}
+* French: {{t+|fr|minet|m}}, {{t+|fr|chaton|m}}
+* Georgian: {{t|ka|ფისო}}, {{t|ka|ფისუნია}}
+* German: {{t+|de|Kätzchen|n}}, {{t+|de|Mieze|f}}
+* Greek: {{t+|el|ψιψίνα|f}}
+* Hebrew: {{t+|he|חֲתַלְתּוּל|m|tr=khataltúl|sc=Hebr}}, {{t|he|חֲתַלְתּוּלָה|f|tr=khataltulá|sc=Hebr}}, {{t|he|גּוּר חֲתוּלִים|m|tr=gúr khatulím|sc=Hebr}}, {{t|he|גּוּרַת חֲתוּלִים|f|tr=gurát khatulím|sc=Hebr}}
+* Hungarian: {{t+|hu|cica}}
+* Ido: {{t+|io|kateto}}, {{t+|io|katyuno}}
+{{trans-mid}}
+* Italian: {{t+|it|gattino}}, {{t+|it|micio|m}}, {{t|it|micetto|m}}, {{t|it|micino|m}}
+* Japanese: {{qualifier|young}} {{t|ja|仔猫|tr=koneko}}, {{t|ja|子猫|tr=koneko}}; {{qualifier|small}} {{t|ja|小猫|tr=koneko}}, {{t|ja|子ネコ|tr=koneko|sc=Jpan}}
+* Kayan: {{t|pdu|kittaou|car}}
+* Korean: {{t+|ko|나비}}, {{t|ko|냐옹}}, {{t+|ko|고양이}}
+* Macedonian: {{t|mk|маче|n|tr=máče|sc=Cyrl}}, {{t|mk|маченце|n|tr=máčence|sc=Cyrl}}
+* Norwegian: {{t+|no|kattunge}}
+* Polish: {{t+|pl|kotek|m}}
+* Portuguese: {{t+|pt|gatinho}}
+* Russian: {{t+|ru|ко́шка|f}}, {{t+|ru|ко́шечка|m}}, {{t+|ru|ки́са|f}}, {{t+|ru|ки́ска|f}}
+* Serbo-Croatian: {{t|sh|маца|f|tr=maca}}
+* Spanish: {{t+|es|gatito}}, {{t+|es|minino|m}}
+* Swedish: {{t+|sv|kisse|c}}
+* Volapük: {{qualifier|♂♀}} {{t|vo|katül}}, {{qualifier|♂}} {{t|vo|hikatül}}, {{qualifier|♀}} {{t|vo|jikatül}}, {{qualifier|diminutive ♂♀}} {{t+|vo|katil}}, {{qualifier|diminutive ♂}} {{t|vo|hikatil}}, {{qualifier|diminutive ♀}} {{t|vo|jikatil}}
+* Yiddish: {{t|yi|קעצל|n}}, {{t|yi|קעצעלע|n}}
+{{trans-bottom}}
+
+{{trans-top|(''childish'') pet name for a cat}}
+* Esperanto: {{t|eo|kateto}}
+* Hungarian: {{t+|hu|cica}}
+* Japanese: {{t|ja|ニャンコ|tr=nyanko|sc=Jpan}}, {{t|ja|ネコちゃん|tr=neko-chan|sc=Jpan}}
+{{trans-mid}}
+* Russian: {{t+|ru|ки́са|f}}, {{t+|ru|ки́ска|f}}
+* Swedish: {{t+|sv|kisse|c}}, {{t+|sv|misse|c}}
+* Turkish: {{t+|tr|pisi}}
+{{trans-bottom}}
+
+{{trans-top|pool of money}}
+* Bulgarian: {{t+|bg|банка|f}}
+* French: {{t+|fr|cagnotte|f}}
+* German: {{t|de|Spielkasse|f}}
+* Greek: {{t|el|κοινό ταμείο|n}}
+{{trans-mid}}
+* Irish: {{t|ga|leac|f}}
+* Spanish: {{t+|es|pozo|m}}, {{t+|es|vaquita|f}}, {{t+|es|bote|m}}
+{{trans-bottom}}
+
+===See also===
+* {{l|en|pussy}}
+
+===Further reading===
+* {{pedia|cat}}
+
+[[Category:en:Cats]]
