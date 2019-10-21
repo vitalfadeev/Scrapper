@@ -784,7 +784,7 @@ SenseRaw = {
     }
 }
 
-ExternalLinks = {
+DescriptionWikipediaLinks = {
     (in_self, in_examples): {  # noun / etymology / english
         in_template: {
             'soplink': {
@@ -795,7 +795,26 @@ ExternalLinks = {
             },
             'pedia': {
                 in_arg: { 0 }
+            },
+            'projectlink/Wikipedia': {
+                in_arg: { 0 }
             }
         }
     }
 }
+
+DescriptionWiktionaryLinks = {
+    (in_self, in_examples): {  # noun / etymology / english
+        in_template: {
+            ('l', 'link', 'll'): {
+                with_lang: {
+                    'en': {
+                        in_arg: { 1 }
+                    }
+                }
+            },
+        },
+        in_link: {},
+    }
+}
+

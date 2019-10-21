@@ -14,140 +14,140 @@ class WikictionaryItem:
         DB_TABLE_NAME = "wiktionary"
         DB_INIT = """
             CREATE TABLE IF NOT EXISTS wiktionary (
-                    PrimaryKey              VARCHAR(255) NOT NULL PRIMARY KEY,
-                    IndexinPage				INTEGER NULL,
-                    IndexPartOfSpeech		VARCHAR(255) NULL,
-                    IndexinToc 				VARCHAR(255) NULL,
-                    SelfUrl                 VARCHAR(255),
-                    LabelName               VARCHAR(255),
-                    LabelType               VARCHAR(255),
-                    LanguageCode            CHAR(2),
-                    Type                    VARCHAR(255),
-                    TypeLabelName           VARCHAR(255),
-                    ExplainationRaw         TEXT,
-                    ExplainationTxt         TEXT,
-                    ExplainationExamplesRaw TEXT,
-                    ExplainationExamplesTxt TEXT,
-                    DescriptionTxt          TEXT,
-                    IsMale                  INTEGER NULL,
-                    IsFeminine              INTEGER NULL,
-                    IsNeutre                INTEGER NULL,
-                    IsSingle                INTEGER NULL,
-                    IsPlural                INTEGER NULL,
-                    SingleVariant           VARCHAR(255) NULL,
-                    PluralVariant           VARCHAR(255) NULL,
-                    PopularityOfWord        INTEGER NULL,
-                    MaleVariant             VARCHAR(255) NULL,
-                    FemaleVariant           VARCHAR(255) NULL,
-                    IsVerbPast              INTEGER NULL,
-                    IsVerbPresent           INTEGER NULL,
-                    IsVerbFutur             INTEGER NULL,
-                    Conjugation             TEXT NULL,
-                    Synonymy                TEXT NULL,
-                    Antonymy                TEXT NULL,
-                    Hypernymy               TEXT NULL,
-                    Hyponymy                TEXT NULL,
-                    Meronymy                TEXT NULL,
-                    Holonymy                TEXT NULL,
-                    Troponymy               TEXT NULL,
-                    Otherwise               TEXT NULL,
-                    AlternativeFormsOther   TEXT NULL,
-                    RelatedTerms            TEXT NULL,
-                    DerivedTerms            TEXT NULL,
-                    Coordinate              TEXT NULL,
-                    Translation_EN          TEXT NULL,
-                    Translation_FR          TEXT NULL,
-                    Translation_DE          TEXT NULL,
-                    Translation_IT          TEXT NULL,
-                    Translation_ES          TEXT NULL,
-                    Translation_RU          TEXT NULL,
-                    Translation_PT          TEXT NULL,
-                    TranslationsBySentence  TEXT NULL,
-                    TranslationSentence     TEXT NULL,
-                    TranslationsByLang      TEXT NULL,
-                    TranslationsPairs       TEXT NULL,
-                    DescriptionWiktionaryLinks TEXT NULL,
-                    DescriptionWikipediaLinks  TEXT NULL,
-                    Labels                  TEXT NULL,
-                    Categories              TEXT NULL,
-                    Cognates                TEXT NULL,
-                    Mentions                TEXT NULL,
-                    VerbConjugaisonAdded    INTEGER NULL,
-                    Senses                  TEXT NULL,
-                    SeeAlso                 TEXT NULL,
-                    Accent                  TEXT NULL,
-                    Qualifier               TEXT NULL,
-                    ExternalLinks           TEXT NULL
+                    PrimaryKey                  VARCHAR(255) NOT NULL PRIMARY KEY,
+                    IndexinPage				    INTEGER NULL,
+                    IndexPartOfSpeech		    VARCHAR(255) NULL,
+                    IndexinToc 				    VARCHAR(255) NULL,
+                    SelfUrl                     VARCHAR(255),
+                    LabelName                   VARCHAR(255),
+                    LabelType                   VARCHAR(255),
+                    LanguageCode                CHAR(2),
+                    Type                        VARCHAR(255),
+                    TypeLabelName               VARCHAR(255),
+                    ExplainationRaw             TEXT,
+                    ExplainationTxt             TEXT,
+                    ExplainationExamplesRaw     TEXT,
+                    ExplainationExamplesTxt     TEXT,
+                    DescriptionTxt              TEXT,
+                    IsMale                      INTEGER NULL,
+                    IsFeminine                  INTEGER NULL,
+                    IsNeutre                    INTEGER NULL,
+                    IsSingle                    INTEGER NULL,
+                    IsPlural                    INTEGER NULL,
+                    SingleVariant               VARCHAR(255) NULL,
+                    PluralVariant               VARCHAR(255) NULL,
+                    PopularityOfWord            INTEGER NULL,
+                    MaleVariant                 VARCHAR(255) NULL,
+                    FemaleVariant               VARCHAR(255) NULL,
+                    IsVerbPast                  INTEGER NULL,
+                    IsVerbPresent               INTEGER NULL,
+                    IsVerbFutur                 INTEGER NULL,
+                    Conjugation                 TEXT NULL,
+                    Synonymy                    TEXT NULL,
+                    Antonymy                    TEXT NULL,
+                    Hypernymy                   TEXT NULL,
+                    Hyponymy                    TEXT NULL,
+                    Meronymy                    TEXT NULL,
+                    Holonymy                    TEXT NULL,
+                    Troponymy                   TEXT NULL,
+                    Otherwise                   TEXT NULL,
+                    AlternativeFormsOther       TEXT NULL,
+                    RelatedTerms                TEXT NULL,
+                    DerivedTerms                TEXT NULL,
+                    Coordinate                  TEXT NULL,
+                    Translation_EN              TEXT NULL,
+                    Translation_FR              TEXT NULL,
+                    Translation_DE              TEXT NULL,
+                    Translation_IT              TEXT NULL,
+                    Translation_ES              TEXT NULL,
+                    Translation_RU              TEXT NULL,
+                    Translation_PT              TEXT NULL,
+                    TranslationsBySentence      TEXT NULL,
+                    TranslationSentence         TEXT NULL,
+                    TranslationsByLang          TEXT NULL,
+                    TranslationsPairs           TEXT NULL,
+                    Labels                      TEXT NULL,
+                    Categories                  TEXT NULL,
+                    Cognates                    TEXT NULL,
+                    Mentions                    TEXT NULL,
+                    VerbConjugaisonAdded        INTEGER NULL,
+                    Senses                      TEXT NULL,
+                    SeeAlso                     TEXT NULL,
+                    Accent                      TEXT NULL,
+                    Qualifier                   TEXT NULL,
+                    DescriptionWikipediaLinks   TEXT NULL,
+                    DescriptionWiktionaryLinks  TEXT NULL
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);
         """
 
     def __init__(self):
-        self.PrimaryKey                 = ""
-        self.SelfUrl                    = ""
-        self.LabelName                  = ""  #
-        self.LabelType                  = ""  #
-        self.LanguageCode               = ""  # (EN,FR,…)
-        self.Type                       = ""  #                        = noun,verb… see = WORD_TYPES
-        self.TypeLabelName              = ""  # chatt for verb of chat
-        self.ExplainationRaw            = ""  #
-        self.ExplainationTxt            = ""  #
-        self.ExplainationExamplesRaw    = ""
-        self.ExplainationExamplesTxt    = ""
-        self.DescriptionTxt             = ""
-        self.IsMale                     = bool
-        self.IsFeminine                 = bool  # ""
-        self.IsNeutre                   = bool  # ""
-        self.IsSingle                   = bool
-        self.IsPlural                   = bool
-        self.SingleVariant              = ""  # ""
-        self.PluralVariant              = ""  # ""
-        self.PopularityOfWord           = 0
-        self.MaleVariant                = ""  # ""
-        self.FemaleVariant              = ""  # ""
-        self.IsVerbPast                 = bool
-        self.IsVerbPresent              = bool
-        self.IsVerbFutur                = bool
-        self.Conjugation                = []
-        self.Synonymy                   = []
-        self.Antonymy                   = []
-        self.Hypernymy                  = []
-        self.Hyponymy                   = []
-        self.Meronymy                   = []
-        self.Holonymy                   = []
-        self.Troponymy                  = []
-        self.Otherwise                  = []
-        self.AlternativeFormsOther      = []
-        self.RelatedTerms               = []
-        self.DerivedTerms               = []
-        self.Coordinate                 = []
-        self.Translation_EN             = []
-        self.Translation_FR             = []
-        self.Translation_DE             = []
-        self.Translation_IT             = []
-        self.Translation_ES             = []
-        self.Translation_RU             = []
-        self.Translation_PT             = []
-        self.IndexinPage                = 0
-        self.IndexinToc                 = "" # ""
-        self.IndexPartOfSpeech          = "" # ""
-        self.TranslationsBySentence     = {}
-        self.TranslationSentence        = {}
-        self.TranslationsByLang         = {}
-        self.TranslationsPairs          = []
-        self.DescriptionWiktionaryLinks = []
-        self.DescriptionWikipediaLinks  = []
-        self.Labels                     = []
-        self.Categories                 = []
-        self.Cognates                   = {}
-        self.Mentions                   = {}
-        self.VerbConjugaisonAdded       = None
-        self.Senses                     = {}
-        self.SeeAlso                    = []
-        self.Accent                     = []
-        self.Qualifier                  = []
-        self.ExternalLinks              = []
+        self.PrimaryKey                  = ""
+        self.SelfUrl                     = ""
+        self.LabelName                   = ""  #
+        self.LabelType                   = ""  #
+        self.LanguageCode                = ""  # (EN,FR,…)
+        self.Type                        = ""  #                        = noun,verb… see = WORD_TYPES
+        self.TypeLabelName               = ""  # chatt for verb of chat
+        self.ExplainationRaw             = ""  #
+        self.ExplainationTxt             = ""  #
+        self.ExplainationExamplesRaw     = ""
+        self.ExplainationExamplesTxt     = ""
+        self.DescriptionTxt              = ""
+        self.IsMale                      = bool
+        self.IsFeminine                  = bool  # ""
+        self.IsNeutre                    = bool  # ""
+        self.IsSingle                    = bool
+        self.IsPlural                    = bool
+        self.SingleVariant               = ""  # ""
+        self.PluralVariant               = ""  # ""
+        self.PopularityOfWord            = 0
+        self.MaleVariant                 = ""  # ""
+        self.FemaleVariant               = ""  # ""
+        self.IsVerbPast                  = bool
+        self.IsVerbPresent               = bool
+        self.IsVerbFutur                 = bool
+        self.Conjugation                 = []
+        self.Synonymy                    = []
+        self.Antonymy                    = []
+        self.Hypernymy                   = []
+        self.Hyponymy                    = []
+        self.Meronymy                    = []
+        self.Holonymy                    = []
+        self.Troponymy                   = []
+        self.Otherwise                   = []
+        self.AlternativeFormsOther       = []
+        self.RelatedTerms                = []
+        self.DerivedTerms                = []
+        self.Coordinate                  = []
+        self.Translation_EN              = []
+        self.Translation_FR              = []
+        self.Translation_DE              = []
+        self.Translation_IT              = []
+        self.Translation_ES              = []
+        self.Translation_RU              = []
+        self.Translation_PT              = []
+        self.IndexinPage                 = 0
+        self.IndexinToc                  = "" # ""
+        self.IndexPartOfSpeech           = "" # ""
+        self.TranslationsBySentence      = {}
+        self.TranslationSentence         = {}
+        self.TranslationsByLang          = {}
+        self.TranslationsPairs           = []
+        self.DescriptionWiktionaryLinks  = []
+        self.DescriptionWikipediaLinks   = []
+        self.Labels                      = []
+        self.Categories                  = []
+        self.Cognates                    = {}
+        self.Mentions                    = {}
+        self.VerbConjugaisonAdded        = None
+        self.Senses                      = {}
+        self.SeeAlso                     = []
+        self.Accent                      = []
+        self.Qualifier                   = []
+        self.DescriptionWikipediaLinks   = []
+        self.DescriptionWiktionaryLinks  = []
 
             
     def dump(self, print_header=False):
