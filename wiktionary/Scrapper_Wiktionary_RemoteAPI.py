@@ -83,16 +83,31 @@ def get_wikitext( title=None ):
     response = _post(params)
 
     if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'lxml')
-        if soup.body.mediawiki.page is not None:
+        spos = response.text.find("<text>")
+        epos = response.text.find("</text>")
+
+        if epos != -1 and epos != -1:
             # page found
-            text = soup.body.mediawiki.page.revision.text
+            spos = spos + len( "<text>" )
+            text = response.text[spos:epos]
             return text
 
         else:
             # no page in DB
             # soup.body.mediawiki.page is None
             log.error( '  no page: %s', title )
+
+    # soup = BeautifulSoup(response.content, 'lxml')
+        # if soup.body.mediawiki.page is not None:
+        #     # page found
+        #     text = soup.body.mediawiki.page.revision.text
+        #     print( response.text )
+        #     return text
+        #
+        # else:
+        #     # no page in DB
+        #     # soup.body.mediawiki.page is None
+        #     log.error( '  no page: %s', title )
 
     else:
         log.error( '  response.status_code: %s', response.status_code )

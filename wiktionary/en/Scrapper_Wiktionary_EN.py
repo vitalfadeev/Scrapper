@@ -753,6 +753,8 @@ def trans_see_finder( toc: Root ):
     for node in toc.find_all( Translations, recursive=True ):
         for t in node.lexemes_by_class[ Template ][ 'trans-see' ]:
             yield (node, t)
+        for t in node.lexemes_by_class[ Template ][ 'section link' ]:
+            yield (node, t)
 
 def add_translations_from_trans_see( page, toc: Root ):
     """
@@ -790,7 +792,7 @@ def add_translations_from_trans_see( page, toc: Root ):
     #      dict[ English ][ Noun ] == current_node.part_of_speech
     #      dict[ Noun ] == current_node.part_of_speech
     #      dict[ Translations ]
-    # 6. get trarnslation lexemes. add to node =Translations=
+    # 6. get translation lexemes. add to node =Translations=
     # save fetch page titles for prevent recursion
     pages = set()
 
@@ -798,13 +800,18 @@ def add_translations_from_trans_see( page, toc: Root ):
     node: Translations
     for node, t in trans_see_finder( toc ):
         # found
-        full_url = t.arg( 1 )
+        # get title
+        if t.name == 'section link':
+            full_url = t.arg( 0 )
+        else:
+            full_url = t.arg( 1 )
 
+        #
         if full_url is None:
             continue
 
         # split cat/translations#Noun  ->  (cat/translations, Noun)
-        page_url = full_url.split('#')[0]
+        page_url = full_url.split('#', 1)[0]
 
         # skip self
         if page_url == page.label:
@@ -828,7 +835,7 @@ def add_translations_from_trans_see( page, toc: Root ):
         ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
         ts_toc = make_table_of_contents( ts_lexemes )
         update_index_in_toc( ts_toc )
-        # ts_toc.dump()
+        ts_toc.dump()
 
         # 4. make search index:  dict[ English ][ Noun ][ Translations ] = (node, t)
         # example:
@@ -872,10 +879,10 @@ def add_translations_from_trans_see( page, toc: Root ):
 
         #
         checks = [
-            d[ clang ][ cpos ],     # ib betted betted betted
-            d[ clang ][ None ],     # ib betted betted
-            d[ None  ][ cpos ],     # ib betted
-            d[ None  ][ None ],     # ib good
+            d[ clang ][ cpos ],     # is better better better
+            d[ clang ][ None ],     # is better better
+            d[ None  ][ cpos ],     # is better
+            d[ None  ][ None ],     # is good
         ]
 
         # 6. get all from external page =Trarnslations=.
