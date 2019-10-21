@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
 
    wiktionary.en
-   wiktionary.tests
 
 Submodules
 ----------

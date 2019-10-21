@@ -90,9 +90,6 @@
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_Downloader.html">Scrapper_Downloader module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Scrapper_Helpers module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Scrapper_IxiooAPI.html">Scrapper_IxiooAPI module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">test module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_one.html">test_one module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_wikidata.html">test_wikidata module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wiktionary.html">wiktionary package</a></li>
 </ul>
 </li>
@@ -250,8 +247,16 @@ for which pred(item) is true.</p>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.get_contents">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_contents</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_contents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_contents</code><span class="sig-paren">(</span><em class="sig-param">filename: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_contents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the file ‘filename’ and return content.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;checkpoint.txt&#39;</span> <span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="s1">&#39;test data&#39;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">Scrapper_Helpers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">get_contents</span><span class="p">(</span> <span class="s1">&#39;checkpoint.txt&#39;</span> <span class="p">)</span>
+<span class="go">&#39;test data&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -306,13 +311,35 @@ For efficiency, the stream is buffered.</p>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.proper">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">proper</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#proper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.proper" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">proper</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#proper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.proper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make string Proper case. First char is upper-case, rest - lower.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – source string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)   Proper-cased string</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">Scrapper_Helpers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">proper</span><span class="p">(</span> <span class="s1">&#39;jazz&#39;</span> <span class="p">)</span>
+<span class="go">&#39;Jazz&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.put_contents">
 <code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">put_contents</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">content</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#put_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.put_contents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save ‘content’ to the file ‘filename’. UTF-8.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">Scrapper_Helpers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">put_contents</span><span class="p">(</span> <span class="s1">&#39;checkpoint.txt&#39;</span> <span class="p">,</span> <span class="s1">&#39;12345&#39;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;checkpoint.txt&#39;</span> <span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">&#39;12345&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -372,8 +399,23 @@ filename</p>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.unique">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">unique</code><span class="sig-paren">(</span><em class="sig-param">lst</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#unique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.unique" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">unique</code><span class="sig-paren">(</span><em class="sig-param">lst: list</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/Scrapper_Helpers.html#unique"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.unique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique list items.</p>
+<p>Source list keeps unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lst</strong> (<em>list</em>) – List with items</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(list)</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">Scrapper_Helpers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </div>
 

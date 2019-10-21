@@ -8,7 +8,4 @@ Scrapper
    Scrapper_Downloader
    Scrapper_Helpers
    Scrapper_IxiooAPI
-   test
-   test_one
-   test_wikidata
    wiktionary

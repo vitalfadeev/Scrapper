@@ -46,14 +46,42 @@ def sanitize_filename(filename):
     return filename
 
 
-def unique(lst):
+def unique( lst: list ) -> list:
+    """
+    Unique list items.
+
+    Source list keeps unchanged.
+
+    Args:
+        lst (list):  List with items
+
+    Returns:
+        (list)
+
+    ::
+
+        >>> import Scrapper_Helpers
+        >>> Scrapper_Helpers.unique([1,1,1,2,3])
+        [1, 2, 3]
+
+    """
     qniqued = list ( collections.OrderedDict.fromkeys( lst ).keys() )
     return qniqued
 
 
-def get_contents(filename):
+def get_contents( filename: str ) -> str:
     """
     Read the file 'filename' and return content.
+
+    ::
+
+        >>> with open('checkpoint.txt' , 'w') as f:
+        >>>    f.write( 'test data')
+
+        >>> import Scrapper_Helpers
+        >>> Scrapper_Helpers.get_contents( 'checkpoint.txt' )
+        'test data'
+
     """
     with open(filename, 'rt', encoding="UTF-8") as f:
         return f.read()
@@ -62,6 +90,16 @@ def get_contents(filename):
 def put_contents(filename, content):
     """
     Save 'content' to the file 'filename'. UTF-8.
+
+    ::
+
+        >>> import Scrapper_Helpers
+        >>> Scrapper_Helpers.put_contents( 'checkpoint.txt' , '12345')
+
+        >>> with open('checkpoint.txt' , 'r') as f:
+        >>>    f.read()
+        '12345'
+
     """
     with open(filename, "w", encoding="UTF-8") as f:
         f.write(content)
@@ -96,7 +134,23 @@ def load_from_pickle(filename):
     return None
 
 
-def proper(s):
+def proper( s: str ) -> str:
+    """
+    Make string Proper case. First char is upper-case, rest - lower.
+
+    Args:
+        s (str): source string
+
+    Returns:
+        (str)   Proper-cased string
+
+    ::
+
+        >>> import Scrapper_Helpers
+        >>> Scrapper_Helpers.proper( 'jazz' )
+        'Jazz'
+
+    """
     if len(s) == 0:
         return s
     elif len(s) == 1:
@@ -104,16 +158,31 @@ def proper(s):
     else:
         return s[0].upper() + s[1:].lower()
 
-def deduplicate(s, char='_'):
+
+def deduplicate( s: str, char: str='_' ) -> str:
     """
-    in:  "abc__def"
-    out: "abc_def"
+    Replace duplicated chars from string.
 
-    in:  "abc_def"
-    out: "abc_def"
+    Args:
+        s (str):    source string
+        char (str): duplicated char which need deduplicate
 
-    in:  "abc_____def"
-    out: "abc_def"
+    Returns:
+        (str)   deduplicated string
+    ::
+    
+        >>> Scrapper_Helpers.deduplicate( "abc__def" )
+        'abc_def'
+
+        >>> Scrapper_Helpers.deduplicate( "abc_def" )
+        'abc_def'
+    
+        >>> Scrapper_Helpers.deduplicate( "abc_____def")
+        'abc_def'
+
+        >>> Scrapper_Helpers.deduplicate( "abc     def", ' ')
+        'abc def'
+
     """
     dup = char + char
 
@@ -122,13 +191,23 @@ def deduplicate(s, char='_'):
 
     return s
 
-def get_number(s):
+def get_number( s: str ) -> str:
     """
-    in:  1a
-    out: 1
-    
-    in:  10a
-    out: 10
+    Return numrical part from string.
+
+    Args:
+        s (str): source string
+
+    Returns:
+        (str)   heading string with numbers only
+    ::
+
+        >>> Scrapper_Helpers.get_number( '1a' )
+        '1'
+        
+        >>> Scrapper_Helpers.get_number( '10a' )
+        '10'
+
     """
     result = ""
     
@@ -141,11 +220,43 @@ def get_number(s):
     return result
     
 
-def convert_to_alnum(s, replace_char="_"):
+def convert_to_alnum( s: str, replace_char: str="_" ) -> str:
+    """
+    Remove from string `s` all non-alpha-numerical symbols.
+
+    Args:
+        s (str):        source strinr
+        replace_char:   char instead non-alpha-numerical symbol
+
+    Returns:
+        (str) new string
+
+    ::
+
+        >>> Scrapper_Helpers.convert_to_alnum( '#: {{syn|en|felid}}' )
+        '_____syn_en_felid__'
+
+    """
     return "".join( (c if c.isalnum() else replace_char for c in s ) )
 
 
-def get_lognest_word(lst):
+def get_lognest_word( lst: list ) -> str:
+    """
+    Return word with maximal length.
+
+    Args:
+        lst (lsit): list with words
+
+    Returns:
+        (str)  word
+
+    ::
+
+        a = ['', 'syn', 'en', 'felid', '']
+        >>> Scrapper_Helpers.get_lognest_word( a )
+        'felid'
+
+    """
     longest = ""
     maxlen = 0
 
@@ -157,7 +268,23 @@ def get_lognest_word(lst):
     return longest
 
 
-def remove_comments(s, startpos=0):
+def remove_comments( s:str, startpos:int=0) -> str:
+    """
+    Remove HTML comments from string.
+
+    Args:
+        s (str):        source string
+        startpos(int):  start position
+
+    Returns:
+        (str)   New string without comments
+
+    ::
+
+        >>> Scrapper_Helpers.remove_comments( '<!-- The comment -->Clean text' )
+        'Clean text'
+
+    """
     cs = s.find("<!--", startpos)
     
     if cs != -1:
@@ -168,8 +295,25 @@ def remove_comments(s, startpos=0):
             return remove_comments(cleaned)
     
     return s
-    
-def extract_from_link(s, startpos=0):
+
+
+def extract_from_link( s:str, startpos:int =0) -> str:
+    """
+    Extract string from [[...]]] square brackets.
+
+    Args:
+        s (str):            source string
+        startpos (int):     start position
+
+    Returns:
+        (str) New string with clean text.
+
+    ::
+
+        >>> Scrapper_Helpers.extract_from_link( '# An animal of the family [[Felidae]]:' )
+        '# An animal of the family Felidae:'
+
+    """
     cs = s.find("[", startpos)
     
     if cs != -1:
@@ -208,7 +352,20 @@ def iterable_to_stream(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
 
 
 
-def is_ascii(s):
+def is_ascii( s :str ) -> bool:
+    """
+    Primitive fast version of ASCII checker.
+
+    Test all symbols for ASCII or not.
+
+    Args:
+        s (str): source string
+
+    Returns:
+        (bool)
+            - True - all is ACSII
+            - False- not all is ACSII
+    """
     return all(ord(c) < 128 for c in s)
 
 
@@ -217,6 +374,7 @@ class Store:
     sections = {}
     counter = 0
     
+
 def add_template(s, t):
     # add template
     lst = Store.sections.get(s.name, None)
@@ -254,6 +412,24 @@ def save():
 
 
 def save_to_json( obj, filename ):
+    """
+    Sve object `obj` to file in JSON format.
+
+    With pretty format with indent 4 spaces.
+
+    Args:
+        obj:        object
+        filename:   file name
+
+    ::
+
+        >>> Scrapper_Helpers.save_to_json( [1,2,3], '123.json' )
+        >>> with open('123.json' , 'r') as f:
+        ...  f.read()
+        ...
+        '[\n    1,\n    2,\n    3\n]'
+
+    """
     js = json.dumps( obj, sort_keys=False, indent=4, ensure_ascii=False )
     put_contents( filename, js )
 
