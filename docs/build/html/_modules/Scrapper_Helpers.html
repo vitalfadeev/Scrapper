@@ -290,16 +290,30 @@
         <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="deduplicate"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.deduplicate">[docs]</a><span class="k">def</span> <span class="nf">deduplicate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">char</span><span class="o">=</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="deduplicate"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.deduplicate">[docs]</a><span class="k">def</span> <span class="nf">deduplicate</span><span class="p">(</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;_&#39;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    in:  &quot;abc__def&quot;</span>
-<span class="sd">    out: &quot;abc_def&quot;</span>
+<span class="sd">    Replace duplicated chars from string.</span>
 
-<span class="sd">    in:  &quot;abc_def&quot;</span>
-<span class="sd">    out: &quot;abc_def&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        s (str):    source string</span>
+<span class="sd">        char (str): duplicated char which need deduplicate</span>
 
-<span class="sd">    in:  &quot;abc_____def&quot;</span>
-<span class="sd">    out: &quot;abc_def&quot;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (str)   deduplicated string</span>
+<span class="sd">    ::</span>
+<span class="sd">    </span>
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.deduplicate( &quot;abc__def&quot; )</span>
+<span class="sd">        &#39;abc_def&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.deduplicate( &quot;abc_def&quot; )</span>
+<span class="sd">        &#39;abc_def&#39;</span>
+<span class="sd">    </span>
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.deduplicate( &quot;abc_____def&quot;)</span>
+<span class="sd">        &#39;abc_def&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.deduplicate( &quot;abc     def&quot;, &#39; &#39;)</span>
+<span class="sd">        &#39;abc def&#39;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dup</span> <span class="o">=</span> <span class="n">char</span> <span class="o">+</span> <span class="n">char</span>
 
@@ -308,13 +322,23 @@
 
     <span class="k">return</span> <span class="n">s</span></div>
 
-<div class="viewcode-block" id="get_number"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_number">[docs]</a><span class="k">def</span> <span class="nf">get_number</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<div class="viewcode-block" id="get_number"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_number">[docs]</a><span class="k">def</span> <span class="nf">get_number</span><span class="p">(</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    in:  1a</span>
-<span class="sd">    out: 1</span>
-<span class="sd">    </span>
-<span class="sd">    in:  10a</span>
-<span class="sd">    out: 10</span>
+<span class="sd">    Return numrical part from string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str): source string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str)   heading string with numbers only</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.get_number( &#39;1a&#39; )</span>
+<span class="sd">        &#39;1&#39;</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.get_number( &#39;10a&#39; )</span>
+<span class="sd">        &#39;10&#39;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     
@@ -327,11 +351,43 @@
     <span class="k">return</span> <span class="n">result</span></div>
     
 
-<div class="viewcode-block" id="convert_to_alnum"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.convert_to_alnum">[docs]</a><span class="k">def</span> <span class="nf">convert_to_alnum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">replace_char</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_to_alnum"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.convert_to_alnum">[docs]</a><span class="k">def</span> <span class="nf">convert_to_alnum</span><span class="p">(</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replace_char</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;_&quot;</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove from string `s` all non-alpha-numerical symbols.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str):        source strinr</span>
+<span class="sd">        replace_char:   char instead non-alpha-numerical symbol</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str) new string</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.convert_to_alnum( &#39;#: {{syn|en|felid}}&#39; )</span>
+<span class="sd">        &#39;_____syn_en_felid__&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="p">(</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="k">else</span> <span class="n">replace_char</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span> <span class="p">)</span> <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_lognest_word"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_lognest_word">[docs]</a><span class="k">def</span> <span class="nf">get_lognest_word</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+<div class="viewcode-block" id="get_lognest_word"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.get_lognest_word">[docs]</a><span class="k">def</span> <span class="nf">get_lognest_word</span><span class="p">(</span> <span class="n">lst</span><span class="p">:</span> <span class="nb">list</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return word with maximal length.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lst (lsit): list with words</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str)  word</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        a = [&#39;&#39;, &#39;syn&#39;, &#39;en&#39;, &#39;felid&#39;, &#39;&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.get_lognest_word( a )</span>
+<span class="sd">        &#39;felid&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">longest</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">maxlen</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -343,7 +399,23 @@
     <span class="k">return</span> <span class="n">longest</span></div>
 
 
-<div class="viewcode-block" id="remove_comments"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.remove_comments">[docs]</a><span class="k">def</span> <span class="nf">remove_comments</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">startpos</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="remove_comments"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.remove_comments">[docs]</a><span class="k">def</span> <span class="nf">remove_comments</span><span class="p">(</span> <span class="n">s</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">startpos</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove HTML comments from string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str):        source string</span>
+<span class="sd">        startpos(int):  start position</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str)   New string without comments</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.remove_comments( &#39;&lt;!-- The comment --&gt;Clean text&#39; )</span>
+<span class="sd">        &#39;Clean text&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;&lt;!--&quot;</span><span class="p">,</span> <span class="n">startpos</span><span class="p">)</span>
     
     <span class="k">if</span> <span class="n">cs</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -354,8 +426,25 @@
             <span class="k">return</span> <span class="n">remove_comments</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">s</span></div>
-    
-<div class="viewcode-block" id="extract_from_link"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.extract_from_link">[docs]</a><span class="k">def</span> <span class="nf">extract_from_link</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">startpos</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="extract_from_link"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.extract_from_link">[docs]</a><span class="k">def</span> <span class="nf">extract_from_link</span><span class="p">(</span> <span class="n">s</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">startpos</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract string from [[...]]] square brackets.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str):            source string</span>
+<span class="sd">        startpos (int):     start position</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (str) New string with clean text.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.extract_from_link( &#39;# An animal of the family [[Felidae]]:&#39; )</span>
+<span class="sd">        &#39;# An animal of the family Felidae:&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cs</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="n">startpos</span><span class="p">)</span>
     
     <span class="k">if</span> <span class="n">cs</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -394,7 +483,20 @@
 
 
 
-<div class="viewcode-block" id="is_ascii"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.is_ascii">[docs]</a><span class="k">def</span> <span class="nf">is_ascii</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<div class="viewcode-block" id="is_ascii"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.is_ascii">[docs]</a><span class="k">def</span> <span class="nf">is_ascii</span><span class="p">(</span> <span class="n">s</span> <span class="p">:</span><span class="nb">str</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Primitive fast version of ASCII checker.</span>
+
+<span class="sd">    Test all symbols for ASCII or not.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        s (str): source string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (bool)</span>
+<span class="sd">            - True - all is ACSII</span>
+<span class="sd">            - False- not all is ACSII</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">128</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span></div>
 
 
@@ -403,6 +505,7 @@
     <span class="n">sections</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span></div>
     
+
 <div class="viewcode-block" id="add_template"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.add_template">[docs]</a><span class="k">def</span> <span class="nf">add_template</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="c1"># add template</span>
     <span class="n">lst</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -440,6 +543,24 @@
 
 
 <div class="viewcode-block" id="save_to_json"><a class="viewcode-back" href="../docstring/Scrapper_Helpers.html#Scrapper_Helpers.save_to_json">[docs]</a><span class="k">def</span> <span class="nf">save_to_json</span><span class="p">(</span> <span class="n">obj</span><span class="p">,</span> <span class="n">filename</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sve object `obj` to file in JSON format.</span>
+
+<span class="sd">    With pretty format with indent 4 spaces.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj:        object</span>
+<span class="sd">        filename:   file name</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        &gt;&gt;&gt; Scrapper_Helpers.save_to_json( [1,2,3], &#39;123.json&#39; )</span>
+<span class="sd">        &gt;&gt;&gt; with open(&#39;123.json&#39; , &#39;r&#39;) as f:</span>
+<span class="sd">        ...  f.read()</span>
+<span class="sd">        ...</span>
+<span class="sd">        &#39;[\n    1,\n    2,\n    3\n]&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">js</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span> <span class="n">obj</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span> <span class="p">)</span>
     <span class="n">put_contents</span><span class="p">(</span> <span class="n">filename</span><span class="p">,</span> <span class="n">js</span> <span class="p">)</span></div>
 

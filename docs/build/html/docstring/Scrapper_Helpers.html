@@ -179,8 +179,24 @@
 
 <dl class="function">
 <dt id="Scrapper_Helpers.convert_to_alnum">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">convert_to_alnum</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">replace_char='_'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#convert_to_alnum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.convert_to_alnum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">convert_to_alnum</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">replace_char: str = '_'</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#convert_to_alnum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.convert_to_alnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove from string <cite>s</cite> all non-alpha-numerical symbols.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>str</em>) – source strinr</p></li>
+<li><p><strong>replace_char</strong> – char instead non-alpha-numerical symbol</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str) new string</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">convert_to_alnum</span><span class="p">(</span> <span class="s1">&#39;#: {{syn|en|felid}}&#39;</span> <span class="p">)</span>
+<span class="go">&#39;_____syn_en_felid__&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.create_storage">
@@ -194,13 +210,32 @@
 
 <dl class="function">
 <dt id="Scrapper_Helpers.deduplicate">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">deduplicate</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">char='_'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#deduplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.deduplicate" title="Permalink to this definition">¶</a></dt>
-<dd><p>in:  “abc__def”
-out: “abc_def”</p>
-<p>in:  “abc_def”
-out: “abc_def”</p>
-<p>in:  “abc_____def”
-out: “abc_def”</p>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">deduplicate</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">char: str = '_'</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#deduplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.deduplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace duplicated chars from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>str</em>) – source string</p></li>
+<li><p><strong>char</strong> (<em>str</em>) – duplicated char which need deduplicate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)   deduplicated string</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">deduplicate</span><span class="p">(</span> <span class="s2">&quot;abc__def&quot;</span> <span class="p">)</span>
+<span class="go">&#39;abc_def&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">deduplicate</span><span class="p">(</span> <span class="s2">&quot;abc_def&quot;</span> <span class="p">)</span>
+<span class="go">&#39;abc_def&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">deduplicate</span><span class="p">(</span> <span class="s2">&quot;abc_____def&quot;</span><span class="p">)</span>
+<span class="go">&#39;abc_def&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">deduplicate</span><span class="p">(</span> <span class="s2">&quot;abc     def&quot;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="go">&#39;abc def&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -217,8 +252,24 @@ to an arbitrary depth, updating keys. The <code class="docutils literal notransl
 
 <dl class="function">
 <dt id="Scrapper_Helpers.extract_from_link">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">extract_from_link</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">startpos=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#extract_from_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.extract_from_link" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">extract_from_link</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">startpos: int = 0</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#extract_from_link"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.extract_from_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract string from [[…]]] square brackets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>str</em>) – source string</p></li>
+<li><p><strong>startpos</strong> (<em>int</em>) – start position</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str) New string with clean text.</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">extract_from_link</span><span class="p">(</span> <span class="s1">&#39;# An animal of the family [[Felidae]]:&#39;</span> <span class="p">)</span>
+<span class="go">&#39;# An animal of the family Felidae:&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.filterWodsProblems">
@@ -261,22 +312,65 @@ for which pred(item) is true.</p>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.get_lognest_word">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_lognest_word</code><span class="sig-paren">(</span><em class="sig-param">lst</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_lognest_word"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_lognest_word" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_lognest_word</code><span class="sig-paren">(</span><em class="sig-param">lst: list</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_lognest_word"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_lognest_word" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return word with maximal length.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lst</strong> (<em>lsit</em>) – list with words</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)  word</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;syn&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="s1">&#39;felid&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">get_lognest_word</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span>
+<span class="s1">&#39;felid&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.get_number">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_number</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>in:  1a
-out: 1</p>
-<p>in:  10a
-out: 10</p>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">get_number</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#get_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.get_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return numrical part from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – source string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)   heading string with numbers only</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">get_number</span><span class="p">(</span> <span class="s1">&#39;1a&#39;</span> <span class="p">)</span>
+<span class="go">&#39;1&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">get_number</span><span class="p">(</span> <span class="s1">&#39;10a&#39;</span> <span class="p">)</span>
+<span class="go">&#39;10&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.is_ascii">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">is_ascii</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#is_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.is_ascii" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">is_ascii</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/Scrapper_Helpers.html#is_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.is_ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Primitive fast version of ASCII checker.</p>
+<p>Test all symbols for ASCII or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>str</em>) – source string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>(bool)</dt><dd><ul class="simple">
+<li><p>True - all is ACSII</p></li>
+<li><p>False- not all is ACSII</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.iterable_to_stream">
@@ -344,8 +438,24 @@ For efficiency, the stream is buffered.</p>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.remove_comments">
-<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">remove_comments</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">startpos=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#remove_comments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.remove_comments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">remove_comments</code><span class="sig-paren">(</span><em class="sig-param">s: str</em>, <em class="sig-param">startpos: int = 0</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/Scrapper_Helpers.html#remove_comments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.remove_comments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove HTML comments from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>str</em>) – source string</p></li>
+<li><p><strong>startpos</strong> (<em>int</em>) – start position</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(str)   New string without comments</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">remove_comments</span><span class="p">(</span> <span class="s1">&#39;&lt;!-- The comment --&gt;Clean text&#39;</span> <span class="p">)</span>
+<span class="go">&#39;Clean text&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.retry">
@@ -384,7 +494,27 @@ each retry</p></li>
 <dl class="function">
 <dt id="Scrapper_Helpers.save_to_json">
 <code class="sig-prename descclassname">Scrapper_Helpers.</code><code class="sig-name descname">save_to_json</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Scrapper_Helpers.html#save_to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Scrapper_Helpers.save_to_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><blockquote>
+<div><p>Sve object <cite>obj</cite> to file in JSON format.</p>
+<p>With pretty format with indent 4 spaces.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>obj:        object
+filename:   file name</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Scrapper_Helpers</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;123.json&#39;</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;123.json&#39;</span> <span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">... </span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">&#39;[</span>
+</pre></div>
+</div>
+<p>1,
+2,
+3</p>
+</div></blockquote>
+<p>]’</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="Scrapper_Helpers.save_to_pickle">
