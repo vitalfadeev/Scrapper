@@ -4,15 +4,15 @@ Main Wiktionary module.
 The Goal: read dump, get pages, parse, find words, save to database
 
 """
+import json
 import os
-import logging
 import logging.config
 import sqlite3
 import bz2
 import importlib
 import string
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
-from . import Scrapper_Wiktionary_WikitextParser
+import Scrapper_WikitextParser
 from . Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 
@@ -83,7 +83,7 @@ class Page:
             (list)
         """
         # parse
-        lexems = Scrapper_Wiktionary_WikitextParser.parse(self.text)
+        lexems = Scrapper_WikitextParser.parse( self.text )
 
         return lexems
 
@@ -323,7 +323,7 @@ def convert_explanation_raw_to_text( label, explanation_text ):
     label = label
 
     html = Scrapper_Wiktionary_RemoteAPI.parse( label, explanation_text )
-    lexems = Scrapper_Wiktionary_WikitextParser.parse( html )
+    lexems = Scrapper_WikitextParser.parse( html )
 
     text = "".join( l.to_text() for l in lexems )
 
@@ -346,7 +346,13 @@ def scrap_one(lang, page):
     log.info( "(%s, %s)", lang, page )
 
     lm    = importlib.import_module("wiktionary." + lang)
-    items = lm.scrap( page )
+
+    try:
+        items = lm.scrap( page )
+
+    except json.decoder.JSONDecodeError as e:
+        log.error( "(%s): HTTP-response: parse error: ", page.label, exc_info=1 )
+        return []
 
     item: WikictionaryItem
     for item in items:

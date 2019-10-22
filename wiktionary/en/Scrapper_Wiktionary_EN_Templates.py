@@ -1,7 +1,4 @@
 import itertools
-import typing
-from ..Scrapper_Wiktionary_WikitextParser import Template
-
 
 TRANSLATION_LANGS = {
     'abkhaz'                 : 'ab',

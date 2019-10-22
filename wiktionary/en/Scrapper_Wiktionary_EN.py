@@ -1,18 +1,17 @@
 import itertools
 import collections
 import logging
-import pprint
 from collections import defaultdict
 from typing import List
 from Scrapper_Helpers import convert_to_alnum, deduplicate, proper, get_lognest_word
 from wiktionary import Scrapper_Wiktionary, Scrapper_Wiktionary_Matcher
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
-from wiktionary import Scrapper_Wiktionary_WikitextParser
+import Scrapper_WikitextParser
 from wiktionary.Scrapper_Wiktionary import Page
 from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary.Scrapper_Wiktionary_Checkers import check_node
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Dl, Link, String
-from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX, VALUED_SECTIONS
+from Scrapper_WikitextParser import Header, Template, Li, Dl, Link, String
+from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import \
     Section, Root, Lang, PartOfSpeech, ExplanationsRoot, section_map, Explanation, ExplanationExample, Translations, \
     ExplanationLi, Synonyms
@@ -791,9 +790,10 @@ def get_from_thesaurus( section:Section, explanation_sense, explanation_pos ):
 def load_thesaurus( title:str ) -> Root:
     # attach to .thesaurus[ sense ][ Synonyms ] = [ words ]
     raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( title )
-    lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
-    th_toc = make_table_of_contents( lexemes )
-    return th_toc
+    if raw_text is not None:
+        lexemes = Scrapper_WikitextParser.parse( raw_text )
+        th_toc = make_table_of_contents( lexemes )
+        return th_toc
 
 def find_thesaurus( section:Section ):
     # find links [[Thesaurus:...]]
@@ -803,9 +803,10 @@ def find_thesaurus( section:Section ):
         if text.startswith( "Thesaurus:" ):
             title = text
             th_toc = load_thesaurus( title )
-            section.thesaurus.append( th_toc )
-            print(section, title)
-            th_toc.dump()
+            if th_toc is not None:
+                section.thesaurus.append( th_toc )
+                print(section, title)
+                th_toc.dump()
 
 def add_all_thesaurus( toc: Root ):
     for node in toc.find_all( Section, recursive=True ):
@@ -915,7 +916,7 @@ def load_external_page( page_title:str ):
         return
 
     # 2. parse page -> lexemes + toc
-    ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
+    ts_lexemes = Scrapper_WikitextParser.parse( raw_text )
     ts_toc = make_table_of_contents( ts_lexemes )
     update_index_in_toc( ts_toc )
     ts_toc.dump()
@@ -945,13 +946,10 @@ def trans_see_finder( toc: Root ):
         Iterator of tuples: (node, template)
     """
     for node in toc.find_all( Translations, recursive=True ):
-        for t in node.lexemes_by_class[ Template ][ 'trans-see' ]:
+        for t in node.lexemes_by_class[ Template ][ 'trans-see' ].copy():  # .copy() - for limit recursion. because new lemex will added when page fetched
             yield (node, t)
-        for t in node.lexemes_by_class[ Template ][ 'section link' ]:
+        for t in node.lexemes_by_class[ Template ][ 'section link' ].copy():  # .copy() - for limit recursion
             yield (node, t)
-        # for k, link in node.lexemes_by_class[ Link ]:
-        #     if link.get_text().startswith("Thesaurus:"):
-        #         yield (node, link)
 
 def add_translations_from_trans_see( page, toc: Root ):
     """
@@ -1029,7 +1027,7 @@ def add_translations_from_trans_see( page, toc: Root ):
             continue
 
         # 3. parse page -> lexemes + toc
-        ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
+        ts_lexemes = Scrapper_WikitextParser.parse( raw_text )
         ts_toc = make_table_of_contents( ts_lexemes )
         update_index_in_toc( ts_toc )
         ts_toc.dump()

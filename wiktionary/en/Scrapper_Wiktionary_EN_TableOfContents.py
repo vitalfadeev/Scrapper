@@ -1,9 +1,7 @@
 from typing import Iterator
-from functools import lru_cache
 from collections import defaultdict
-import Scrapper_IxiooAPI
 from wiktionary.Scrapper_Wiktionary_ValuableSections import VALUABLE_SECTIONS as ws
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Dl, Link, String, Container
+from Scrapper_WikitextParser import Template, Li, Container
 from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
 
 # High-level

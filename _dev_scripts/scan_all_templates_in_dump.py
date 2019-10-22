@@ -1,7 +1,7 @@
 import os
 import itertools
 from wiktionary.Scrapper_Wiktionary import Dump, filterPageProblems
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
+from Scrapper_WikitextParser import Template, Container
 from Scrapper_Helpers import save_to_json
 
 

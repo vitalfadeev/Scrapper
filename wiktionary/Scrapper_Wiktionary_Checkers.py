@@ -1,11 +1,10 @@
-import itertools
 import json
 from typing import Iterator
 import logging
 import more_itertools
 from Scrapper_Helpers import filterWodsProblems, dict_merge, deduplicate
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
-from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
+from Scrapper_WikitextParser import Template, Li, Link, Container
 from wiktionary.en import Scrapper_Wiktionary_EN
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
 
