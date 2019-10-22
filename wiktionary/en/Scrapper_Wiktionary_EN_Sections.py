@@ -331,22 +331,3 @@ for name, aliases in PART_OF_SPEECH_SECTIONS.items():
 VALUED_SECTIONS_INDEX = {}
 for name, aliases in VALUED_SECTIONS.items():
     VALUED_SECTIONS_INDEX.update( dict.fromkeys(aliases, name) )
-
-
-"""
-def normalize(lexems):
-    NORMALIZATION_INDEX = {}
-    NORMALIZATION_INDEX.update(LANG_SECTIONS_INDEX)
-    NORMALIZATION_INDEX.update(PART_OF_SPEECH_SECTIONS_INDEX)
-    NORMALIZATION_INDEX.update(VALUED_SECTIONS_INDEX)
-
-    for lexem in  lexems:
-        try:
-            if isinstance(lexem, Header):
-                lexem.raw_name = lexem.name
-                lexem.name = NORMALIZATION_INDEX[lexem.name]
-        except KeyError:
-            pass
-
-    return lexems
-"""
