@@ -58,7 +58,7 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
     }
 
     #
-    log.debug( "  Request to: %s", url )
+    log.debug( "    Request to: %s", url )
     response = requests.post(url, json=data, timeout=(11, 33))
 
     if response.status_code == 200:
