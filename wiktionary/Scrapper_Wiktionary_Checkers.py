@@ -269,7 +269,19 @@ def by_sense( page, explanation:Explanation, context, definitions, path ) -> Ite
 
             # match
             # current explanation in ( explanations x section_senses )
+            # pks match
+            log.info( "  pks match:" )
+            log.info( "    %s", (section, path[0]) )
+            log.info( "    %s", explanation_sense_txt )
+            log.info( "    %s", section_senses )
+
             matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
+
+            if matched_txt:
+                log.info( "    [ OK ] match: %s", matched_txt )
+            else:
+                log.info( "    [ NO-MATCH ] %s", matched_txt )
+
 
             # save sense (for debugging)
             explanation.item.Senses[ type(section).__name__ ] = matched_txt

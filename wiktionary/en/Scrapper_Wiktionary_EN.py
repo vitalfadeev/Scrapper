@@ -772,14 +772,15 @@ def get_from_thesaurus( section:Section, explanation_sense, explanation_pos ):
                                 log.info( "    %s", section )
                                 log.info( "    %s", explanation_sense )
                                 log.info( "    %s", th_sense )
-                                matched = Scrapper_Wiktionary_Matcher.Matcher.match( explanation_sense, [ explanation_sense ],
-                                                                           [ th_sense ] )
-                                if matched:
-                                    log.info( "    [ OK ] match: %s", matched )
-                                else:
-                                    log.info( "    [ NO-MATCH ] %s", matched )
 
-                                if matched:
+                                matched_txt = Scrapper_Wiktionary_Matcher.Matcher.match( explanation_sense, [ explanation_sense ],
+                                                                           [ th_sense ] )
+                                if matched_txt:
+                                    log.info( "    [ OK ] match: %s", matched_txt )
+                                else:
+                                    log.info( "    [ NO-MATCH ] %s", matched_txt )
+
+                                if matched_txt:
                                     th_valued_section: Section
                                     th_valued_section = th_sense_section.sections_by_name.get( section.title_norm, None )
                                     if th_valued_section is not None:
