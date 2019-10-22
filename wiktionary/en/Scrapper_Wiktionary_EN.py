@@ -1,12 +1,14 @@
 import itertools
 import collections
+import logging
 import pprint
 from collections import defaultdict
 from typing import List
 from Scrapper_Helpers import convert_to_alnum, deduplicate, proper, get_lognest_word
-from wiktionary import Scrapper_Wiktionary
+from wiktionary import Scrapper_Wiktionary, Scrapper_Wiktionary_Matcher
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 from wiktionary import Scrapper_Wiktionary_WikitextParser
+from wiktionary.Scrapper_Wiktionary import Page
 from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary.Scrapper_Wiktionary_Checkers import check_node
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Dl, Link, String
@@ -14,6 +16,8 @@ from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, P
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import \
     Section, Root, Lang, PartOfSpeech, ExplanationsRoot, section_map, Explanation, ExplanationExample, Translations, \
     ExplanationLi, Synonyms
+
+log = logging.getLogger(__name__)
 
 
 def make_table_of_contents( lexemes: list ) -> Root:
@@ -171,7 +175,6 @@ def make_table_of_contents( lexemes: list ) -> Root:
                 node.title = header.name
                 node.title_norm = LANG_SECTIONS_INDEX[ beauty_name ]
                 node.level = header.level
-                node.lexemes.append( header )
 
             elif beauty_name in PART_OF_SPEECH_SECTIONS_INDEX:
                 # Part of speech
@@ -179,7 +182,6 @@ def make_table_of_contents( lexemes: list ) -> Root:
                 node.title = header.name
                 node.title_norm = PART_OF_SPEECH_SECTIONS_INDEX[ beauty_name ]
                 node.level = header.level
-                node.lexemes.append( header )
 
             elif beauty_name in VALUED_SECTIONS_INDEX:
                 # Synonyms, Antonyms, Translations
@@ -188,7 +190,6 @@ def make_table_of_contents( lexemes: list ) -> Root:
                 node.title = header.name
                 node.title_norm = VALUED_SECTIONS_INDEX[ beauty_name ]
                 node.level = header.level
-                node.lexemes.append( header )
 
             else:
                 # Any other section
@@ -196,7 +197,6 @@ def make_table_of_contents( lexemes: list ) -> Root:
                 node.title = header.name
                 node.title_norm = beauty_name
                 node.level = header.level
-                node.lexemes.append( header )
 
             # hierarchy
             if last is root:
@@ -234,11 +234,13 @@ def make_table_of_contents( lexemes: list ) -> Root:
             # index by name
             parent.sections_by_name[ beauty_name ] = node
 
-        else:
-            # text block
-            last.lexemes.append( lexem )
-            # index by class
-            last.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
+        # save lexems
+        # text block
+        last.lexemes.append( lexem )
+        # index by class
+        last.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
+        for lex in lexem.find_all( recursive=True ):
+            last.lexemes_by_class[ type( lex ) ][ lex.name ].append( lex )
 
     return root
 
@@ -738,6 +740,196 @@ def remove_other_langs( toc: Root ):
                 lang.parent.remove( node )
 
 
+# English / Noun / Sense / Synonyms
+# English / Noun / Sense / Hyponyms
+
+# Thesaurus:book / English / Noun / Sense / Synonyms
+def get_from_thesaurus( section:Section, explanation_sense, explanation_pos ):
+    # check .thesaurus[ Noun ][ sense ][ Synonyms ]
+    # find Part-of-speech
+    # find sense
+    # find sections
+
+    # in:
+    #   explanation language
+    #   explanation sense
+    #   explanation part-of-speech
+    #   value section
+    #
+    # try:
+    #   language / part-of-speech / sense / section
+    th_toc: Root
+    for th_toc in section.thesaurus:
+        for th_lang in th_toc.find_lang_sections():
+            for th_pos in th_lang.find_part_of_speech_sections():
+                th_sense_section: Section
+                for k, th_sense_section in th_pos.sections_by_name.items():
+                    for th_senses_t in th_sense_section.lexemes_by_class[ Template ][ 'ws sense' ]:
+                            th_sense = th_senses_t.arg(0)
+                            if th_sense:
+                                # pks match
+                                log.info( "  pks match:" )
+                                log.info( "    %s", explanation_sense )
+                                log.info( "    %s", th_sense )
+                                matched = Scrapper_Wiktionary_Matcher.Matcher.match( explanation_sense, [ explanation_sense ],
+                                                                           [ th_sense ] )
+                                if matched:
+                                    log.info( "    [ OK ] match: %s", matched )
+                                else:
+                                    log.info( "    [ NO-MATCH ] %s", matched )
+
+                                if matched:
+                                    th_valued_section: Section
+                                    th_valued_section = th_sense_section.sections_by_name.get( section.title_norm, None )
+                                    if th_valued_section is not None:
+                                        for t in th_valued_section.lexemes_by_class[ Template ][ 'ws' ]:
+                                            for a in t.args():
+                                                yield a.get_text()
+
+def load_thesaurus( title:str ) -> Root:
+    # attach to .thesaurus[ sense ][ Synonyms ] = [ words ]
+    raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( title )
+    lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
+    th_toc = make_table_of_contents( lexemes )
+    return th_toc
+
+def find_thesaurus( section:Section ):
+    # find links [[Thesaurus:...]]
+    links = section.lexemes_by_class[ Link ][ '' ]
+    for l in links:
+        text = l.raw.strip('[').rstrip(']').strip()
+        if text.startswith( "Thesaurus:" ):
+            title = text
+            th_toc = load_thesaurus( title )
+            section.thesaurus.append( th_toc )
+            print(section, title)
+            th_toc.dump()
+
+def add_all_thesaurus( toc: Root ):
+    for node in toc.find_all( Section, recursive=True ):
+        find_thesaurus( node )
+
+
+def parse_thesaurus_page_structure( toc: Root ):
+    # From:
+    #
+    #   1. English
+    #     1.1. Noun
+    #       1.1.1. ws sense
+    #         1.1.1.1. Synonyms
+    #         1.1.1.2. Hyponyms
+    #
+    # to
+    #
+    #   1. English
+    #     1.1. Noun
+    #       1.1.1. Synonyms
+    #              .lexemes_by_sense[ sense ]
+    #       1.1.2. Hyponyms
+    #              .lexemes_by_sense[ sense ]
+    #
+    for node in toc.find_all( Section, recursive=True ):
+        ws_sense_templates = node.lexemes_by_class[ Template ][ 'ws sense' ]
+
+        if ws_sense_templates:
+            # sense
+            # =={{ws sense|...}}==
+            # ===Subsection===
+            # - lexemes
+            # - lexemes
+            for ws_sense in ws_sense_templates:
+                sense = ws_sense.arg( 0 )
+
+                # find sub-sections
+                for subsection in node:
+                    subsection.lexemes_by_sense[ sense ].extends( subsection.lexemes )
+
+        else:
+            # no sense
+            pass
+
+
+def get_page_sense( toc: Root ):
+    has_sense = False
+
+    for node in toc.find_all( Section, recursive=True ):
+        for lexem in node.lexemes:
+            if isinstance( lexem, Template ):
+                t = lexem
+                if t.name == 'ws sense' :
+                    # have sense
+                    pass
+
+
+def load_external_page( page_title:str ):
+    # 1. get text
+    # 2. make toc
+    # 3. find sense
+    #      if with sense:
+    #         group by sense
+    #      else
+    #         put all together
+    # 4. attach
+    # attach ( if this = Synonyms ):
+    #     English
+    #       Noun
+    #         Synonyms      ->      this.section     <- here was {{trans-see}}
+
+    #   1. English
+    #     1.1. Noun
+    #       1.1.1. ws sense
+    #         1.1.1.1. Synonyms
+    #         1.1.1.2. Hyponyms
+    #         1.1.1.3. Hypernyms
+    #         1.1.1.4. Meronyms
+    #         1.1.1.5. Holonyms
+    #         1.1.1.6. Various
+    #
+    # to
+    #
+    #   1. English
+    #     1.1. Noun
+    #       1.1.1. Synonyms
+    #                sense
+    #                  * {{...}}
+    #                sense
+    #                  * {{...}}
+    #       1.1.2. Hyponyms
+    #                by_sense
+    #       1.1.3. Hypernyms
+    #                by_sense
+    #       1.1.4. Meronyms
+    #                by_sense
+    #       1.1.5. Holonyms
+    #                by_sense
+    #       1.1.6. Various
+    #                by_sense
+
+    # 1. request to wiktionary API
+    raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( page_title )
+
+    # if page not exists - next
+    if raw_text is None:
+        return
+
+    # 2. parse page -> lexemes + toc
+    ts_lexemes = Scrapper_Wiktionary_WikitextParser.parse( raw_text )
+    ts_toc = make_table_of_contents( ts_lexemes )
+    update_index_in_toc( ts_toc )
+    ts_toc.dump()
+
+    # 3. find section
+
+
+
+def attach_external_page_to_section( this_hode, this_section, external_page ):
+    pass
+
+
+def load_external_pages( page: Page, toc: Root ):
+    pass
+
+
 def trans_see_finder( toc: Root ):
     """
     It helper help find Templates with name 'trans-see'.
@@ -755,6 +947,9 @@ def trans_see_finder( toc: Root ):
             yield (node, t)
         for t in node.lexemes_by_class[ Template ][ 'section link' ]:
             yield (node, t)
+        # for k, link in node.lexemes_by_class[ Link ]:
+        #     if link.get_text().startswith("Thesaurus:"):
+        #         yield (node, link)
 
 def add_translations_from_trans_see( page, toc: Root ):
     """
@@ -824,7 +1019,7 @@ def add_translations_from_trans_see( page, toc: Root ):
         # 2. request to wiktionary API
         raw_text = Scrapper_Wiktionary_RemoteAPI.get_wikitext( page_url )
 
-        # keep fetched title
+        # keep fetched title. for prevent recursion
         pages.add( page_url )
 
         # if page not exists - next
@@ -895,6 +1090,8 @@ def add_translations_from_trans_see( page, toc: Root ):
             # index by class
             for lexem in ts_translations_node.lexemes:
                 node.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
+                for lex in lexem.find_all( recursive=True ):
+                    node.lexemes_by_class[ type( lex ) ][ lex.name ].append( lex )
 
 
 def update_popularity_of_word( item ):
@@ -1009,6 +1206,9 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
 
     # add translations from {{trans-see|...}}
     add_translations_from_trans_see( page, toc )
+
+    # add thesaurus pages
+    add_all_thesaurus( toc )
 
     # add toc-numbers
     update_index_in_toc( toc )

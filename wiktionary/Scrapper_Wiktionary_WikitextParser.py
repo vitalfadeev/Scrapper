@@ -324,7 +324,7 @@ class Article(Container):
 
 
 class Template(Container):
-    def args(self):
+    def args(self) -> list:
         yield from self.find_objects(Arg)
 
     def positional_args(self) -> list:

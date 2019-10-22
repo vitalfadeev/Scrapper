@@ -4,6 +4,7 @@ import more_itertools
 from Scrapper_Helpers import filterWodsProblems, dict_merge, deduplicate
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
 from wiktionary.Scrapper_Wiktionary_WikitextParser import Header, Template, Li, Link, String, Container
+from wiktionary.en import Scrapper_Wiktionary_EN
 from wiktionary.en.Scrapper_Wiktionary_EN_TableOfContents import Explanation, ExplanationExample
 
 log = logging.getLogger(__name__)
@@ -219,7 +220,7 @@ def in_examples( page, explanation, context, definitions, path ):
             yield from check( page, explanation, child, definitions, path )
 
 
-def by_sense( page, explanation, context, definitions, path ) -> Iterator:
+def by_sense( page, explanation:Explanation, context, definitions, path ) -> Iterator:
     # 1. if single explaanation:
     #    get all from section (do next checkers)
     #
@@ -297,6 +298,8 @@ def by_sense( page, explanation, context, definitions, path ) -> Iterator:
                             path[0], page.label, section, explanation_sense_txt
                         )
                 )
+
+    yield from Scrapper_Wiktionary_EN.get_from_thesaurus( section, explanation.sense_txt, explanation.get_parent_pos_node() )
 
 
 def en_noun( t, label ):
@@ -428,10 +431,16 @@ def check_node( page, node, lm ):
 
             # save method depend of type
             if isinstance( store, list ):
+                # filter non words
                 filtered = filter( filterWodsProblems, generator )
+                # remove spaces: strip
                 cleaned = map( str.strip, filtered )
+                # unique
                 uniqued = filter( lambda x: x not in store, cleaned )
-                store.extend( uniqued )
+                # filter self
+                withou_self = filter( lambda x: x != page.label, cleaned )
+                # keep
+                store.extend( withou_self )
             elif isinstance( store, dict ):
                 store.update( generator )
             elif isinstance( store, bool ) or store is bool:

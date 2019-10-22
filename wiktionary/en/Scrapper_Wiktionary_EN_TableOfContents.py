@@ -72,9 +72,11 @@ class Section(list):
         self.level = 0
         self.parent = None
         self.index_in_toc = ""
+        self.thesaurus = []
         # indexes
         self.sections_by_name = {}
-        self.lexemes_by_class = defaultdict(lambda: defaultdict( list ))
+        self.lexemes_by_class = defaultdict( lambda: defaultdict( list ) )
+        self.lexemes_by_sense = defaultdict( list )
 
 
     def append(self, node) -> None:
@@ -102,6 +104,10 @@ class Section(list):
 
     def find_part_of_speech_sections( self ) -> Iterator[ "PartOfSpeech" ]:
         yield from self.find_all( PartOfSpeech, recursive=True )
+
+
+    def find_lang_sections( self ) -> Iterator[ "Lang" ]:
+        yield from self.find_all( Lang, recursive=True )
 
 
     def find_explanation_sections( self ) -> Iterator["Explanation"]:
