@@ -1,3 +1,5 @@
+import itertools
+import json
 from typing import Iterator
 import logging
 import more_itertools
@@ -264,23 +266,44 @@ def by_sense( page, explanation:Explanation, context, definitions, path ) -> Ite
         elif len( section_senses ) > 0:
             # get explanation sense
             explanation_sense_txt = explanation.sense_txt
+
             # get all explanations (for match all-at-once in matcher)
-            explanation_sense_txts = map( lambda x: x.sense_txt, page.explanations )
+            #
+            # if parent section is Part-of-speech
+            #   group explanations by Part-of-speech
+            # else
+            #   get all
+            parent_pos = section.get_parent_pos_node()
+            if parent_pos is not None:
+                ex_parent_pos = explanation.get_parent_pos_node()
+                explanation_by_pos = list(
+                    filter( lambda x: x.get_parent_pos_node() is ex_parent_pos, page.explanations )
+                )
+                explanation_sense_txts = list( map( lambda x: x.sense_txt, explanation_by_pos ) )
+            else:
+                explanation_sense_txts = list( map( lambda x: x.sense_txt, page.explanations ) )
+
+            x: Explanation
 
             # match
             # current explanation in ( explanations x section_senses )
             # pks match
-            log.info( "  pks match:" )
-            log.info( "    %s", (section, path[0]) )
-            log.info( "    %s", explanation_sense_txt )
-            log.info( "    %s", section_senses )
+            log.debug( "  pks match:" )
+            log.debug( "    %s", (section, path[0]) )
+            log.debug( "    explanation_sense : %s", explanation_sense_txt )
+            log.debug( "    explanation_senses: %s", explanation_sense_txts )
+            log.debug( "    section_senses    : %s", section_senses )
 
-            matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
+            try:
+                matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
+            except json.decoder.JSONDecodeError as e:
+                log.error( "[ERROR] when matching: %s", e, exc_info=1 )
+                matched_txt = None
 
             if matched_txt:
-                log.info( "    [ OK ] match: %s", matched_txt )
+                log.debug( "    [ OK ] match: %s", matched_txt )
             else:
-                log.info( "    [ NO-MATCH ] %s", matched_txt )
+                log.debug( "    [ NO-MATCH ] %s", matched_txt )
 
 
             # save sense (for debugging)

@@ -768,17 +768,17 @@ def get_from_thesaurus( section:Section, explanation_sense, explanation_pos ):
                             th_sense = th_senses_t.arg(0)
                             if th_sense:
                                 # pks match
-                                log.info( "  pks match:" )
-                                log.info( "    %s", section )
-                                log.info( "    %s", explanation_sense )
-                                log.info( "    %s", th_sense )
+                                log.debug( "  pks match:" )
+                                log.debug( "    %s", section )
+                                log.debug( "    %s", explanation_sense )
+                                log.debug( "    %s", th_sense )
 
                                 matched_txt = Scrapper_Wiktionary_Matcher.Matcher.match( explanation_sense, [ explanation_sense ],
                                                                            [ th_sense ] )
                                 if matched_txt:
-                                    log.info( "    [ OK ] match: %s", matched_txt )
+                                    log.debug( "    [ OK ] match: %s", matched_txt )
                                 else:
-                                    log.info( "    [ NO-MATCH ] %s", matched_txt )
+                                    log.debug( "    [ NO-MATCH ] %s", matched_txt )
 
                                 if matched_txt:
                                     th_valued_section: Section
