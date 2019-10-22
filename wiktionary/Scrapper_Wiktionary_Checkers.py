@@ -268,22 +268,23 @@ def by_sense( page, explanation:Explanation, context, definitions, path ) -> Ite
             explanation_sense_txt = explanation.sense_txt
 
             # get all explanations (for match all-at-once in matcher)
-            #
+
+            # send to pks-matcher Noun explanations when Synonyms under Noun. else all
             # if parent section is Part-of-speech
             #   group explanations by Part-of-speech
             # else
             #   get all
             parent_pos = section.get_parent_pos_node()
-            if parent_pos is not None:
-                ex_parent_pos = explanation.get_parent_pos_node()
-                explanation_by_pos = list(
-                    filter( lambda x: x.get_parent_pos_node() is ex_parent_pos, page.explanations )
-                )
-                explanation_sense_txts = list( map( lambda x: x.sense_txt, explanation_by_pos ) )
+            if parent_pos is None:
+                # no Type-of-speech. need send all explanations
+                explanation_sense_txts = [ x.sense_txt for x in page.explanations ]
             else:
-                explanation_sense_txts = list( map( lambda x: x.sense_txt, page.explanations ) )
-
-            x: Explanation
+                # section (like Synonyms) under Noun. need send Noun explanations
+                ex_parent_pos = explanation.get_parent_pos_node()
+                explanation_by_pos = [
+                    x for x in page.explanations if x.get_parent_pos_node() is ex_parent_pos
+                ]
+                explanation_sense_txts = [ x.sense_txt for x in explanation_by_pos ]
 
             # match
             # current explanation in ( explanations x section_senses )
