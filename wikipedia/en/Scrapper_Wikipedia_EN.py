@@ -1,10 +1,15 @@
 from typing import List
-
-from Scrapper_WikitextParser import Header
+import nltk
+from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word
+from Scrapper_WikitextParser import Header, Link, Template
 from wikipedia import Scrapper_Wikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
+from wikipedia import Scrapper_Wikipedia_RemoteAPI
 from wikipedia.en.Scrapper_Wikipedia_EN_TableOfContents import Section, Root, Lang, PartOfSpeech, section_map
 from wikipedia.en.Scrapper_Wikipedia_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX
+
+nltk.download( 'punkt' )
+from nltk import tokenize
 
 
 def make_table_of_contents( lexemes: list ) -> Root:
@@ -120,6 +125,159 @@ def make_table_of_contents( lexemes: list ) -> Root:
     return root
 
 
+def get_label_type( expl, item ):
+    """
+    Return LabelType for item.
+
+    Args:
+        expl (Explanation):         Explanation
+        item (WikictionaryItem):    WikictionaryItem
+
+    Returns:
+        (str)   LabelType
+
+    ::
+
+        LabelType for 'cat' for explanation
+            ## A domesticated [[subspecies]] (''[[Felis silvestris catus]]'') of [[feline]] animal, commonly kept as a house [[pet]]. {{defdate|from 8<sup>th</sup>c.}}
+        is:
+            "Noun_DEFDATE_Subspecies_Silvestris_Feline"
+
+    """
+    wt = proper(item.Type) if item.Type is not None else ""
+
+    # Extract the list of item enclosed in {{ }}
+    # For each item found , if there is | inside , then split and take only longest word
+    # Convert all non 0-9 A-Z into _
+    # Deduplicate _ _ into single _
+    # Make all words in upper case
+    list1 = []
+    for t in expl.find_objects(Template, recursive=True, exclude=[li for li in expl.find_objects((Li, Dl))]):
+        inner = t.raw
+        s = convert_to_alnum(inner , '_')
+        s = deduplicate(s, '_')
+        s = s.strip('_')
+        words = []
+        for ws in s.split("|"):
+            for w in ws.split('_'):
+                words += w.split(' ')
+        s = get_lognest_word(words)
+        s = s.upper()
+        list1.append(s)
+
+    # Extract the list of item enclosed in [[ ]]
+    # For each item found , if there is | inside , then split and take only longest word
+    # Convert all non 0-9 A-Z into _
+    # Deduplicate _ _ into single _
+    # Make all words with first letter uppercase and others lower case (propercase)
+    list2 = []
+    for l in expl.find_objects(Link, recursive=True, exclude=[li for li in expl.find_objects((Li, Dl))]):
+        s = l.get_text()
+        s = convert_to_alnum(s, '_')
+        s = deduplicate(s, '_')
+        s = s.strip('_')
+        words = []
+        for ws in s.split('_'):
+            for w in ws.split(' '):
+                words.append(w)
+        s = get_lognest_word(words)
+        s = proper(s)
+        list2.append(s)
+
+    # remove all [ ( { ) ] } from the line, and extract all words separated by spaces
+    # keep only words having a lenght>=3
+    # Convert all non 0-9 A-Z into _
+    # Deduplicate _ _ into single _
+    # Make all words in lowercase
+    list3 = []
+    words = []
+    for w in expl.find_objects(String, recursive=False, exclude=[li for li in expl.find_objects((Li, Dl))]):
+        words.append(w.get_text())
+
+    s = " ".join(words)
+    s = s.replace('(', ' ').replace(')', ' ')
+    s = deduplicate(s, ' ')
+    s = convert_to_alnum(s)
+    s = deduplicate(s, '_')
+    s = s.strip('_')
+
+    words = []
+    for ws in s.split('_'):
+        for w in ws.split(' '):
+            words.append(w)
+    list3 = [w.lower() for w in words if len(w) >= 3]
+
+    # Add TYPE + (the 4 first items of the concatenated list :  list1 + List2 + list3
+    # Concat
+    biglst = list1 + list2 + list3
+
+    return wt + "_" + "_".join(biglst[:4])
+
+
+def get_first_block_before_header( toc: Root ):
+    block = []
+    for lexem in toc.lexemes:
+        block.append( lexem.raw )
+
+    return block
+
+
+def convert_raw_to_txt( page:Scrapper_Wikipedia.Page, raws:list ) -> list:
+    txts = Scrapper_Wikipedia_RemoteAPI.expand_templates( page.label, raws )
+    return txts
+
+
+def get_all_wikipedia_links( page, toc ):
+    links = []
+
+    for node in toc.find_all( recursive=True ):
+        links.extend( node.lexemes_by_class[ Link ][''] )
+
+    return links
+
+
+def get_all_wiktionary_links( page, toc ):
+    links = [ ]
+
+    for node in toc.find_all( recursive=True ):
+        links.extend( node.lexemes_by_class[ Template ][ 'll' ] )
+        links.extend( node.lexemes_by_class[ Template ][ 'link' ] )
+
+    return links
+
+
+def get_all_links_from_see_alo( page, toc ):
+    links = []
+
+    for node in toc.find_all( recursive=True ):
+        if node.title_norm == 'see also':
+            links.extend( node.lexemes_by_class[ Link ][''] )
+
+    return links
+
+
+def get_all_links_from_section( page, toc, section_title='see also' ):
+    links = []
+
+    for node in toc.find_all( recursive=True ):
+        if node.title_norm == section_title:
+            links.extend( node.lexemes_by_class[ Link ][''] )
+
+    return links
+
+
+def get_all_explanation_examples_raw( page, toc ):
+    raws = []
+
+    for lexem in page.lexems:
+        raws.append( lexem.raw )
+
+    text = "\n".join( raws )
+    sentences = tokenize.sent_tokenize( text )
+
+    return sentences
+
+
 def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     items = []
 
@@ -129,6 +287,28 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     # make table-of-contents (toc)
     toc = make_table_of_contents( lexems )
     page.toc = toc
+
+    #
+    item = WikipediaItem()
+
+    #
+    item.LabelName = page.label
+    item.LabelTypeWP = get_label_type( ... )
+    item.LanguageCode = "en"
+
+    item.ExplainationWPRaw = get_first_block_before_header( toc )
+    item.ExplainationWPTxt = convert_raw_to_txt( item.ExplainationWPRaw )
+
+    item.DescriptionWikipediaLinks = get_all_wikipedia_links( page, toc )
+    item.DescriptionWiktionaryLinks = get_all_wiktionary_links( page, toc )
+
+    item.SelfUrlWikipedia = "https://en.wikipedia.org/wiki/" + page.label   # check in dump
+
+    item.SeeAlso = get_all_links_from_see_alo( page, toc )
+    item.SeeAlsoWikipediaLinks = get_all_links_from_section( page, toc , section_title='see also' )
+
+    item.ExplainationExamplesRaw = get_all_explanation_examples_raw( page, toc )
+    item.ExplainationExamplesTxt = []
 
     return items
 

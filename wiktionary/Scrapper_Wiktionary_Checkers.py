@@ -2,6 +2,8 @@ import json
 from typing import Iterator
 import logging
 import more_itertools
+import requests
+
 from Scrapper_Helpers import filterWodsProblems, dict_merge, deduplicate
 from wiktionary.Scrapper_Wiktionary_Matcher import Matcher
 from Scrapper_WikitextParser import Template, Li, Link, Container
@@ -296,6 +298,11 @@ def by_sense( page, explanation:Explanation, context, definitions, path ) -> Ite
 
             try:
                 matched_txt = Matcher.match( explanation_sense_txt, explanation_sense_txts, section_senses )
+
+            except requests.exceptions.ConnectTimeout as e:
+                log.error( "[ERROR] when matching: %s", e, exc_info=1 )
+                matched_txt = None
+
             except json.decoder.JSONDecodeError as e:
                 log.error( "[ERROR] when matching: %s", e, exc_info=1 )
                 matched_txt = None
