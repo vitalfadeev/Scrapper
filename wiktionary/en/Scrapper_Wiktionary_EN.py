@@ -769,6 +769,7 @@ def get_from_thesaurus( section:Section, explanation_sense, explanation_pos ):
                             if th_sense:
                                 # pks match
                                 log.info( "  pks match:" )
+                                log.info( "    %s", section )
                                 log.info( "    %s", explanation_sense )
                                 log.info( "    %s", th_sense )
                                 matched = Scrapper_Wiktionary_Matcher.Matcher.match( explanation_sense, [ explanation_sense ],
