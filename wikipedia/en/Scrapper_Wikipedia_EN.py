@@ -2,9 +2,10 @@ from typing import List
 import nltk
 import re
 import string
+import logging
 from bs4 import BeautifulSoup
-from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word
-from Scrapper_WikitextParser import Header, Link, Template
+from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word, is_ascii, unique
+from Scrapper_WikitextParser import Header, Link, Template, parse, String, Li, Dl, Container
 from wikipedia import Scrapper_Wikipedia
 from wikipedia import Scrapper_Wikipedia_RemoteAPI
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
@@ -13,7 +14,8 @@ from wikipedia.en.Scrapper_Wikipedia_EN_Sections import LANG_SECTIONS_INDEX, PAR
 
 nltk.download( 'punkt' )
 from nltk import tokenize
-from nltk.tokenize import word_tokenize
+
+log = logging.getLogger(__name__)
 
 
 def make_table_of_contents( lexemes: list ) -> Root:
@@ -129,7 +131,7 @@ def make_table_of_contents( lexemes: list ) -> Root:
     return root
 
 
-def get_label_type( expl, item ):
+def get_label_type( expl ):
     """
     Return LabelType for item.
 
@@ -148,7 +150,7 @@ def get_label_type( expl, item ):
             "Noun_DEFDATE_Subspecies_Silvestris_Feline"
 
     """
-    wt = proper(item.Type) if item.Type is not None else ""
+    # wt = proper(item.Type) if item.Type is not None else ""
 
     # Extract the list of item enclosed in {{ }}
     # For each item found , if there is | inside , then split and take only longest word
@@ -215,7 +217,7 @@ def get_label_type( expl, item ):
     # Concat
     biglst = list1 + list2 + list3
 
-    return wt + "_" + "_".join(biglst[:4])
+    return "_".join(biglst[:4])
 
 
 def get_first_block_before_header( toc: Root ):
@@ -318,11 +320,50 @@ def has_class_but_no_id( tag ):
     return tag.has_attr( 'class' ) and not tag.has_attr( 'id' )
 
 
-def get_explaination( js, html, soup ):
+def find_text_in_brackets( text, op='(', cl=')' ):
+    spos = None
+    epos = None
+
+    opened = 0
+    closed = 0
+
+    for i, c in enumerate( text ):
+        if c == op:
+            opened += 1
+
+            if spos is None:
+                spos = i
+
+        elif c == cl:
+            closed += 1
+
+            if opened == closed:
+                epos = i
+                break
+
+    return (spos, epos)
+
+
+def replace_text_in_brackets( text, replace_wuth, op='(', cl=')' ):
+    result = text
+
+    (spos, epos) = find_text_in_brackets( text, op, cl )
+
+    if spos and epos:
+        result = text[:spos] + replace_wuth + text[epos+1:]
+
+    return result
+
+
+def get_explaination_from_api( js, html, soup ):
+    # 1. find
     # <div class="mw-parser-output">
     #   p, p, p, ...
     #     skip: <p class="mw-empty-elt">
     #   <div id ="toc">
+    # 2. remove [1]. [2], ...
+    # 3. remove pronunciation
+    #    (/.../) <- between round brackets (), between slashes //, in first  explanation: (/ ... /)
     explainations = []
 
     for main_container in soup.select( ".mw-parser-output" ):
@@ -330,8 +371,11 @@ def get_explaination( js, html, soup ):
             # p
             if child.name == 'p' and ( len( child.attrs.get("class", []) ) == 0 ):
                 text = child.text
-                # remove [1]. [2], ...
+                # 2. remove [1]. [2], ...
                 cleaned = re.sub( '\[[0-9]+\]', '', text )
+                # 3. remove pronunciation (/...)
+                if cleaned.find( '(/' ) != -1:
+                    cleaned = replace_text_in_brackets( cleaned, '', op='(', cl=')' )
                 explainations.append( cleaned )
 
             # TOC -> stop
@@ -420,6 +464,8 @@ def get_explanation_examples_from_api( js, html, soup, label ):
     # 3. split label to tokens: 'An American in Paris' to to ['An' 'American' 'in' 'Paris']
     # 4. find match. (ignore case)
     #      if found: OK
+    # 5. remove pronunciation
+    #    (/.../) <- between round brackets (), between slashes //, in first  explanation: (/ ... /)
     examples = []
 
     # 3. split label to tokens: 'An American in Paris' to to ['An' 'American' 'in' 'Paris']
@@ -433,26 +479,68 @@ def get_explanation_examples_from_api( js, html, soup, label ):
     cleaned_expected = ' ' + ' '.join( lowered ) + ' '  # is pattern for search
 
     # 1. split text to sentences
-    text = soup.text
-    sentences = tokenize.sent_tokenize( text )
+    for i, p in enumerate( soup.select( 'p' ) ):
+        text = p.text
 
-    for sentence in sentences:
-        # 2. split sentence to words
-        words = re.split( "\W+" , sentence )
-        lowered = list( map( str.lower, words ) )
-        cleaned_sentence = ' ' + ' '.join( lowered ) + ' '
+        # remove prunounciation: (/...)
+        # in 1-2 paragraph
+        if i <= 2 and text.find( '(/' ) != -1:
+            text = replace_text_in_brackets( text, '', op='(', cl=')' )
 
-        # 4. match
-        # [ 'An' 'American' 'in' 'Paris' ] -> 'An American in Paris'
-        if cleaned_expected in cleaned_sentence:
-            examples.append( sentence )
+        # to senteces
+        sentences = tokenize.sent_tokenize( text )
+
+        for sentence in sentences:
+            # lower
+            lowered = sentence.lower()
+            # remove [1]. [2], ...
+            cleaned = re.sub( '\[[0-9]+\]', '', lowered )
+            # 2. split sentence to words
+            words = re.split( "\W+" , cleaned )
+            # to string
+            cleaned_sentence = ' ' + ' '.join( words ) + ' '
+
+            # 4. match
+            # [ 'An' 'American' 'in' 'Paris' ] -> 'An American in Paris'
+            if cleaned_expected in cleaned_sentence:
+                examples.append( sentence )
 
     return examples
+
+
+def get_explanatoin_lexems( page ):
+    raw = page.text
+
+    blocks = []
+
+    # parse raw
+    lexemes = parse( raw )
+
+    # find text blocks before Header
+    for lexem in lexemes:
+        if isinstance( lexem, Header ):
+            break
+
+        blocks.append( lexem )
+
+    return blocks
+
+
+def get_label_type_from_api( js, html, soup, explanations_lexems ):
+    # 1. parse part of text : explanations only
+    # 2. Text block at page start. Until ==Header==. Is explanation.
+
+    # build LabelType
+    expl = Container()
+    expl.childs = explanations_lexems
+
+    return get_label_type( expl )
 
 
 def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     lang = "en"
     title = page.label
+    #title = 'AbalonE'
 
     js = get_page( lang, title )
 
@@ -470,6 +558,8 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     # toc = make_table_of_contents( lexems )
     # page.toc = toc
 
+    explanation_lexems = get_explanatoin_lexems( page )
+
     #
     item = WikipediaItem()
 
@@ -477,28 +567,53 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     item.LabelName = page.label
     item.LanguageCode = "en"
 
-    # item.ExplainationWPRaw = get_first_block_before_header( toc )
-    item.ExplainationWPTxt = "\n".join( get_explaination( js, html, soup ) )
+    item.ExplainationWPRaw = "".join( l.raw for l in explanation_lexems )
+    item.ExplainationWPTxt = "\n".join( get_explaination_from_api( js, html, soup ) )
 
     # Description Links
-    item.DescriptionWikipediaLinks = get_all_wikipedia_links_from_api( js, html, soup )
-    item.DescriptionWiktionaryLinks = get_all_wiktionary_links_from_api( js, html, soup )
-    item.DescriptionWikidataLinks = get_all_wikidata_links_from_api( js, html, soup )
+    item.DescriptionWikipediaLinks = unique(
+        filter(
+            lambda s: s != title,
+            get_all_wikipedia_links_from_api( js, html, soup )
+        )
+    )
+    item.DescriptionWiktionaryLinks = unique(
+        filter(
+            lambda s: s != title,
+            get_all_wiktionary_links_from_api( js, html, soup )
+        )
+    )
+    item.DescriptionWikidataLinks = unique(
+        filter(
+            lambda s: s != title,
+            get_all_wikidata_links_from_api( js, html, soup )
+        )
+    )
 
     # Self Url
     item.SelfUrlWikipedia = "https://en.wikipedia.org/wiki/" + page.label   # check in dump
 
     # SeeAlso
     item.SeeAlso = get_all_links_from_see_also_from_api( js, html, soup )
-    item.SeeAlsoWikipediaLinks = [ l[len('/wiki/'):] for l in item.SeeAlso if l.startswith('/wiki/') ]
-    item.SeeAlsoWiktionaryLinks = [ re.sub( 'https://[\w]+.wiktionary.org/wiki/', '', l ) for l in item.SeeAlso if l.find(".wiktionary.org/") != -1 ]
+    item.SeeAlsoWikipediaLinks = unique(
+        filter(
+            lambda s: s != title,
+            [ l[len('/wiki/'):] for l in item.SeeAlso if l.startswith('/wiki/') ]
+        )
+    )
+    item.SeeAlsoWiktionaryLinks = unique(
+        filter(
+            lambda s: s != title,
+            [ re.sub( 'https://[\w]+.wiktionary.org/wiki/', '', l ) for l in item.SeeAlso if l.find(".wiktionary.org/") != -1 ]
+        )
+    )
 
     # Examples
     # item.ExplainationExamplesRaw = get_all_explanation_examples_raw( page, toc )
     item.ExplainationExamplesTxt = get_explanation_examples_from_api( js, html, soup, title )
 
     # LabelType
-    # item.LabelTypeWP = get_label_type( li, item )
+    item.LabelTypeWP = get_label_type_from_api( js, html, soup, explanation_lexems )
 
     # PrimaryKey
     item.PK = item.LanguageCode + "-" + item.LabelName + "§" + item.LabelTypeWP + "-" + str( page.id_ )

@@ -10,6 +10,7 @@ import logging
 import collections
 import time
 import functools
+from typing import Iterator
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ def sanitize_filename(filename):
     return filename
 
 
-def unique( lst: list ) -> list:
+def unique( lst: Iterator ) -> list:
     """
     Unique list items.
 
