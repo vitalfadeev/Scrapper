@@ -1,15 +1,19 @@
 from typing import List
 import nltk
+import re
+import string
+from bs4 import BeautifulSoup
 from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word
 from Scrapper_WikitextParser import Header, Link, Template
 from wikipedia import Scrapper_Wikipedia
-from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 from wikipedia import Scrapper_Wikipedia_RemoteAPI
+from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 from wikipedia.en.Scrapper_Wikipedia_EN_TableOfContents import Section, Root, Lang, PartOfSpeech, section_map
 from wikipedia.en.Scrapper_Wikipedia_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX
 
 nltk.download( 'punkt' )
 from nltk import tokenize
+from nltk.tokenize import word_tokenize
 
 
 def make_table_of_contents( lexemes: list ) -> Root:
@@ -278,52 +282,227 @@ def get_all_explanation_examples_raw( page, toc ):
     return sentences
 
 
+def get_page( lang, title ):
+    # https://en.wikipedia.org/wiki/Special:ApiSandbox
+    # https://en.wikipedia.org
+    #   /w/api.php?action=parse&format=json&page=Cat&prop=text%7Ccategories%7Clinks%7Cexternallinks%7Csections%7Cdisplaytitle%7Ciwlinks%7Cproperties%7Cparsewarnings&disablelimitreport=1&disableeditsection=1&disablestylededuplication=1&utf8=1
+    js = Scrapper_Wikipedia_RemoteAPI.parse_page( title )
+
+    # js["parse"]["title"]
+    # js["parse"]["pageid"]
+    # js["parse"]["text"]["*"]
+    #
+    # js["links"]["ns"]
+    # js["links"]["*"]
+    # js["iwlinks"]["prefix"]
+    # js["iwlinks"]["url"]
+    # js["iwlinks"]["*"]
+    # js["displaytitle"]
+    # js["sections"]
+    # js["sections"]["toclevel"]
+    # js["sections"]["level"]
+    # js["sections"]["line"]
+    # js["sections"]["number"]
+    # js["sections"]["index"]
+    # js["sections"]["fromtitle"]
+    # js["sections"]["byteoffset"]
+    # js["sections"]["anchor"]
+    # js["externallinks"]
+    # js["categories"]["ns"]
+    # js["categories"]["*"]
+
+    return js
+
+
+def has_class_but_no_id( tag ):
+    return tag.has_attr( 'class' ) and not tag.has_attr( 'id' )
+
+
+def get_explaination( js, html, soup ):
+    # <div class="mw-parser-output">
+    #   p, p, p, ...
+    #     skip: <p class="mw-empty-elt">
+    #   <div id ="toc">
+    explainations = []
+
+    for main_container in soup.select( ".mw-parser-output" ):
+        for child in main_container.findChildren( recursive=False ):
+            # p
+            if child.name == 'p' and ( len( child.attrs.get("class", []) ) == 0 ):
+                text = child.text
+                # remove [1]. [2], ...
+                cleaned = re.sub( '\[[0-9]+\]', '', text )
+                explainations.append( cleaned )
+
+            # TOC -> stop
+            if child.name == 'div' and ("toc" in child.attrs.get("class", []) ):
+                break
+
+    return explainations
+
+
+def get_all_wikipedia_links_from_api( js, html, soup ):
+    links = []
+
+    for link in js["parse"]["links"]:
+        ns = int( link["ns"] )
+        if ns == 0:
+            links.append( link["*"] )
+
+    return links
+
+
+def get_all_wiktionary_links_from_api( js, html, soup ):
+    links = []
+
+    # js["iwlinks"]["prefix"]
+    # js["iwlinks"]["url"]
+    # js["iwlinks"]["*"]
+    for link in js["parse"]["iwlinks"]:
+        prefix = link["prefix"]
+        if prefix in ["wikt", "wiktionary"]:
+            path = link["*"]
+            cleaned = re.sub( '^wikt:', '', path )
+            cleaned = re.sub( '^wiktionary:', '', cleaned )
+            links.append( cleaned )
+
+    return links
+
+
+def get_all_wikidata_links_from_api( js, html, soup ):
+    links = []
+
+    # js["iwlinks"]["prefix"]
+    # js["iwlinks"]["url"]
+    # js["iwlinks"]["*"]
+    for link in js["parse"]["iwlinks"]:
+        prefix = link["prefix"]
+        if prefix in ["wikidata"]:
+            path = link["*"]
+            cleaned = re.sub( '^wikidata:', '', path )
+            links.append( cleaned )
+
+    return links
+
+
+def get_all_links_from_see_also_from_api( js, html, soup ):
+    # 1. find 'see also'. h1, h2, h3, h4, h5
+    # 2. find all <a>.
+    # 3. until EOF | other h1, h2, h3, h4, h5: with higher level
+
+    links = []
+
+    # 1. find 'see also'. h1, h2, h3, h4, h5
+    iterator = soup.find_all( recursive=True )
+
+    for header in iterator:
+        if header.name in ["h1", "h2", "h3", "h4", "h5"]:
+            # header found
+            if header.text.lower() == 'see also':
+                # 2. find all <a>.
+                for e in iterator:
+                    if e.name == 'a':
+                        href = e.attrs.get('href', None)
+                        if href:
+                            if not href.startswith( '#' ):
+                                links.append( href )
+
+                    if e.name in [ "h1", "h2", "h3", "h4", "h5" ]:
+                        # 3. until EOF | other h1, h2, h3, h4, h5: with higher level
+                        break
+
+    return links
+
+
+def get_explanation_examples_from_api( js, html, soup, label ):
+    # 1. split text to sentences
+    # 2. split sentence to words
+    # 3. split label to tokens: 'An American in Paris' to to ['An' 'American' 'in' 'Paris']
+    # 4. find match. (ignore case)
+    #      if found: OK
+    examples = []
+
+    # 3. split label to tokens: 'An American in Paris' to to ['An' 'American' 'in' 'Paris']
+    # here remove all non-chars - is split
+    # then concat by space
+    # and space around
+    # example: 'The text with... 1, 2, 3' -> ['The', 'text', 'with', '1', '2', '3'] -> ' The text with 1 2 3 '
+    # then can match with 'The text'
+    expecteds = re.split( "\W+" , label )
+    lowered = list( map( str.lower, expecteds ) )
+    cleaned_expected = ' ' + ' '.join( lowered ) + ' '  # is pattern for search
+
+    # 1. split text to sentences
+    text = soup.text
+    sentences = tokenize.sent_tokenize( text )
+
+    for sentence in sentences:
+        # 2. split sentence to words
+        words = re.split( "\W+" , sentence )
+        lowered = list( map( str.lower, words ) )
+        cleaned_sentence = ' ' + ' '.join( lowered ) + ' '
+
+        # 4. match
+        # [ 'An' 'American' 'in' 'Paris' ] -> 'An American in Paris'
+        if cleaned_expected in cleaned_sentence:
+            examples.append( sentence )
+
+    return examples
+
+
 def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
+    lang = "en"
+    title = page.label
+
+    js = get_page( lang, title )
+
+    html = js["parse"]["text"]["*"]
+
+    soup = BeautifulSoup( html, 'html.parser' )
+
+    #
     items = []
 
-    lexems = page.to_lexems()
-    page.lexems = lexems
-
-    # make table-of-contents (toc)
-    toc = make_table_of_contents( lexems )
-    page.toc = toc
+    # lexems = page.to_lexems()
+    # page.lexems = lexems
+    #
+    # # make table-of-contents (toc)
+    # toc = make_table_of_contents( lexems )
+    # page.toc = toc
 
     #
     item = WikipediaItem()
 
-    #
+    # Label Name
     item.LabelName = page.label
-    item.LabelTypeWP = get_label_type( ... )
     item.LanguageCode = "en"
 
-    item.ExplainationWPRaw = get_first_block_before_header( toc )
-    item.ExplainationWPTxt = convert_raw_to_txt( item.ExplainationWPRaw )
+    # item.ExplainationWPRaw = get_first_block_before_header( toc )
+    item.ExplainationWPTxt = "\n".join( get_explaination( js, html, soup ) )
 
-    item.DescriptionWikipediaLinks = get_all_wikipedia_links( page, toc )
-    item.DescriptionWiktionaryLinks = get_all_wiktionary_links( page, toc )
+    # Description Links
+    item.DescriptionWikipediaLinks = get_all_wikipedia_links_from_api( js, html, soup )
+    item.DescriptionWiktionaryLinks = get_all_wiktionary_links_from_api( js, html, soup )
+    item.DescriptionWikidataLinks = get_all_wikidata_links_from_api( js, html, soup )
 
+    # Self Url
     item.SelfUrlWikipedia = "https://en.wikipedia.org/wiki/" + page.label   # check in dump
 
-    item.SeeAlso = get_all_links_from_see_alo( page, toc )
-    item.SeeAlsoWikipediaLinks = get_all_links_from_section( page, toc , section_title='see also' )
+    # SeeAlso
+    item.SeeAlso = get_all_links_from_see_also_from_api( js, html, soup )
+    item.SeeAlsoWikipediaLinks = [ l[len('/wiki/'):] for l in item.SeeAlso if l.startswith('/wiki/') ]
+    item.SeeAlsoWiktionaryLinks = [ re.sub( 'https://[\w]+.wiktionary.org/wiki/', '', l ) for l in item.SeeAlso if l.find(".wiktionary.org/") != -1 ]
 
-    item.ExplainationExamplesRaw = get_all_explanation_examples_raw( page, toc )
-    item.ExplainationExamplesTxt = []
+    # Examples
+    # item.ExplainationExamplesRaw = get_all_explanation_examples_raw( page, toc )
+    item.ExplainationExamplesTxt = get_explanation_examples_from_api( js, html, soup, title )
+
+    # LabelType
+    # item.LabelTypeWP = get_label_type( li, item )
+
+    # PrimaryKey
+    item.PK = item.LanguageCode + "-" + item.LabelName + "§" + item.LabelTypeWP + "-" + str( page.id_ )
+
+    items.append( item )
 
     return items
-
-
-# The explanation:
-# - first block before TOC (before first header, like the: ==Etymology== )
-#
-# The sentence:
-# - splitted by DOT, EOL
-# - splitted by COMMA
-#
-# The word:
-# - spaces before and after
-# - cat start of EOL
-# - not case-sensitive (cat = Cat)
-#
-
-

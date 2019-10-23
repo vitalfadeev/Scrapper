@@ -5,13 +5,13 @@ import logging.config
 from bs4 import BeautifulSoup
 from Scrapper_Helpers import retry
 
-DOMAIN  = "https://en.wiktionary.org"
+DOMAIN  = "https://en.wikipedia.org"
 API_URL = "/w/api.php"
 log     = logging.getLogger(__name__)
 
 
 def set_domain( lang: str ):
-    DOMAIN = "https://{}.wiktionary.org".format( lang )
+    DOMAIN = "https://{}.wikipedia.org".format( lang )
 
 
 @lru_cache(maxsize=32)
@@ -34,6 +34,52 @@ def parse( title, text ):
     if response.status_code == 200:
         data = response.json()
         return data['parse']['text']['*']
+    else:
+        log.error( '  response.status_code: %s', response.status_code )
+        log.error( '  response.text: %s', response.text )
+
+
+@lru_cache(maxsize=32)
+def parse_page( title ):
+    # wiki-text wrapped by xml
+    params = {
+        "action"                   : "parse",
+        "format"                   : "json",
+        "page"                     : title,
+        "redirects"                : 1,
+        "prop"                     : "text|categories|links|externallinks|sections|displaytitle|iwlinks",
+        "disablelimitreport"       : "1",
+        "disableeditsection"       : "1",
+        "disablestylededuplication": "1",
+        "utf8"                     : "1",
+    }
+
+    response = _post(params)
+
+    if response.status_code == 200:
+        # js[ "parse" ][ "title" ]
+        # js[ "parse" ][ "pageid" ]
+        # js[ "parse" ][ "text" ][ "*" ]
+        #
+        # js[ "iwlinks" ][ "prefix" ]
+        # js[ "iwlinks" ][ "url" ]
+        # js[ "iwlinks" ][ "*" ]
+        # js[ "displaytitle" ]
+        # js[ "sections" ]
+        # js[ "sections" ][ "toclevel" ]
+        # js[ "sections" ][ "level" ]
+        # js[ "sections" ][ "line" ]
+        # js[ "sections" ][ "number" ]
+        # js[ "sections" ][ "index" ]
+        # js[ "sections" ][ "fromtitle" ]
+        # js[ "sections" ][ "byteoffset" ]
+        # js[ "sections" ][ "anchor" ]
+        # js[ "externallinks" ]
+        # js[ "categories" ][ "ns" ]
+        # js[ "categories" ][ "*" ]
+        data = response.json()
+        return data
+
     else:
         log.error( '  response.status_code: %s', response.status_code )
         log.error( '  response.text: %s', response.text )

@@ -11,3 +11,6 @@ html5lib
 ijson
 # fetch content from Wikipedia
 wikipedia
+# scrapy
+scrapy
+html2text

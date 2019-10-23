@@ -6,10 +6,10 @@ import sqlite3
 import bz2
 import importlib
 import string
-from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 import Scrapper_WikitextParser
-from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
+from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Helpers import create_storage, is_ascii
+from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
 DB_NAME         = "wikipedia.db"
 DBWikipedia     = sqlite3.connect(DB_NAME, isolation_level=None)
@@ -324,7 +324,4 @@ def scrap( lang: str ="en", workers: int = 1 ):
         for page in reader:
             log.warning( page )
             scrap_one( lang, page )
-
-
-	
 

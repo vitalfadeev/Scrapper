@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 class WikipediaItem:
     class Meta:
-        DB_TABLE_NAME = "wiktionary"
+        DB_TABLE_NAME = "wikipedia"
         DB_INIT = """
             CREATE TABLE IF NOT EXISTS wikipedia (
                     PK		                    VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -22,9 +22,11 @@ class WikipediaItem:
                     ExplainationWPRaw           TEXT,
                     DescriptionWikipediaLinks   TEXT,
                     DescriptionWiktionaryLinks  TEXT,
+                    DescriptionWikidataLinks    TEXT,
                     SelfUrlWikipedia		    VARCHAR(255),
                     SeeAlso						TEXT,
                     SeeAlsoWikipediaLinks		TEXT,
+                    SeeAlsoWiktionaryLinks		TEXT,
                     ExplainationExamplesRaw		TEXT,
                     ExplainationExamplesTxt		TEXT
             );
@@ -41,14 +43,16 @@ class WikipediaItem:
         self.ExplainationWPRaw			 = ""
         self.DescriptionWikipediaLinks   = []
         self.DescriptionWiktionaryLinks  = []
+        self.DescriptionWikidataLinks    = []
         self.SelfUrlWikipedia			 = ""
         self.SeeAlso			         = []
         self.SeeAlsoWikipediaLinks		 = []
+        self.SeeAlsoWiktionaryLinks 	 = []
         self.ExplainationExamplesRaw	 = []
         self.ExplainationExamplesTxt	 = []
             
     def __repr__(self):
-        return "WikictionaryItem(" + self.LabelName + ': ' + self.PrimaryKey + ")"
+        return "WikipediaItem(" + self.LabelName + ': ' + self.PK + ")"
 
 
 
