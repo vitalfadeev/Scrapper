@@ -55,17 +55,17 @@ def get_verbs( page: Page, soup ) -> defaultdict :
                         t2 = li.find( "i", class_="particletxt" )
                     t3 = li.find( "i", class_="verbtxt" )
 
-                    header = h.strip() if h is not None else None
+                    tense = h.strip() if h is not None else None
                     s1 = t1.text.strip() if t1 is not None else ''
                     s2 = t2.text.strip() if t2 is not None else ''
                     s3 = t3.text.strip() if t3 is not None else ''
 
-                    verbs[ header ].append( ( s1, s2, s3 ) )
+                    verbs[ tense ].append( ( s1, s2, s3 ) )
 
     return verbs
 
 
-def get_single_plural_variant( header, s1, s2, s3, verbs_group ):
+def get_single_plural_variant( tense, s1, s2, s3, verbs_group ):
     # I - we
     # you - you
     # he/she/it - they
@@ -99,7 +99,7 @@ def get_single_plural_variant( header, s1, s2, s3, verbs_group ):
     return (s, p)
 
 
-def decode_conj_tense( header, pronoun, participle, verb ):
+def decode_conj_tense( tense, pronoun, participle, verb ):
     conj_map = {
         "Simple present": (0, 1, 0),
         "Indicative Present continuous": (0, 1, 0),
@@ -139,10 +139,10 @@ def decode_conj_tense( header, pronoun, participle, verb ):
         "Indicative Present ": (0, 1, 0),
     } 
 
-    return conj_map[ header ]
+    return conj_map[ tense ]
 
 
-def decode_conj_amount( header, s1, s2, s3 ):
+def decode_conj_amount( tense, s1, s2, s3 ):
     amount_map = {
         'I': (1, 0),
         'you': (1, 1),
@@ -156,16 +156,16 @@ def decode_conj_amount( header, s1, s2, s3 ):
     return amount_map[ s1 ]
 
 
-def get_label_type( page, header, infinitive, pronoun ):
+def get_label_type( page, tense, infinitive, pronoun ):
     # Verb_To_do_You_Indicative Perfect
-    s = "Verb" + '_' + proper( infinitive ) + '_' + proper( pronoun ) + '_' + header
+    s = "Verb" + '_' + proper( infinitive ) + '_' + proper( pronoun ) + '_' + tense
     s = s.replace( ' ', '_' )
     return s
 
 
-def get_explanation_txt( page, header, infinitive, pronoun ):
+def get_explanation_txt( page, tense, infinitive, pronoun ):
     # Verb,  to do , you, indicative perfect
-    s = "Verb" + ', ' + infinitive + ', ' + pronoun + ', ' + header
+    s = "Verb" + ', ' + infinitive + ', ' + pronoun + ', ' + tense
     return s
 
 
@@ -184,13 +184,13 @@ def scrap( page: Page ):
     i = 0
 
     #
-    for header, verbs_group in verbs.items():
+    for tense, verbs_group in verbs.items():
         for pronoun, participle, verb in verbs_group:                           # for each verb
             #
             item = ConjugationsItem()
 
             # Past, Present, Future
-            is_past, is_present, is_future = decode_conj_tense( header, pronoun, participle, verb )
+            is_past, is_present, is_future = decode_conj_tense( tense, pronoun, participle, verb )
 
             if is_past:
                 item.IsVerbPast = True
@@ -202,7 +202,7 @@ def scrap( page: Page ):
                 item.IsVerbFutur = True
 
             # IsSingle, IsPlural
-            is_single, is_plural = decode_conj_amount( header, pronoun, participle, verb )
+            is_single, is_plural = decode_conj_amount( tense, pronoun, participle, verb )
 
             if is_single:
                 item.IsSingle = True
@@ -211,7 +211,7 @@ def scrap( page: Page ):
                 item.IsPlural = True
 
             # SingleVariant, PluralVariant
-            sv, pv = get_single_plural_variant( header, pronoun, participle, verb, verbs_group )
+            sv, pv = get_single_plural_variant( tense, pronoun, participle, verb, verbs_group )
             item.SingleVariant = sv
             item.PluralVariant = pv
 
@@ -239,14 +239,14 @@ def scrap( page: Page ):
 
             # Explaination
             # Verb , INFINITIVE , subject , tense-name
-            item.ExplainationTxt = get_explanation_txt( page, header, infinitive, pronoun )
+            item.ExplainationTxt = get_explanation_txt( page, tense, infinitive, pronoun )
 
             # LabelType
-            item.LabelType = get_label_type( page, header, infinitive, pronoun )
+            item.LabelType = get_label_type( page, tense, infinitive, pronoun )
 
             #
             item.LanguageCode = "en"
-            item.PK = item.LanguageCode + '"§"' + item.LabelName + '"§"' + item.LabelType + '"§"' + str( i )
+            item.PK = item.LanguageCode + '§' + item.LabelName + '§' + item.LabelType + '§' + str( i )
 
             #
             items.append( item )
