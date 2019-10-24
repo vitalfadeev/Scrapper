@@ -137,11 +137,24 @@ def get_page( lang, title ):
     return js
 
 
-def has_class_but_no_id( tag ):
-    return tag.has_attr( 'class' ) and not tag.has_attr( 'id' )
-
-
 def find_text_in_brackets( text, op='(', cl=')' ):
+    """
+    Find text between matched brackets.
+
+    Args:
+        text (str): text
+        op (str):   open bracket symbol
+        cl (str):   close bracket symbol
+
+    Returns:
+        (tuple(start, end))  Return tuple with start position where found open bracket `op`, and positions where found matched close bracket `cl`.
+
+    ::
+
+        >>> find_text_in_brackets( "123(45)", '(', ')' )
+        (3, 6)
+
+    """
     spos = None
     epos = None
 
@@ -166,6 +179,18 @@ def find_text_in_brackets( text, op='(', cl=')' ):
 
 
 def replace_text_in_brackets( text, replace_wuth, op='(', cl=')' ):
+    """
+    Find first occurence `(...)` in text and replace to `replace_wuth`. Or remove if `replace_wuth` == ''
+
+    Args:
+        text (str):         text
+        replace_wuth (str): replace text
+        op (str):           open bracket sumbol
+        cl (str):           close bracket symbol
+
+    Returns:
+        (str) new string with replacement
+    """
     result = text
 
     (spos, epos) = find_text_in_brackets( text, op, cl )
