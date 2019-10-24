@@ -1,267 +1,173 @@
-import argparse
+import os
+import json
+import logging
+import sqlite3
+import string
+import logging.config
+import importlib
+import bs4
+
 import requests
-from bs4 import BeautifulSoup
-import more_itertools
 
-# see: HTML: https://api.verbix.com/conjugator/html
-# see: JSON: https://api.verbix.com/conjugator/json
-VERBIX_TABLE_URL = 'http://tools.verbix.com/webverbix/personal/template.htm'
-VERBIX_LANG_CODES_URL = 'http://api.verbix.com/conjugator/html'
-VERBIX_URL = 'http://api.verbix.com/conjugator/html?language={0}&tableurl=' \
-             + VERBIX_TABLE_URL \
-             + '&verb={1}'
+from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
+from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 
-verbixLanguageCodes = {
-	"de": "deu",
-	"en": "eng",
-	"da": "dan",
-	"es": "spa",
-	"fi": "fin",
-	"fr": "fra",
-	"hu": "hun",
-	"is": "isl",
-	"it": "ita",
-	"la": "lat",
-	"nl": "nld",
-	"no": "nob",
-	"pt": "por",
-	"ro": "ron",
-	"ru": "rus",
-	"sv": "swe"
-}
+DB_NAME         = "conjugations.db"
+DBConjugations  = sqlite3.connect(DB_NAME, isolation_level=None)
+CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
+log             = logging.getLogger(__name__)
+english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
+ASCII           = set(string.printable)
 
-titles = {
-    "Indicativo" : "Indicative",
-    "Presente"   : "Present",
-    "Imperfecto" : "Imperfect",
-    "Futuro"     : "Future",
-    "Subjuntivo" : "Subjunctive",
-    "Condicional": "Conditional",
-    "Imperativo" : "Imperative",
-    "Infinitivo" : "Infinitive",
-}
+if os.path.isfile( os.path.join( 'conjugator', 'logging.ini' ) ):
+    logging.config.fileConfig( os.path.join( 'conjugator', 'logging.ini' ) )
+
+log = logging.getLogger(__name__)
+
+# init DB
+DBExecute( DBConjugations, "PRAGMA journal_mode = OFF" )
+DBExecuteScript( DBConjugations, ConjugationsItem.Meta.DB_INIT )
 
 
-# Indicative
-#   Present
-#   Imperfect
-#   Future
-#   Perfect
-#   PastPerfect
-#   PreviousFuture
-# Subjunctive
-#   Present
-#   Imperfect
-#   Future
-#   Perfect
-#   PastPerfect
-#   PreviousFuture
-# Conditional
-#   Conditional
-#   PerfectConditiontal
-# Imperativo
+def DBDeleteLangRecords( lang ):
+    """
+    Remove old lang data
+
+    Args:
+        lang (str): Lang. One of: en, de, it, es, pt, fr
+    """
+    log.info("Deleting old '%s' records...", lang)
+    return DBExecute(DBConjugations, "DELETE FROM conjugations WHERE LanguageCode = ?", lang)
 
 
-def check_connection():
-    lang = 'eng'
-    verb = 'do'
-    response = requests.get( VERBIX_URL.format( lang, verb ) )
+class Page:
+    def __init__( self ):
+        self.lang = ""
+        self.label = ""
+        self.text = ""
+        self.url = ""
+
+    def __repr__(self):
+        return "Page" + repr( (self.lang, self.label) )
+
+
+def make_request( url ):
+    response = requests.get( url )
 
     if response.status_code == 200:
         pass
+
     else:
-        raise Exception( "Returned status code != 200: ", response.status_code )
+        log.error( "HTTP-Error: %s: %s", response.status_code, response.text )
+        return None
+
+    return response.text
 
 
-def get_conjugations( lang, verb ):
-    """Use the verbix API to return a list of all conjugations
-    of a given verb/language combination
+def get_one_verb_page( lang, label ):
+    conjs_url = "http://conjugueur.reverso.net/conjugaison-" + "anglais" + '-verbe-' + label.lower() + '.html'
 
-    :param str lang: Language code
-    :param str verb: Verb to conjugate
+    log.info( "Fetching verb: %s", conjs_url )
+    conjs_text = make_request( conjs_url )
 
-    Result example:
-    [
-        ('Infinitive'  , None                   , None        , 'to do')
-        ('Participle'  , None                   , None        , 'done')
-        ('Gerund'      , None                   , None        , 'doing')
-        ('Indicativo'  , 'Presente'             , 'I'         , 'do')
-        ('Indicativo'  , 'Presente'             , 'you'       , 'do')
-        ('Indicativo'  , 'Presente'             , 'he;she;it' , 'does')
-        ('Indicativo'  , 'Presente'             , 'we'        , 'do')
-        ('Indicativo'  , 'Presente'             , 'you'       , 'do')
-        ('Indicativo'  , 'Presente'             , 'they'      , 'do')
-        ('Indicativo'  , 'Perfecto'             , 'I'         , 'have done')
-        ('Indicativo'  , 'Perfecto'             , 'you'       , 'have done')
-        ('Indicativo'  , 'Perfecto'             , 'he;she;it' , 'has done')
-        ('Indicativo'  , 'Perfecto'             , 'we'        , 'have done')
-        ('Indicativo'  , 'Perfecto'             , 'you'       , 'have done')
-        ('Indicativo'  , 'Perfecto'             , 'they'      , 'have done')
-        ('Indicativo'  , 'Imperfecto'           , 'I'         , 'did')
-        ('Indicativo'  , 'Imperfecto'           , 'you'       , 'did')
-        ('Indicativo'  , 'Imperfecto'           , 'he;she;it' , 'did')
-        ('Indicativo'  , 'Imperfecto'           , 'we'        , 'did')
-        ('Indicativo'  , 'Imperfecto'           , 'you'       , 'did')
-        ('Indicativo'  , 'Imperfecto'           , 'they'      , 'did')
-        ('Indicativo'  , 'Pluscuamperfecto'     , 'I'         , 'had done')
-        ('Indicativo'  , 'Pluscuamperfecto'     , 'you'       , 'had done')
-        ('Indicativo'  , 'Pluscuamperfecto'     , 'he;she;it' , 'had done')
-        ('Indicativo'  , 'Pluscuamperfecto'     , 'we'        , 'had done')
-        ('Indicativo'  , 'Pluscuamperfecto'     , 'you'       , 'had done')
-        ('Indicativo'  , 'Pluscuamperfecto'     , 'they'      , 'had done')
-        ('Indicativo'  , 'Futuro'               , 'I'         , 'will do')
-        ('Indicativo'  , 'Futuro'               , 'you'       , 'will do')
-        ('Indicativo'  , 'Futuro'               , 'he;she;it' , 'will do')
-        ('Indicativo'  , 'Futuro'               , 'we'        , 'will do')
-        ('Indicativo'  , 'Futuro'               , 'you'       , 'will do')
-        ('Indicativo'  , 'Futuro'               , 'they'      , 'will do')
-        ('Indicativo'  , 'Futuro anterior'      , 'I'         , 'will have done')
-        ('Indicativo'  , 'Futuro anterior'      , 'you'       , 'will have done')
-        ('Indicativo'  , 'Futuro anterior'      , 'he;she;it' , 'will have done')
-        ('Indicativo'  , 'Futuro anterior'      , 'we'        , 'will have done')
-        ('Indicativo'  , 'Futuro anterior'      , 'you'       , 'will have done')
-        ('Indicativo'  , 'Futuro anterior'      , 'they'      , 'will have done')
-        ('Subjuntivo'  , 'Presente'             , 'I'         , 'do')
-        ('Subjuntivo'  , 'Presente'             , 'you'       , 'do')
-        ('Subjuntivo'  , 'Presente'             , 'he;she;it' , 'do')
-        ('Subjuntivo'  , 'Presente'             , 'we'        , 'do')
-        ('Subjuntivo'  , 'Presente'             , 'you'       , 'do')
-        ('Subjuntivo'  , 'Presente'             , 'they'      , 'do')
-        ('Subjuntivo'  , 'Perfecto'             , 'I'         , 'have done')
-        ('Subjuntivo'  , 'Perfecto'             , 'you'       , 'have done')
-        ('Subjuntivo'  , 'Perfecto'             , 'he;she;it' , 'have done')
-        ('Subjuntivo'  , 'Perfecto'             , 'we'        , 'have done')
-        ('Subjuntivo'  , 'Perfecto'             , 'you'       , 'have done')
-        ('Subjuntivo'  , 'Perfecto'             , 'they'      , 'have done')
-        ('Condicional' , 'Condicional'          , 'I'         , 'would do')
-        ('Condicional' , 'Condicional'          , 'you'       , 'would do')
-        ('Condicional' , 'Condicional'          , 'he;she;it' , 'would do')
-        ('Condicional' , 'Condicional'          , 'we'        , 'would do')
-        ('Condicional' , 'Condicional'          , 'you'       , 'would do')
-        ('Condicional' , 'Condicional'          , 'they'      , 'would do')
-        ('Condicional' , 'Condicional perfecto' , 'I'         , 'would have done')
-        ('Condicional' , 'Condicional perfecto' , 'you'       , 'would have done')
-        ('Condicional' , 'Condicional perfecto' , 'he;she;it' , 'would have done')
-        ('Condicional' , 'Condicional perfecto' , 'we'        , 'would have done')
-        ('Condicional' , 'Condicional perfecto' , 'you'       , 'would have done')
-        ('Condicional' , 'Condicional perfecto' , 'they'      , 'would have done')
-        ('Imperativo'  , ''                     , 'you'       , 'do')
-        ('Imperativo'  , ''                     , 'we'        , "Let's do")
-        ('Imperativo'  , ''                     , 'you'       , 'do')
-    ]
+    if conjs_text is not None:
+        page = Page()
+        page.lang = lang
+        page.label = label
+        page.text = conjs_text
+        page.url = conjs_url
+
+        return page
+
+    else:
+        log.error( "Error-No-text: %s", conjs_url )
+
+
+def get_all_verbs_pages( lang ):
+    page = {}
+
+    all_verbs_url = "https://cooljugator.com/" + lang + "/list/all"
+
+    log.info( "Fetching all verbs: %s", all_verbs_url )
+
+    html = make_request( all_verbs_url )
+
+    soup = bs4.BeautifulSoup( html, 'html.parser' )
+
+    for li in soup.select( 'li.item' ):
+        for a in li.find_all( 'a' ):
+            verb = a.text.strip()
+            page = get_one_verb_page( lang, verb )
+            yield page
+
+
+def filterPageProblems( page: Page ) -> Page:
+    return page
+
+
+
+def scrap_one( lang: str, page: Page ) -> list:
     """
-    result = []
+    Scrap one page.
 
-    # Make http request
+    It load language module and scrap data from page. Then save to DB.
+
+    Args:
+        lang (str):     Language. Example: 'en'
+        page (Page):    Page instance. With `label`, `text`
+
+    Returns:
+        list of WikipediaItem  - it items with scrapped info
+    """
+    log.info( "(%s, %s)", lang, page )
+
+    lm = importlib.import_module("conjugator." + lang)
+
     try:
-        response = requests.get( VERBIX_URL.format( lang, verb ) )
+        items = lm.scrap( page )
 
-    except requests.exceptions.RequestException as e:
-        print( "Exception connecting to Verbix API" )
-        print( e )
-        return set( [ ] )
+    except json.decoder.JSONDecodeError as e:
+        log.error( "(%s): HTTP-response: parse error: ", page.label, exc_info=1 )
+        return []
 
-    html_string = response.text
+    item: ConjugationsItem
+    for item in items:
+        DBWrite( DBConjugations, item )
 
-    # Parse response using beautiful soup
-    soup = BeautifulSoup( html_string, "html5lib" )
+    return items
 
-    # table
-    #   tr
-    #     td
-    #       b
-    #         Infinitivo
-    #       span
-    #         span class="normal"
-    #           .text -> ...
-    #       b
-    #         Participio
-    #       span
-    #         span class="irregular"
-    #           .text -> ...
-    #       b
-    #         Gerundio
-    #         span class="normal"
-    #           .text -> ...
-    #   tr
-    #     td
-    #       b
-    #        .text = "Indicativo"
-    #       table class="verbtense"
-    #         tr
-    #           td
-    #             b
-    #               .text = "Presente"
-    #             table
-    #               tr
-    #                 td
-    #                   span class="pronoun"
-    #                     .text -> term
-    #                   span class="normal"
-    #                     .text -> term
 
-    table_main = soup.find( 'table', attrs={ 'border': "1" })
+def scrap_one_wrapper(args):
+    """
+    It used with multiprocessing. Because multiprocessing callback pass arguments as tuple. This wrapper help expand tuple.
 
-    trs_table_main = table_main.tbody.find_all('tr', recursive=False)
-    tr1 = trs_table_main[0]
+    it call `scrap_one()` with `args`.
 
-    for b in tr1.find('td').find_all('b'):
-        if b.text.strip() == 'Infinitivo:':
-            span = b.find_next('span')
-            if span:
-                Infinitive = span.text
-                result.append( ("Infinitive", None, None, Infinitive) )
+    Args:
+        args (tuple):  Args
+    """
+    try:
+        scrap_one( *args )
+    except Exception as e:
+        log.error( "  %s", args, exc_info=True )
 
-        elif b.text.strip() == 'Participio:':
-            span = b.find_next('span')
-            if span:
-                Participle = span.text
-                result.append( ("Participle", None, None, Participle) )
 
-        elif b.text.strip() == 'Gerundio:':
-            span = b.find_next('span')
-            if span:
-                Gerund = span.text
-                result.append( ("Gerund", None, None, Gerund) )
+def scrap( lang: str ="en", workers: int = 1 ):
+    result = DBDeleteLangRecords( lang )
+    reader = filter( filterPageProblems, get_all_verbs_pages( lang ) )
 
-    # Sections
-    # Verb forms
-    tr_rest = trs_table_main[1:]
+    if workers > 1:
+        import multiprocessing
+        import itertools
 
-    for tr_tr in more_itertools.sliced( tr_rest, 2 ):
-        if len(tr_tr) == 2:
-            (tr_with_title, tr_with_data) = tr_tr
+        pool = multiprocessing.Pool( workers )
+        for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
+            pass
+        pool.close()
+        pool.join()
 
-            for td_section_title, td_section_data in zip( tr_with_title.find_all('td', recursive=False), tr_with_data.find_all('td', recursive=False) ):
-                # title
-                section_title = td_section_title.text
+    else: # single process
+        for page in reader:
+            scrap_one( lang, page )
 
-                # terms by form
-                table_tenses = td_section_data.find_all('table', class_="verbtense")
-
-                for table_tense in table_tenses:
-                    b_title = table_tense.parent.find('b')
-
-                    if b_title:
-                        # title
-                        title = b_title.text.strip()
-
-                        for tr in table_tense.find_all('tr'):
-                            td_pronoun, td_term = tr.find_all('td')
-
-                            # pronoun
-                            pronoun = td_pronoun.text.strip()
-
-                            # split "he;she;it" to ['he', 'she', 'it']
-                            pronouns = pronoun.split(';')
-                            pronouns = map(str.strip, pronouns)
-
-                            # term
-                            term    = td_term.text.strip()
-
-                            # result
-                            for pronoun in pronouns:
-                                result.append( (section_title, title, pronoun, term) )
-
-    return result
 

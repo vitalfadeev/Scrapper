@@ -67,7 +67,7 @@ def DBRead( DB, table, id=None, where=None, args=tuple ):
     yield from item
 
 
-def DBWrite(DB, item):
+def DBWrite(DB, item:object ):
     """
     Write item into database `DB`.
 
