@@ -1,3 +1,10 @@
+"""
+Scrapper send 'title' to API and get clean HTML.
+then HTML -> text.
+then text  -> sentences.
+then clean: remove [1], [2]
+"""
+
 import json
 import os
 import logging

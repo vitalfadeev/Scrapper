@@ -9,126 +9,11 @@ from Scrapper_WikitextParser import Header, Link, Template, parse, String, Li, D
 from wikipedia import Scrapper_Wikipedia
 from wikipedia import Scrapper_Wikipedia_RemoteAPI
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
-from wikipedia.en.Scrapper_Wikipedia_EN_TableOfContents import Section, Root, Lang, PartOfSpeech, section_map
-from wikipedia.en.Scrapper_Wikipedia_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX
 
 nltk.download( 'punkt' )
 from nltk import tokenize
 
 log = logging.getLogger(__name__)
-
-
-def make_table_of_contents( lexemes: list ) -> Root:
-    """
-    Create Table of contents for given `lexemes`.
-
-    it search <Header> tokens. In raw-text it '=English=', '===Noun==='. Then detect level of header. Then build tree.
-
-    Args:
-        lexemes (list):     List of lexemes. Lexemes going from raw-text parser (module Scrapper_Wiktionary_WikitextParser)
-
-    Returns:
-        (Root)  Tree root.
-
-    ::
-
-        # for 'cat'
-        toc = make_table_of_contents( lexems )
-
-        # result is:
-        toc.dump()
-
-        # result:
-        ...
-
-    """
-    root = Root()
-    last = root
-
-    # 1. scan each lexem
-    # 2. get Headers
-    # 3. make tree
-    # group lexems by class
-    for lexem in lexemes:
-        if isinstance( lexem, Header ):
-            header = lexem
-
-            # flags
-            beauty_name = header.name.lower().strip()
-            if header.level < 4 and beauty_name in LANG_SECTIONS_INDEX:
-                # Language
-                node = Lang()
-                node.title = header.name
-                node.title_norm = LANG_SECTIONS_INDEX[ beauty_name ]
-                node.level = header.level
-
-            elif beauty_name in PART_OF_SPEECH_SECTIONS_INDEX:
-                # Part of speech
-                node = PartOfSpeech()
-                node.title = header.name
-                node.title_norm = PART_OF_SPEECH_SECTIONS_INDEX[ beauty_name ]
-                node.level = header.level
-
-            elif beauty_name in VALUED_SECTIONS_INDEX:
-                # Synonyms, Antonyms, Translations
-                cls = section_map.get( beauty_name, Section )
-                node = cls()
-                node.title = header.name
-                node.title_norm = VALUED_SECTIONS_INDEX[ beauty_name ]
-                node.level = header.level
-
-            else:
-                # Any other section
-                node = Section()
-                node.title = header.name
-                node.title_norm = beauty_name
-                node.level = header.level
-
-            # hierarchy
-            if last is root:
-                # top-level node
-                parent = last
-                parent.append(node)
-                last = node
-
-            elif header.level > last.level:
-                # child node
-                parent = last
-                parent.append(node)
-                last = node
-
-            elif header.level == last.level:
-                # same level node
-                parent = last.parent
-                parent.append(node)
-                last = node
-
-            else:
-                # parent node
-                # find parent
-                parent = last
-
-                while parent is not root:
-                    if header.level > parent.level:
-                        break
-                    else:
-                        parent = parent.parent
-
-                parent.append(node)
-                last = node
-
-            # index by name
-            parent.sections_by_name[ beauty_name ] = node
-
-        # save lexems
-        # text block
-        last.lexemes.append( lexem )
-        # index by class
-        last.lexemes_by_class[ type( lexem ) ][ lexem.name ].append( lexem )
-        for lex in lexem.find_all( recursive=True ):
-            last.lexemes_by_class[ type( lex ) ][ lex.name ].append( lex )
-
-    return root
 
 
 def get_label_type( expl ):
@@ -218,70 +103,6 @@ def get_label_type( expl ):
     biglst = list1 + list2 + list3
 
     return "_".join(biglst[:4])
-
-
-def get_first_block_before_header( toc: Root ):
-    block = []
-    for lexem in toc.lexemes:
-        block.append( lexem.raw )
-
-    return block
-
-
-def convert_raw_to_txt( page:Scrapper_Wikipedia.Page, raws:list ) -> list:
-    txts = Scrapper_Wikipedia_RemoteAPI.expand_templates( page.label, raws )
-    return txts
-
-
-def get_all_wikipedia_links( page, toc ):
-    links = []
-
-    for node in toc.find_all( recursive=True ):
-        links.extend( node.lexemes_by_class[ Link ][''] )
-
-    return links
-
-
-def get_all_wiktionary_links( page, toc ):
-    links = [ ]
-
-    for node in toc.find_all( recursive=True ):
-        links.extend( node.lexemes_by_class[ Template ][ 'll' ] )
-        links.extend( node.lexemes_by_class[ Template ][ 'link' ] )
-
-    return links
-
-
-def get_all_links_from_see_alo( page, toc ):
-    links = []
-
-    for node in toc.find_all( recursive=True ):
-        if node.title_norm == 'see also':
-            links.extend( node.lexemes_by_class[ Link ][''] )
-
-    return links
-
-
-def get_all_links_from_section( page, toc, section_title='see also' ):
-    links = []
-
-    for node in toc.find_all( recursive=True ):
-        if node.title_norm == section_title:
-            links.extend( node.lexemes_by_class[ Link ][''] )
-
-    return links
-
-
-def get_all_explanation_examples_raw( page, toc ):
-    raws = []
-
-    for lexem in page.lexems:
-        raws.append( lexem.raw )
-
-    text = "\n".join( raws )
-    sentences = tokenize.sent_tokenize( text )
-
-    return sentences
 
 
 def get_page( lang, title ):
@@ -538,26 +359,42 @@ def get_label_type_from_api( js, html, soup, explanations_lexems ):
 
 
 def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
+    """
+    Scrap page.
+
+    - 1 Take page title `page.label`
+    - 2. Send to Wikipedia API
+    - 3. Get HTML
+    - 4. Parse HTML with BeautifulSoup
+    - 5. Get gems: Explanations, Links, Examples, ....
+    - 6. Generate LabelType, PrymaryKey
+    - 7. Return `items` to parent script
+
+
+    Args:
+        page (Page):  instace of Page. It contain `label` `text`, `id_`, `ns` fetched from dump.
+
+    Returns:
+        (list)  List of items.
+    """
+    # - 1 Take page title `page.label`
     lang = "en"
     title = page.label
     #title = 'AbalonE'
 
+    # - 2. Send to Wikipedia API
+    # - 3. Get HTML
     js = get_page( lang, title )
 
     html = js["parse"]["text"]["*"]
 
+    # - 4. Parse HTML with BeautifulSoup
     soup = BeautifulSoup( html, 'html.parser' )
 
-    #
-    items = []
+    # - 5. Get gems: Explanations, Links, Examples, ....
+    items = []  # scrapped data container
 
-    # lexems = page.to_lexems()
-    # page.lexems = lexems
-    #
-    # # make table-of-contents (toc)
-    # toc = make_table_of_contents( lexems )
-    # page.toc = toc
-
+    # get explanation lexems. for to use with LabelType builder
     explanation_lexems = get_explanatoin_lexems( page )
 
     #
@@ -567,26 +404,26 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     item.LabelName = page.label
     item.LanguageCode = "en"
 
-    item.ExplainationWPRaw = "".join( l.raw for l in explanation_lexems )
-    item.ExplainationWPTxt = "\n".join( get_explaination_from_api( js, html, soup ) )
+    item.ExplainationWPRaw = "".join( l.raw for l in explanation_lexems )  # join lexems for get one raw text
+    item.ExplainationWPTxt = "\n".join( get_explaination_from_api( js, html, soup ) )  # join text blocks. from soup we taken <p> - 1~5 blockss
 
     # Description Links
-    item.DescriptionWikipediaLinks = unique(
+    item.DescriptionWikipediaLinks = unique(                        # unique
         filter(
-            lambda s: s != title,
-            get_all_wikipedia_links_from_api( js, html, soup )
+            lambda s: s != title,                                   # skip self
+            get_all_wikipedia_links_from_api( js, html, soup )      # get WP links
         )
     )
-    item.DescriptionWiktionaryLinks = unique(
+    item.DescriptionWiktionaryLinks = unique(                       # unique
         filter(
-            lambda s: s != title,
-            get_all_wiktionary_links_from_api( js, html, soup )
+            lambda s: s != title,                                   # skip self
+            get_all_wiktionary_links_from_api( js, html, soup )     # get WT links
         )
     )
-    item.DescriptionWikidataLinks = unique(
+    item.DescriptionWikidataLinks = unique(                         # unique
         filter(
-            lambda s: s != title,
-            get_all_wikidata_links_from_api( js, html, soup )
+            lambda s: s != title,                                   # skip self
+            get_all_wikidata_links_from_api( js, html, soup )       # get WD links
         )
     )
 
@@ -595,16 +432,16 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
 
     # SeeAlso
     item.SeeAlso = get_all_links_from_see_also_from_api( js, html, soup )
-    item.SeeAlsoWikipediaLinks = unique(
+    item.SeeAlsoWikipediaLinks = unique(                                            # unique
         filter(
-            lambda s: s != title,
-            [ l[len('/wiki/'):] for l in item.SeeAlso if l.startswith('/wiki/') ]
+            lambda s: s != title,                                                   # skip self
+            [ l[len('/wiki/'):] for l in item.SeeAlso if l.startswith('/wiki/') ]   # keep WP links only: /wiki/...
         )
     )
-    item.SeeAlsoWiktionaryLinks = unique(
+    item.SeeAlsoWiktionaryLinks = unique(                                           # unique
         filter(
-            lambda s: s != title,
-            [ re.sub( 'https://[\w]+.wiktionary.org/wiki/', '', l ) for l in item.SeeAlso if l.find(".wiktionary.org/") != -1 ]
+            lambda s: s != title,                                                   # skip self
+            [ re.sub( 'https://[\w]+.wiktionary.org/wiki/', '', l ) for l in item.SeeAlso if l.find(".wiktionary.org/") != -1 ]  # keep WKT links only: https://en.wiktionary.org/wiki/...
         )
     )
 
@@ -612,6 +449,7 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     # item.ExplainationExamplesRaw = get_all_explanation_examples_raw( page, toc )
     item.ExplainationExamplesTxt = get_explanation_examples_from_api( js, html, soup, title )
 
+    # - 6. Generate LabelType, PrymaryKey
     # LabelType
     item.LabelTypeWP = get_label_type_from_api( js, html, soup, explanation_lexems )
 
@@ -620,4 +458,5 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
 
     items.append( item )
 
+    # - 7. Return `items` to parent script
     return items
