@@ -15,7 +15,7 @@ import importlib
 import string
 import Scrapper_WikitextParser
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
-from Scrapper_Helpers import create_storage, is_ascii
+from Scrapper_Helpers import create_storage, is_ascii, is_lang
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
 DB_NAME         = "wikipedia.db"
@@ -115,9 +115,9 @@ def filterPageProblems( page: "Page" ):
         log.warning("  filter: %s: find('#'): [SKIP]", page.label)
         return None
 
-    # skip non ASCII
-    if is_ascii( page.label ) is False:
-        log.warning("  filter: %s: non ASCII: [SKIP]", page.label)
+    # skip non lang
+    if is_lang( page.label, page.lang ) is False:
+        log.warning("  filter: '%s;: some symbols not in '%s' alphabet: [SKIP]", page.label, page.lang)
         return None
 
     return page
@@ -127,11 +127,11 @@ class Page:
     """
     Class to hold page data: raw-text, label, lexemes, explanations, table-of-contents, text-by-raw
     """
-    def __init__(self, id_, ns, label, text):
+    def __init__(self, id_, ns, label, text, lang):
         self.id_   = id_
         self.ns    = ns
         self.label = label
-        self.lang = ""
+        self.lang = lang
 
         # prepare text
         # remove BOM
@@ -218,10 +218,10 @@ class Dump:
 
         """
         with bz2.open(self.path, "r") as xml_stream:
-            yield from XmlStreamReader(xml_stream)
+            yield from XmlStreamReader( self.lang, xml_stream )
 
 
-def XmlStreamReader( infile ):
+def XmlStreamReader( lang, infile ):
     """
     Create reader for read `infile ` stream and return `Page()` objects.
 
@@ -258,7 +258,7 @@ def XmlStreamReader( infile ):
             revision = page.find(revision_tag)                    # page/revision
             text     = revision.findtext(text_tag, default='')    # page/text
 
-            yield Page(id_, ns, label, text)
+            yield Page(id_, ns, label, text, lang)
 
             elem.clear()
 
@@ -281,7 +281,6 @@ def scrap_one( lang: str, page: Page ):
     log.info( "(%s, %s)", lang, page )
 
     lm = importlib.import_module("wikipedia." + lang)
-    page.lang = lang
 
     try:
         items = lm.scrap( page )
@@ -339,19 +338,3 @@ def scrap( lang: str ="en", workers: int = 1 ):
         for page in reader:
             log.warning( page )
             scrap_one( lang, page )
-
-
-# pip install regex
-# import re
-#
-# def has_cyrillic(text):
-#     return bool(re.search('[а-яА-Я]', text))
-
-# regex
-# en:
-# de: [A-Za-z0-9 \-_.\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]
-# fr: [a-zàâçéèêëîïôûùüÿñæœ .-]
-# ru: [a-z\u0400-\u04FF]
-# it:
-# es:
-# pt:

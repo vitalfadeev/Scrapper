@@ -45,3 +45,23 @@ if __name__ == "__main__":
 #       print( item )
 #
 
+# Reader( "dump.xml.bz2" )
+#   open( "dump.xml.bz2" )
+#     bz2.open( f )
+#       xml.open( f )
+
+# Reader( "http://www/dump.xml.bz2" )
+#   requests.get( "http://www/dump.xml.bz2" )
+#   open( "dump.xml.bz2" )
+#     bz2.open( f )
+#       xml.open( f )
+
+# Reader( "http://www/page.html" )
+#   requests.get( "http://www/page.html" )
+#   open( "page.html" )
+#     html.open( f )
+
+# Reader( "http://www/rss.xml" )
+#   requests.get( "http://www/rss.xml" )
+#   open( "rss.xml" )
+#     xml.open( f )

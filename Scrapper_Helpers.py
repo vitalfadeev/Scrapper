@@ -4,6 +4,7 @@
 import sys
 import os
 import io
+import re
 import pickle
 import json
 import logging
@@ -545,3 +546,45 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
         return f_retry  # true decorator
 
     return deco_retry
+
+
+# regex
+lang_validators = {
+    'en': "[A-Za-z0-9 '\"\-_]",
+    'de': "[A-Za-z0-9 '\"\-_Ää Öö Üü ẞß]",
+    'fr': "[A-Za-z0-9 '\"\-_Àà Ââ Çç Éé Èè Êê Ëë Îî Ïï Ôô Ûû Ùù Üü Ÿÿ Ññ Ææ Œœ .-]",
+    'ru': "[A-Za-z0-9 '\"\-_\u0400-\u04FF]",
+    'it': "[A-Za-z0-9 '\"\-_Àà Èè Éé Ìì Íí Îî Òò Óó Ùù Úú]",
+    'es': "[A-Za-z0-9 '\"\-_Ññ ]",
+    'pt': "[A-Za-z0-9 '\"\-_Áá Ââ Ãã Àà Çç Éé Êê Íí Óó Ôô Õõ Úú]",
+}
+
+def is_lang( s: str, lang: str ) -> bool:
+    """
+    Check string `s` for all symbols in `lang` alphabet.
+
+    Args:
+        s:      String
+        lang:   Language code. ('en', 'de', ...)
+
+    Returns:
+        (bool)
+            - True - all symbols fron language `lang`
+            - False - not match
+
+    ::
+
+        # lang_validators = {
+        #     'en': "[A-Za-z0-9 \-_]",
+        #     'de': "[A-Za-z0-9 \-_Ää Öö Üü ẞß]",
+        #     'fr': "[A-Za-z0-9 \-_Àà Ââ Çç Éé Èè Êê Ëë Îî Ïï Ôô Ûû Ùù Üü Ÿÿ Ññ Ææ Œœ .-]",
+        #     'ru': "[A-Za-z0-9 \-_\u0400-\u04FF]",
+        #     'it': "[A-Za-z0-9 \-_Àà Èè Éé Ìì Íí Îî Òò Óó Ùù Úú]",
+        #     'es': "[A-Za-z0-9 \-_Ññ ]",
+        #     'pt': "[A-Za-z0-9 \-_Áá Ââ Ãã Àà Çç Éé Êê Íí Óó Ôô Õõ Úú]",
+        # }
+        >>> is_lang( "Cat", "en" )
+        True
+
+    """
+    return  bool( re.match( lang_validators[ lang ], s ) )

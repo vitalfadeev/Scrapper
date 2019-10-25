@@ -17,7 +17,12 @@ log = logging.getLogger(__name__)
 
 see_also_titles_by_lang = {
     'en': ['see also'],
-    'fr': ['Voir aussi'],
+    'fr': ['voir aussi'],
+    'de': [],
+    'it': ['guarda anche', 'voci correlate'],
+    'es': ['véase también'],
+    'pt': ['ver também'],
+    'ru': ['cм. также', 'cмотри также'],
 }
 
 
@@ -411,6 +416,8 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     lang = page.lang
     title = page.label
     #title = 'AbalonE'
+
+    Scrapper_Wikipedia_RemoteAPI.DOMAIN = "https://{}.wikipedia.org".format( lang )
 
     # - 2. Send to Wikipedia API
     # - 3. Get HTML

@@ -11,6 +11,7 @@ log     = logging.getLogger(__name__)
 
 
 def set_domain( lang: str ):
+    global DOMAIN
     DOMAIN = "https://{}.wikipedia.org".format( lang )
 
 
