@@ -79,9 +79,9 @@ def filterPageProblems( page: "Page" ):
         return None
 
     # skip #REDIRECT
-    if page.text[:100].find("#REDIRECT ") != -1:
-        spos = page.text.find( "#REDIRECT " ) + len( "#REDIRECT " )
-        epos = page.text.find( '\n', spos )
+    if page.text[:100].upper().find("#REDIRECT ") != -1:
+        spos = page.text.upper().find( "#REDIRECT " ) + len( "#REDIRECT " )
+        epos = page.text.upper().find( '\n', spos )
         if epos != -1:
             label_to = page.text[spos:epos]
         else:
