@@ -131,6 +131,7 @@ class Page:
         self.id_   = id_
         self.ns    = ns
         self.label = label
+        self.lang = ""
 
         # prepare text
         # remove BOM
@@ -264,7 +265,7 @@ def XmlStreamReader( infile ):
 
 
 
-def scrap_one(lang, page):
+def scrap_one( lang: str, page: Page ):
     """
     Scrap one page.
 
@@ -280,6 +281,7 @@ def scrap_one(lang, page):
     log.info( "(%s, %s)", lang, page )
 
     lm = importlib.import_module("wikipedia." + lang)
+    page.lang = lang
 
     try:
         items = lm.scrap( page )
@@ -338,3 +340,18 @@ def scrap( lang: str ="en", workers: int = 1 ):
             log.warning( page )
             scrap_one( lang, page )
 
+
+# pip install regex
+# import re
+#
+# def has_cyrillic(text):
+#     return bool(re.search('[а-яА-Я]', text))
+
+# regex
+# en:
+# de: [A-Za-z0-9 \-_.\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]
+# fr: [a-zàâçéèêëîïôûùüÿñæœ .-]
+# ru: [a-z\u0400-\u04FF]
+# it:
+# es:
+# pt:

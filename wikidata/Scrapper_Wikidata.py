@@ -8,8 +8,10 @@ import logging
 import logging.config
 import multiprocessing
 import ijson
+import bs4
+import requests
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
-from Scrapper_Helpers import filterWodsProblems, clean_surrogates, pprint, create_storage
+from Scrapper_Helpers import filterWodsProblems, clean_surrogates, pprint, create_storage, put_contents
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 import Scrapper_Downloader
 
@@ -331,6 +333,36 @@ def DumpReader(lang, local_file, from_point=None):
             yield (data, lang, i)
 
 
+def find_latest_dump():
+    # https://dumps.wikimedia.org/wikidatawiki/entities/
+    url = "https://dumps.wikimedia.org/wikidatawiki/entities/"
+    response = requests.get( url )
+
+    soup = bs4.BeautifulSoup( response.text, "html.parser" )
+
+    folders = []
+
+    for a in soup.select( 'a' ):
+        href =  a.attrs.get( 'href', '' ).strip()
+        if href.endswith( '/' ):
+            if href[:-1].isnumeric() and len( href ) == len( '19770101/' ):
+                folders.append( href[:-1] )
+
+    folders.sort()
+
+    for folder in reversed( folders ):
+        dump_url = "https://dumps.wikimedia.org/wikidatawiki/entities/{}/wikidata-{}-all.json.bz2"\
+            .format( folder, folder )
+
+        log.debug( 'check: %s', dump_url )
+        response = requests.head( dump_url )
+
+        log.debug( '  %s', response.status_code )
+
+        if response.status_code == 200:
+            return dump_url
+
+
 # helpers
 def download(lang="en", use_cached=True):
     """
@@ -346,8 +378,9 @@ def download(lang="en", use_cached=True):
     # latest-all.json.bz2 - is not stable link. sometime locate to absent file. 404 - error
     # remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/20190701/wikidata-20190701-all.json.bz2.not'
     # remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/20190812/wikidata-20190812-all.json.bz2'
-    remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2'
+    #remote_file = 'https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2'
 
+    # cache folder
     create_storage(CACHE_FOLDER)
     local_file = os.path.join(CACHE_FOLDER, "wikidata-latest-all.json.bz2")
 
@@ -356,6 +389,12 @@ def download(lang="en", use_cached=True):
         return local_file
 
     # download
+    remote_file = find_latest_dump()
+
+    # keep url
+    url_file_name = os.path.join( CACHE_FOLDER, "wikidata-url.txt" )
+    put_contents( url_file_name, remote_file )
+
     log.info("Downloading (%s)....", remote_file)
     if Scrapper_Downloader.download( remote_file, local_file ):
         log.info("Downloaded... [ OK ]")

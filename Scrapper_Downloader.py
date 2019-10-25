@@ -231,7 +231,7 @@ def _download_with_resume(url, local_file):
             return True  # OK
         else:
             # continue downloading
-            resume_pos = local - 4096   # delete 4096 Bytes tail
+            resume_pos = local - 4096   # delete 4096 Bytes tail. for remove '500 ... error message'
             if resume_pos < 0:
                 resume_pos = 0
 

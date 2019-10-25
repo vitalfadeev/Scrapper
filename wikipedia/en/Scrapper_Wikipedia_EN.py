@@ -15,6 +15,11 @@ from nltk import tokenize
 
 log = logging.getLogger(__name__)
 
+see_also_titles_by_lang = {
+    'en': ['see also'],
+    'fr': ['Voir aussi'],
+}
+
 
 def get_label_type( expl ):
     """
@@ -275,7 +280,7 @@ def get_all_wikidata_links_from_api( js, html, soup ):
     return links
 
 
-def get_all_links_from_see_also_from_api( js, html, soup ):
+def get_all_links_from_see_also_from_api( js, html, soup, section_titles ):
     # 1. find 'see also'. h1, h2, h3, h4, h5
     # 2. find all <a>.
     # 3. until EOF | other h1, h2, h3, h4, h5: with higher level
@@ -288,7 +293,7 @@ def get_all_links_from_see_also_from_api( js, html, soup ):
     for header in iterator:
         if header.name in ["h1", "h2", "h3", "h4", "h5"]:
             # header found
-            if header.text.lower() == 'see also':
+            if header.text.lower() in section_titles:
                 # 2. find all <a>.
                 for e in iterator:
                     if e.name == 'a':
@@ -403,7 +408,7 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
         (list)  List of items.
     """
     # - 1 Take page title `page.label`
-    lang = "en"
+    lang = page.lang
     title = page.label
     #title = 'AbalonE'
 
@@ -427,7 +432,7 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
 
     # Label Name
     item.LabelName = page.label
-    item.LanguageCode = "en"
+    item.LanguageCode = lang
 
     item.ExplainationWPRaw = "".join( l.raw for l in explanation_lexems )  # join lexems for get one raw text
     item.ExplainationWPTxt = "\n".join( get_explaination_from_api( js, html, soup ) )  # join text blocks. from soup we taken <p> - 1~5 blockss
@@ -453,10 +458,10 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     )
 
     # Self Url
-    item.SelfUrlWikipedia = "https://en.wikipedia.org/wiki/" + page.label   # check in dump
+    item.SelfUrlWikipedia = "https://" + lang + ".wikipedia.org/wiki/" + page.label   # check in dump
 
     # SeeAlso
-    item.SeeAlso = get_all_links_from_see_also_from_api( js, html, soup )
+    item.SeeAlso = get_all_links_from_see_also_from_api( js, html, soup, see_also_titles_by_lang[ lang ] )
     item.SeeAlsoWikipediaLinks = unique(                                            # unique
         filter(
             lambda s: s != title,                                                   # skip self
