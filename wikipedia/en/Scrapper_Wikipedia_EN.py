@@ -3,6 +3,7 @@ import nltk
 import re
 import string
 import logging
+from urllib.parse import unquote
 from bs4 import BeautifulSoup
 from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word, is_ascii, unique
 from Scrapper_WikitextParser import Header, Link, Template, parse, String, Li, Dl, Container
@@ -24,6 +25,24 @@ see_also_titles_by_lang = {
     'pt': ['ver também'],
     'ru': ['cм. также', 'cмотри также'],
 }
+
+# https://textminingonline.com/dive-into-nltk-part-ii-sentence-tokenize-and-word-tokenize
+TOKENIZE_LANGS = {
+    'en': 'english',
+    'fr': 'french',
+    'de': 'german',
+    'it': 'italian',
+    'es': 'spanish',
+    'pt': 'portuguese',
+    'ru': 'english',
+}
+
+
+def cleanup( url ):
+    try:
+        return unquote( url, errors='strict' )
+    except UnicodeDecodeError:
+        return unquote( url, encoding='latin-1' )
 
 
 def get_label_type( expl ):
@@ -252,6 +271,28 @@ def get_all_wikipedia_links_from_api( js, html, soup ):
     return links
 
 
+def get_all_wikipedia_links_from_explanation_lexems( explanation_lexems ):
+    # https://en.wikipedia.org/wiki/Help:Interwiki_linking
+    links = []
+
+    container = Container()
+    container.childs = explanation_lexems
+
+    for link in container.find_objects( Link, recursive=True ):
+        txt = link.get_text()
+
+        if txt.find(":") != -1:
+            ns, rest = txt.split(':', 1)
+            if ns in ['wikipedia', 'w']:
+                txt = rest
+            else:
+                continue
+
+        links.append( txt )
+
+    return links
+
+
 def get_all_wiktionary_links_from_api( js, html, soup ):
     links = []
 
@@ -269,6 +310,51 @@ def get_all_wiktionary_links_from_api( js, html, soup ):
     return links
 
 
+def get_all_wiktionary_links_from_explanation_lexems( explanation_lexems ):
+    # https://en.wikipedia.org/wiki/Help:Interwiki_linking
+    # https://en.wikipedia.org/wiki/Help:Interwikimedia_links
+    links = []
+
+    container = Container()
+    container.childs = explanation_lexems
+
+    # Links
+    for link in container.find_objects( Link, recursive=True ):
+        txt = link.get_text()
+
+        if txt.find(":") != -1:
+            ns, rest = txt.split(':', 1)
+            if ns in ['wiktionary', 'wikt']:
+                txt = rest
+                links.append( txt )
+
+    # Templates
+    for t in container.find_objects( Template, recursive=True ):
+        t: Template
+        if t.name in ['Wiktionary']:
+            for a in t.positional_args():
+                txt = a.get_value()
+
+                if txt:
+                    if txt.find(":") != -1:
+                        ns, rest = txt.rsplit(':', 1)
+                        txt = rest
+
+                    links.append( txt )
+
+        elif t.name in ['wikt']:
+            txt = t.arg(0)
+
+            if txt:
+                if txt.find(":") != -1:
+                    ns, rest = txt.rsplit(':', 1)
+                    txt = rest
+
+                links.append( txt )
+
+    return links
+
+
 def get_all_wikidata_links_from_api( js, html, soup ):
     links = []
 
@@ -281,6 +367,26 @@ def get_all_wikidata_links_from_api( js, html, soup ):
             path = link["*"]
             cleaned = re.sub( '^wikidata:', '', path )
             links.append( cleaned )
+
+    return links
+
+
+def get_all_wikidata_links_from_explanation_lexems( explanation_lexems ):
+    # https://en.wikipedia.org/wiki/Help:Interwiki_linking
+    links = []
+
+    container = Container()
+    container.childs = explanation_lexems
+
+    for link in container.find_objects( Link, recursive=True ):
+        txt = link.get_text()
+
+        if txt.find(":") != -1:
+            ns, rest = txt.split(':', 1)
+            if ns in ['wikidata', 'd']:
+                txt = rest
+                links.append( txt )
+
 
     return links
 
@@ -305,7 +411,7 @@ def get_all_links_from_see_also_from_api( js, html, soup, section_titles ):
                         href = e.attrs.get('href', None)
                         if href:
                             if not href.startswith( '#' ):
-                                links.append( href )
+                                links.append( cleanup( href ) )
 
                     if e.name in [ "h1", "h2", "h3", "h4", "h5" ]:
                         # 3. until EOF | other h1, h2, h3, h4, h5: with higher level
@@ -314,7 +420,7 @@ def get_all_links_from_see_also_from_api( js, html, soup, section_titles ):
     return links
 
 
-def get_explanation_examples_from_api( js, html, soup, label ):
+def get_explanation_examples_from_api( js, html, soup, label, page ):
     # 1. split text to sentences
     # 2. split sentence to words
     # 3. split label to tokens: 'An American in Paris' to to ['An' 'American' 'in' 'Paris']
@@ -344,7 +450,7 @@ def get_explanation_examples_from_api( js, html, soup, label ):
             text = replace_text_in_brackets( text, '', op='(', cl=')' )
 
         # to senteces
-        sentences = tokenize.sent_tokenize( text )
+        sentences = tokenize.sent_tokenize( text, language=TOKENIZE_LANGS[ page.lang ] )
 
         for sentence in sentences:
             # lower
@@ -443,24 +549,29 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
 
     item.ExplainationWPRaw = "".join( l.raw for l in explanation_lexems )  # join lexems for get one raw text
     item.ExplainationWPTxt = "\n".join( get_explaination_from_api( js, html, soup ) )  # join text blocks. from soup we taken <p> - 1~5 blockss
+    item.ExplainationWPTxt = item.ExplainationWPTxt.strip()
 
     # Description Links
+# Links from Exaplaination only
+# get_links_from_explanation( explanation_lexems )
+
     item.DescriptionWikipediaLinks = unique(                        # unique
         filter(
             lambda s: s != title,                                   # skip self
-            get_all_wikipedia_links_from_api( js, html, soup )      # get WP links
+            #get_all_wikipedia_links_from_api( js, html, soup )      # get WP links
+            get_all_wikipedia_links_from_explanation_lexems( explanation_lexems )      # get WP links
         )
     )
     item.DescriptionWiktionaryLinks = unique(                       # unique
         filter(
             lambda s: s != title,                                   # skip self
-            get_all_wiktionary_links_from_api( js, html, soup )     # get WT links
+            get_all_wiktionary_links_from_explanation_lexems( explanation_lexems )     # get WT links
         )
     )
     item.DescriptionWikidataLinks = unique(                         # unique
         filter(
             lambda s: s != title,                                   # skip self
-            get_all_wikidata_links_from_api( js, html, soup )       # get WD links
+            get_all_wikidata_links_from_explanation_lexems( explanation_lexems )       # get WD links
         )
     )
 
@@ -484,14 +595,14 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
 
     # Examples
     # item.ExplainationExamplesRaw = get_all_explanation_examples_raw( page, toc )
-    item.ExplainationExamplesTxt = get_explanation_examples_from_api( js, html, soup, title )
+    item.ExplainationExamplesTxt = get_explanation_examples_from_api( js, html, soup, title, page )
 
     # - 6. Generate LabelType, PrymaryKey
     # LabelType
     item.LabelTypeWP = get_label_type_from_api( js, html, soup, explanation_lexems )
 
     # PrimaryKey
-    item.PK = item.LanguageCode + "-" + item.LabelName + "§" + item.LabelTypeWP + "-" + str( page.id_ )
+    item.PK = item.LanguageCode + "§" + item.LabelName + "§" + item.LabelTypeWP + "§" + str( page.id_ )
 
     items.append( item )
 

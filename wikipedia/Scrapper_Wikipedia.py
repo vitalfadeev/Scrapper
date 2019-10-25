@@ -78,17 +78,28 @@ def filterPageProblems( page: "Page" ):
         log.warning("  filter: %s: ns:%s != 0: [SKIP]", page, page.ns)
         return None
 
-    # skip #REDIRECT
-    if page.text[:100].upper().find("#REDIRECT ") != -1:
-        spos = page.text.upper().find( "#REDIRECT " ) + len( "#REDIRECT " )
-        epos = page.text.upper().find( '\n', spos )
-        if epos != -1:
-            label_to = page.text[spos:epos]
-        else:
-            label_to = page.text[spos:]
+    redirection_tags = [
+        "#REDIRECT ",
+        "#REDIRECTION ",
+        "#WEITERLEITUNG ",
+        "#UMLEITEN ",
+        "#REDIRECTO ",
+        "#REINDIRIZZARE ",
+        "#RÉORIENTER ",
+    ]
 
-        log.warning("REDIRECT %s -> %s... [SKIP]", page.label, label_to)
-        return None
+    # skip #REDIRECT
+    for keyword in redirection_tags:
+        if page.text[:100].upper().find( keyword ) != -1:
+            spos = page.text.upper().find( keyword ) + len( keyword )
+            epos = page.text.upper().find( '\n', spos )
+            if epos != -1:
+                label_to = page.text[spos:epos]
+            else:
+                label_to = page.text[spos:]
+
+            log.warning("REDIRECT %s -> %s... [SKIP]", page.label, label_to)
+            return None
 
     # skip single symbols
     # if len(page.label) == 1:
@@ -291,8 +302,11 @@ def scrap_one( lang: str, page: Page ):
 
     item: WikipediaItem
     for item in items:
-        #item.dump()
-        DBWrite( DBWikipedia, item )
+        # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
+        if len( item.ExplainationWPTxt ) > 15:
+            DBWrite( DBWikipedia, item )
+        else:
+            log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", page.label )
 
     return items
 

@@ -453,6 +453,11 @@ def filterWodsProblems(s: str, context=None) -> str:
         log.warning("    filter: %s: %s: find(':'): [SKIP]", context, s)
         return None
 
+    # skip words contains :
+    if s.find('/') != -1:
+        log.warning("    filter: %s: %s: find('/'): [SKIP]", context, s)
+        return None
+
     # skip more than 3 spaces
     if s.count(' ') > 3:
         log.warning("    filter: %s: %s: count(' ') > 3: [SKIP]", context, s)
