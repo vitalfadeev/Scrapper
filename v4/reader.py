@@ -3,7 +3,7 @@ import os
 import importlib
 from contextlib import contextmanager
 from urllib.parse import urlparse
-from .iterator import Iterator
+from .range import Range
 
 
 # Example: 'dump.xml.bz2'
@@ -39,7 +39,7 @@ def Read( url, readers=None, encoding='UTF-8', streamed=False ):
 
     wf = wrap( f, classes )
 
-    return Iterator( wf )
+    return Range( wf )
 
 
 def wrap( f, classes ):

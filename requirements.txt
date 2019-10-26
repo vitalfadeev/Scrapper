@@ -12,5 +12,7 @@ ijson
 # fetch content from Wikipedia
 wikipedia
 # scrapy
-scrapy
-html2text
+#scrapy
+#html2text
+#
+pandas
