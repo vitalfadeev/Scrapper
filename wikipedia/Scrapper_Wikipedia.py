@@ -86,6 +86,7 @@ def filterPageProblems( page: "Page" ):
         "#REDIRECTO ",
         "#REINDIRIZZARE ",
         "#RÉORIENTER ",
+        "#REDIRECIONAMENTO ",
     ]
 
     # skip #REDIRECT
