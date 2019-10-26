@@ -4,10 +4,10 @@ from lxml import etree
 
 def Reader( f, stream=False ):
     if stream:
-        stream = etree.iterparse( f, huge_tree=True, events=('start', 'end') )
-        return stream
+        iter = etree.iterparse( f, huge_tree=True, events=('start', 'end') )
+        return iter
 
     else:
-        stream = etree.iterparse( f, huge_tree=False, events=('start', 'end') )
-        return stream
+        iter = etree.iterparse( f, huge_tree=False, events=('start', 'end') )
+        return iter
 

@@ -1,6 +1,9 @@
+import io
 import os
 import importlib
+from contextlib import contextmanager
 from urllib.parse import urlparse
+from .iterator import Iterator
 
 
 # Example: 'dump.xml.bz2'
@@ -15,8 +18,7 @@ from urllib.parse import urlparse
 
 # pass to last reader 'dump.xml.bz2'
 # pass to reader opened stream
-
-def Reader( url ):
+def Read( url, readers=None, encoding='UTF-8', streamed=False ):
     parsed = urlparse( url )
     scheme = parsed.scheme
     path = parsed.path
@@ -25,22 +27,52 @@ def Reader( url ):
     if scheme == '':
         scheme = 'file'
 
-    package = '.readers.scheme'
-    scheme_module = importlib.import_module( scheme, package )
+    # package = '.readers.scheme'
+    # scheme_module = importlib.import_module( scheme, package )
+    #
+    # with scheme_module.Reader() as scheme_reader:
+    #     return scheme_reader
 
-    with scheme_module.Reader() as scheme_reader:
-        return scheme_reader
+    classes = get_reader_class( url )
 
+    f = io.FileIO( path )
+
+    wf = wrap( f, classes )
+
+    return Iterator( wf )
+
+
+def wrap( f, classes ):
+    if classes:
+        cls = classes[0]
+
+        wf = cls( f )
+
+        return wrap( wf, classes[1:] )
+
+    else:
+        return f
+
+
+def get_reader_class( url ):
+    classes = []
 
     # next
     filename, file_extension = os.path.splitext( url )
 
     if file_extension:
         # find reader
-        package = '.readers'
+        package = 'v4.readers'
         reader_module_name = file_extension[1:] # remove dot. '.xml' -> 'xml'
-        module = importlib.import_module( reader_module_name, package )
+        module = importlib.import_module( package + '.' + reader_module_name )
 
-        with module.Reader( scheme_reader ) as stream:
-            return stream
+        print(module)
 
+        cls = module.Reader
+        classes.append( cls )
+
+        # recursive
+        if filename:
+            classes.extend( get_reader_class( filename ) )
+
+    return classes

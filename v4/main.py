@@ -1,5 +1,5 @@
-from .reader import Reader
-from .writer import Writer
+from .reader import Read
+from .writer import Write
 from .converter import Converter
 
 
@@ -11,10 +11,31 @@ def main():
     # converter = conjugator.Converter()
     converter = Converter()
 
-    with Reader( "dump.xml.bz2" ) as reader:
-        with Writer( "sqlite:///scrapped.sqlite3" ) as writer:
+    with Read( "dump.xml.bz2" ) as reader:
+        with Write( "sqlite:///scrapped.sqlite3" ) as write:
             for item in converter.convert( reader ):
-                writer.write( item )
+                write( item )
+
+    for item in Read( "dump.xml.bz2" ):
+        Write( "sqlite:///scrapped.sqlite3", item )
+
+    for item in Read( "dump.xml.bz2" ).by_element( 'page' ):
+        Write( "sqlite:///scrapped.sqlite3" ).element( item )
+
+    for item in Read( "dump.json.bz2" ).by_element( 'item' ):
+        Write( "sqlite:///scrapped.sqlite3" ).element( item )
+
+    for item in Read( "dump.sql.bz2" ).by_line( ';' ):
+        Write( "sqlite:///scrapped.sqlite3" ).line( item )
+
+    for item in Read( "savepoint.txt" ).by_line():
+        Write( "sqlite:///scrapped.sqlite3" ).line( item )
+
+    for item in Read( "savepoint.txt" ).all():
+        Write( "sqlite:///scrapped.sqlite3" ).all( item )
+
+    for item in Read( "savepoint.txt" ):
+        Write( "sqlite:///scrapped.sqlite3", item )
 
 
 if __name__ == "__main__":
@@ -65,3 +86,6 @@ if __name__ == "__main__":
 #   requests.get( "http://www/rss.xml" )
 #   open( "rss.xml" )
 #     xml.open( f )
+
+# for item in Read( 'dump.xml.bz2' ):
+#   Write( 'sqlite:///wikipedia.db', item )
