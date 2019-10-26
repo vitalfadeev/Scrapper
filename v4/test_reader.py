@@ -29,3 +29,37 @@ if __name__ == "__main__":
         print( item )
 
 
+# stream
+# range
+#   as pandas:
+#     .select()
+#     .head()
+#     .where( row['time'] == 'Dinner' and row['tip'] > 5 )
+#     .groupby()
+#     .count()
+#     .tail()
+#     .sort()
+#   as jQuery:
+#     .each()
+#   as DLang:
+#     .by_line()
+#     .by_pairs()
+#   with XML:
+#     .by_element()
+#     .by_tag()
+# pandas can use it
+#   not pandas, because pandas not stream-able. how to parse 37 GB wikidata.json.dump ?
+
+# converters
+#   Wikipedia
+#   Wiktionary
+#   Wikidata
+#   VerbConjugations
+
+# to row
+
+# row save to
+#   db sqlite/mysql
+#   db json
+#   db txt
+#   db xml

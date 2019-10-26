@@ -87,6 +87,7 @@ def filterPageProblems( page: "Page" ):
         "#REINDIRIZZARE ",
         "#RÉORIENTER ",
         "#REDIRECIONAMENTO ",
+        "#RINVIA ",
     ]
 
     # skip #REDIRECT
@@ -353,3 +354,4 @@ def scrap( lang: str ="en", workers: int = 1 ):
         for page in reader:
             log.warning( page )
             scrap_one( lang, page )
+
