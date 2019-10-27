@@ -52,7 +52,7 @@ class Page:
 
 
 def make_request( url ):
-    response = requests.get( url )
+    response = requests.get( url, verify=False )
 
     if response.status_code == 200:
         pass
@@ -86,7 +86,7 @@ def get_one_verb_page( lang, label ):
 def get_all_verbs_pages( lang ):
     page = {}
 
-    all_verbs_url = "https://cooljugator.com/" + lang + "/list/all"
+    all_verbs_url = "http://cooljugator.com/" + lang + "/list/all"
 
     log.info( "Fetching all verbs: %s", all_verbs_url )
 

@@ -13,5 +13,5 @@ def test_all( lang="en", workers=1 ):
 
 
 if __name__ == "__main__":
-    test_all( "en", workers=10 )
+    test_all( lang="en", workers=10 )
     #test_one("en", "do")
