@@ -25,9 +25,12 @@ log = logging.getLogger(__name__)
 
 
 def get_infinitive( page, soup ):
-    for h4 in soup.select( 'h4' ):
-        if h4.text.strip().lower() == "infinitive":
-            return h4.find_parent().find_parent().find( 'li' ).text
+    for a in soup.select( 'a#ch_lblVerb' ):
+        if a.attrs.get( "tooltip", "" ).strip().lower() == "existing infinitive":
+            return a.text
+        if a.attrs.get( "tooltip", "" ).strip().lower() == "unknown infinitive":
+            log.warning( "Unknown infinitive: %s", a.text )
+            return a.text
 
 
 def get_verbs( page: Page, soup ) -> defaultdict :
@@ -66,11 +69,24 @@ def get_verbs( page: Page, soup ) -> defaultdict :
                     verb = ""
 
                     for i_el in li.select( "i" ):
-                        if "graytxt" in i_el.attrs[ "class" ]:
-                            pronoun_el = li.find( "i", class_ = "graytxt" )
-                            pronoun = pronoun_el.text if pronoun_el else ""
+                        # skip transliteration
+                        if i_el.find_parents( attrs={"class": "transliteration"} ):
+                            continue
+
+                        # skip transliteration 2
+                        if i_el.find_parents( "div", class_="transliteration" ):
+                            continue
+
+                        # skip parts on one
+                        if i_el.find_parents( "i", attrs={"h": "1"} ):
+                            continue
+
+                        #
+                        if "graytxt" in i_el.attrs.get( "class" , []):
+                            pronoun = i_el.text
                         else:
-                            verb += i_el.text
+                            # verbtxt, maroontxt
+                            verb += ' ' + i_el.text
 
                     pronoun = pronoun.strip().lstrip('(').rstrip(')').strip()
                     verb = verb.strip().lstrip('(').rstrip(')').strip()
@@ -94,77 +110,68 @@ def get_single_plural_variant( tense, pronoun, verb, verbs_group ):
             xs1 = x[1] if x[1] else ""
             index[ x[0] ] = xs1
 
-    if pronoun == 'I':
-        p = index[ 'we' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'he/she/it':
-        p = index[ 'they' ]
+    if pronoun == 'eu':
+        p = index[ 'nós' ]
+    elif pronoun == 'tu':
+        p = index[ 'vós' ]
+    elif pronoun == 'ele/ela/você':
+        p = index[ 'eles/elas/vocês' ]
 
-    elif pronoun == 'we':
-        s = index[ 'I' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'they':
-        s = index[ 'he/she/it' ]
+    elif pronoun == 'nós':
+        s = index[ 'eu' ]
+    elif pronoun == 'vós':
+        s = index[ 'tu' ]
+    elif pronoun == 'eles/elas/vocês':
+        s = index[ 'ele/ela/você' ]
 
     return (s, p)
 
 
 def decode_conj_tense( tense, pronoun, verb ):
     conj_map = {
-        "Simple present"                                : (0, 1, 0),
-        "Indicative Present continuous"                 : (0, 1, 0),
-        "Indicative Present perfect"                    : (0, 1, 0),
-        "Indicative Future"                             : (0, 0, 1),
-        "Indicative Present"                            : (0, 1, 0),
-        "Indicative Preterite"                          : (0, 1, 0),
-        "Indicative Future perfect"                     : (0, 0, 1),
-        "Indicative Past continous"                     : (1, 0, 0),
-        "Indicative Past perfect"                       : (1, 0, 0),
-        "Indicative Future continuous"                  : (0, 0, 1),
-        "Indicative Present perfect continuous"         : (0, 1, 0),
-        "Indicative Past perfect continuous"            : (1, 0, 0),
-        "Indicative Future perfect continuous"          : (0, 0, 1),
-        # "Imperative"                                  : (0, 1, 0),
-        "Participle Present"                            : (0, 1, 0),
-        "Participle Past"                               : (1, 0, 0),
-        # "Infinitive"                                  : (0, 1, 0),
-        "Perfect participle"                            : (0, 1, 0),
+        "indicativo presente"                                          : (0, 1, 0),
+        "indicativo pretérito imperfeito"                              : (1, 0, 0),
+        "indicativo pretérito mais-que-perfeito simples"               : (1, 0, 0),
+        "indicativo pretérito perfeito composto"                       : (1, 0, 0),
+        "indicativo pretérito perfeito simples"                        : (1, 0, 0),
+        "indicativo pretérito mais-que-perfeito anterior"              : (1, 0, 0),
+        "indicativo futuro do presente simples"                        : (0, 0, 1),
+        "indicativo futuro do presente composto"                       : (0, 0, 1),
+        "condicional futuro do pretérito simples"                      : (0, 1, 0),
+        "condicional futuro do pretérito composto"                     : (1, 0, 0),
+        "conjuntivo / subjuntivo presente"                             : (0, 1, 0),
+        "conjuntivo / subjuntivo pretérito imperfeito"                 : (1, 0, 0),
+        "conjuntivo / subjuntivo futuro simples"                       : (0, 0, 1),
+        "conjuntivo / subjuntivo pretérito perfeito"                   : (1, 0, 0),
+        "conjuntivo / subjuntivo pretérito mais-que-perfeito"          : (1, 0, 0),
+        "conjuntivo / subjuntivo futuro composto"                      : (0, 0, 1),
+        "infinitivo pessoal presente"                                  : (0, 1, 0),
+        "infinitivo pessoal pretérito"                                 : (1, 0, 0),
+        "imperativo afirmativo"                                        : (0, 1, 0),
+        "imperativo negativo"                                          : (0, 1, 0),
+        "indicativo pretérito perfeito"                                : (1, 0, 0),
+        "indicativo pretérito mais-que-perfeito"                       : (1, 0, 0),
+        "indicativo pretérito mais-que-perfeito composto"              : (1, 0, 0),
+        "conjuntivo / subjuntivo pretérito mais-que-perfeito composto" : (1, 0, 0),
+        "conjuntivo / subjuntivo futuro"                               : (0, 0, 1),
+        "gerúndio"                                                     : (0, 1, 0),
+        "infinitivo"                                                   : (0, 1, 0),
+        "imperativo"                                                   : (0, 1, 0),
+        "particípio"                                                   : (0, 1, 0),
+    }
 
-        "Simple past"                                   : (1, 0, 0),
-        "Present perfect simple"                        : (0, 1, 0),
-        "Present progressive/continuous"                : (0, 1 ,0),
-        "Past progressive/continuous"                   : (1, 0, 0),
-        "Present perfect progressive/continuous"        : (0, 1, 0),
-        "Past perfect"                                  : (1, 0, 0),
-        "Past perfect progressive/continuous"           : (1, 0, 0),
-        "Future"                                        : (0, 0, 1),
-        "Future progressive/continuous"                 : (0, 0, 1),
-        "Future perfect"                                : (0, 0, 1),
-        "Future perfect continuous"                     : (0, 0, 1),
-        "Imperative"                                    : (0, 1, 0),
-        "Infinitive"                                    : (0, 1, 0),
-        "Present Participle"                            : (0, 1, 0),
-        "Past Participle"                               : (1, 0, 0),
-        "Perfect participle "                           : (0, 1, 0),
-        "Indicative Present "                           : (0, 1, 0),
-    } 
-
-    return conj_map[ tense ]
+    return conj_map[ tense.lower() ]
 
 
 def decode_conj_amount( tense, pronoun, verb ):
     amount_map = {
-        'I'         : (1, 0),
-        'you'       : (1, 1),
-        'he/she/it' : (1, 0),
-        'we'        : (0, 1),
-        # 'you'     : (0, 1),
-        'they'      : (0, 1),
-        ''          : (0, 0),
+        'eu'               : (1, 0),
+        'tu'               : (1, 0),
+        'ele/ela/você'     : (1, 0),
+        'nós'              : (0, 1),
+        'vós'              : (0, 1),
+        'eles/elas/vocês'  : (0, 1),
+        ''                 : (0, 0),
     }
 
     return amount_map[ pronoun ]

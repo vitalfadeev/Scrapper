@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 def get_infinitive( page, soup ):
     for h4 in soup.select( 'h4' ):
-        if h4.text.strip().lower() == "infinitive":
+        if h4.text.strip().lower() == "infinitiv":
             return h4.find_parent().find_parent().find( 'li' ).text
 
 
@@ -87,83 +87,67 @@ def get_single_plural_variant( tense, pronoun, verb, verbs_group ):
     s = None
     p = None
 
-    index = defaultdict( None )
+    index = defaultdict( str )
 
     for x in verbs_group:
         if x[0]:
             xs1 = x[1] if x[1] else ""
             index[ x[0] ] = xs1
 
-    if pronoun == 'I':
-        p = index[ 'we' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'he/she/it':
-        p = index[ 'they' ]
+    if pronoun == 'ich':
+        p = index[ 'wir' ]
+    elif pronoun == 'du':
+        p = index[ 'ihr' ]
+    elif pronoun == 'er/sie/es':
+        p = index[ 'Sie' ]
 
-    elif pronoun == 'we':
-        s = index[ 'I' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'they':
-        s = index[ 'he/she/it' ]
+    elif pronoun == 'wir':
+        s = index[ 'ich' ]
+    elif pronoun == 'ihr':
+        s = index[ 'du' ]
+    elif pronoun == 'Sie':
+        s = index[ 'er/sie/es' ]
 
     return (s, p)
 
 
 def decode_conj_tense( tense, pronoun, verb ):
     conj_map = {
-        "Simple present"                                : (0, 1, 0),
-        "Indicative Present continuous"                 : (0, 1, 0),
-        "Indicative Present perfect"                    : (0, 1, 0),
-        "Indicative Future"                             : (0, 0, 1),
-        "Indicative Present"                            : (0, 1, 0),
-        "Indicative Preterite"                          : (0, 1, 0),
-        "Indicative Future perfect"                     : (0, 0, 1),
-        "Indicative Past continous"                     : (1, 0, 0),
-        "Indicative Past perfect"                       : (1, 0, 0),
-        "Indicative Future continuous"                  : (0, 0, 1),
-        "Indicative Present perfect continuous"         : (0, 1, 0),
-        "Indicative Past perfect continuous"            : (1, 0, 0),
-        "Indicative Future perfect continuous"          : (0, 0, 1),
-        # "Imperative"                                  : (0, 1, 0),
-        "Participle Present"                            : (0, 1, 0),
-        "Participle Past"                               : (1, 0, 0),
-        # "Infinitive"                                  : (0, 1, 0),
-        "Perfect participle"                            : (0, 1, 0),
+        "Indikativ Präsens"             : (0, 1, 0),
+        "Indikativ Präteritum"          : (1, 0, 0),
+        "Indikativ Futur I"             : (0, 0, 1),
+        "Indikativ Perfekt"             : (0, 1, 0),
+        "Indikativ Plusquamperfekt"     : (1, 0, 0),
+        "Indikativ Futur II"            : (0, 0, 1),
+        "Konjunktiv I Präsens"          : (0, 1, 0),
+        "Konjunktiv I Futur I"          : (0, 0, 1),
+        "Konjunktiv I Perfekt"          : (0, 1, 0),
+        "Konjunktiv I Futur II"         : (0, 0, 1),
+        "Konjunktiv II Präteritum"      : (1, 0, 0),
+        "Konjunktiv II Futur I"         : (0, 0, 1),
+        "Konjunktiv II Plusquamperfekt" : (1, 0, 0),
+        "Konjunktiv II Futur II"        : (0, 0, 1),
+        "Imperativ Präsens"             : (0, 1, 0),
+        "Partizip Präsens"              : (0, 1, 0),
+        "Partizip Perfekt"              : (1, 0, 0),
+        "Infinitiv Präsens"             : (0 ,1, 0),
+        "Infinitiv Perfekt"             : (1, 0, 0),
+        "Infinitiv zu + Infinitiv"      : (1, 0, 0),
+    }
 
-        "Simple past"                                   : (1, 0, 0),
-        "Present perfect simple"                        : (0, 1, 0),
-        "Present progressive/continuous"                : (0, 1 ,0),
-        "Past progressive/continuous"                   : (1, 0, 0),
-        "Present perfect progressive/continuous"        : (0, 1, 0),
-        "Past perfect"                                  : (1, 0, 0),
-        "Past perfect progressive/continuous"           : (1, 0, 0),
-        "Future"                                        : (0, 0, 1),
-        "Future progressive/continuous"                 : (0, 0, 1),
-        "Future perfect"                                : (0, 0, 1),
-        "Future perfect continuous"                     : (0, 0, 1),
-        "Imperative"                                    : (0, 1, 0),
-        "Infinitive"                                    : (0, 1, 0),
-        "Present Participle"                            : (0, 1, 0),
-        "Past Participle"                               : (1, 0, 0),
-        "Perfect participle "                           : (0, 1, 0),
-        "Indicative Present "                           : (0, 1, 0),
-    } 
+    key = tense
 
-    return conj_map[ tense ]
+    return conj_map[ key ]
 
 
 def decode_conj_amount( tense, pronoun, verb ):
     amount_map = {
-        'I'         : (1, 0),
-        'you'       : (1, 1),
-        'he/she/it' : (1, 0),
-        'we'        : (0, 1),
-        # 'you'     : (0, 1),
-        'they'      : (0, 1),
+        'ich'       : (1, 0),
+        'du'        : (1, 0),
+        'er/sie/es' : (1, 0),
+        'wir'       : (0, 1),
+        'ihr'       : (0, 1),
+        'Sie'       : (0, 1),
         ''          : (0, 0),
     }
 
@@ -198,7 +182,7 @@ def scrap( page: Page ):
     i = 0
 
     #
-    for tense, verbs_group in verbs.items():
+    for (tense, verbs_group) in verbs.items():
         for pronoun, verb in verbs_group:                           # for each verb
             #
             item = ConjugationsItem()

@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 def get_infinitive( page, soup ):
     for h4 in soup.select( 'h4' ):
-        if h4.text.strip().lower() == "infinitive":
+        if h4.text.strip().lower() == "infinitivo":
             return h4.find_parent().find_parent().find( 'li' ).text
 
 
@@ -94,77 +94,72 @@ def get_single_plural_variant( tense, pronoun, verb, verbs_group ):
             xs1 = x[1] if x[1] else ""
             index[ x[0] ] = xs1
 
-    if pronoun == 'I':
-        p = index[ 'we' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'he/she/it':
-        p = index[ 'they' ]
+    if pronoun == 'yo':
+        p = index[ 'nosotros' ]
+    elif pronoun == 'tú':
+        p = index[ 'vosotros' ]
+    elif pronoun == 'él/ella/Ud.':
+        p = index[ 'ellos/ellas/Uds.' ]
 
-    elif pronoun == 'we':
-        s = index[ 'I' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'they':
-        s = index[ 'he/she/it' ]
+    elif pronoun == 'nosotros':
+        s = index.get( 'yo', '' )
+    elif pronoun == 'vosotros':
+        s = index[ 'tú' ]
+    elif pronoun == 'ellos/ellas/Uds.':
+        s = index[ 'él/ella/Ud.' ]
 
     return (s, p)
 
 
 def decode_conj_tense( tense, pronoun, verb ):
     conj_map = {
-        "Simple present"                                : (0, 1, 0),
-        "Indicative Present continuous"                 : (0, 1, 0),
-        "Indicative Present perfect"                    : (0, 1, 0),
-        "Indicative Future"                             : (0, 0, 1),
-        "Indicative Present"                            : (0, 1, 0),
-        "Indicative Preterite"                          : (0, 1, 0),
-        "Indicative Future perfect"                     : (0, 0, 1),
-        "Indicative Past continous"                     : (1, 0, 0),
-        "Indicative Past perfect"                       : (1, 0, 0),
-        "Indicative Future continuous"                  : (0, 0, 1),
-        "Indicative Present perfect continuous"         : (0, 1, 0),
-        "Indicative Past perfect continuous"            : (1, 0, 0),
-        "Indicative Future perfect continuous"          : (0, 0, 1),
-        # "Imperative"                                  : (0, 1, 0),
-        "Participle Present"                            : (0, 1, 0),
-        "Participle Past"                               : (1, 0, 0),
-        # "Infinitive"                                  : (0, 1, 0),
-        "Perfect participle"                            : (0, 1, 0),
-
-        "Simple past"                                   : (1, 0, 0),
-        "Present perfect simple"                        : (0, 1, 0),
-        "Present progressive/continuous"                : (0, 1 ,0),
-        "Past progressive/continuous"                   : (1, 0, 0),
-        "Present perfect progressive/continuous"        : (0, 1, 0),
-        "Past perfect"                                  : (1, 0, 0),
-        "Past perfect progressive/continuous"           : (1, 0, 0),
-        "Future"                                        : (0, 0, 1),
-        "Future progressive/continuous"                 : (0, 0, 1),
-        "Future perfect"                                : (0, 0, 1),
-        "Future perfect continuous"                     : (0, 0, 1),
-        "Imperative"                                    : (0, 1, 0),
-        "Infinitive"                                    : (0, 1, 0),
-        "Present Participle"                            : (0, 1, 0),
-        "Past Participle"                               : (1, 0, 0),
-        "Perfect participle "                           : (0, 1, 0),
-        "Indicative Present "                           : (0, 1, 0),
-    } 
+        "Indicativo Presente"                       : (0, 1, 0),
+        "Indicativo Pretérito imperfecto"           : (1, 0, 0),
+        "Indicativo Pretérito perfecto simple"      : (1, 0, 0),
+        "Indicativo Pretérito perfecto compuesto"   : (1, 0, 0),
+        "Indicativo Pretérito pluscuamperfecto"     : (1, 0, 0),
+        "Indicativo Pretérito anterior"             : (1, 0, 0),
+        "Indicativo Futuro"                         : (0, 0, 1),
+        "Indicativo Futuro perfecto"                : (0, 0, 1),
+        "Indicativo Condicional"                    : (0, 1, 0),
+        "Indicativo Condicional perfecto"           : (1, 0, 0),
+        "Subjuntivo Presente"                       : (0, 1, 0),
+        "Subjuntivo Pretérito imperfecto_1"         : (1, 0, 0),
+        "Subjuntivo Pretérito imperfecto_2"         : (1, 0, 0),
+        "Subjuntivo Futuro"                         : (0, 0, 1),
+        "Subjuntivo Pretérito perfecto"             : (0, 1, 0),
+        "Subjuntivo Pretérito pluscuamperfecto_1"   : (1, 0, 0),
+        "Subjuntivo Pretérito pluscuamperfecto_2"   : (1, 0, 0),
+        "Subjuntivo Futuro perfecto"                : (0, 0, 1),
+        "Imperativo"                                : (0, 1, 0),
+        "Imperativo negativo"                       : (0, 1, 0),
+        "Infinitivo Simple"                         : (0, 1, 0),
+        "Infinitivo Compuesto"                      : (1, 0, 0),
+        "Gerundio Simple"                           : (0, 1, 0),
+        "Gerundio Compuesto"                        : (1, 0, 0),
+        "Participio Pasado"                         : (1, 0, 0),
+        "Subjuntivo Pretérito imperfecto"           : (1, 0, 0),
+        "Subjuntivo Pretérito pluscuamperfecto"     : (1, 0, 0),
+        "Subjuntivo Pretérito imperfecto (2)"       : (1, 0, 0),
+        "Subjuntivo Pretérito pluscuamperfecto (2)" : (1, 0, 0),
+        "Gerundio"                                  : (0, 1, 0),
+        "Gerundio compuesto"                        : (1, 0, 0),
+        "Infinitivo"                                : (0, 1, 0),
+        "Infinitivo compuesto"                      : (1, 0, 0),
+    }
 
     return conj_map[ tense ]
 
 
 def decode_conj_amount( tense, pronoun, verb ):
     amount_map = {
-        'I'         : (1, 0),
-        'you'       : (1, 1),
-        'he/she/it' : (1, 0),
-        'we'        : (0, 1),
-        # 'you'     : (0, 1),
-        'they'      : (0, 1),
-        ''          : (0, 0),
+        'yo'               : (1, 0),
+        'tú'               : (1, 0),
+        'él/ella/Ud.'      : (1, 0),
+        'nosotros'         : (0, 1),
+        'vosotros'         : (0, 1),
+        'ellos/ellas/Uds.' : (0, 1),
+        ''                 : (0, 0),
     }
 
     return amount_map[ pronoun ]

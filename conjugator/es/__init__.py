@@ -1,0 +1,1 @@
+from .Scrapper_Conjugator_ES import *

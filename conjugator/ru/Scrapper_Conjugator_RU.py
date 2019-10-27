@@ -25,9 +25,12 @@ log = logging.getLogger(__name__)
 
 
 def get_infinitive( page, soup ):
-    for h4 in soup.select( 'h4' ):
-        if h4.text.strip().lower() == "infinitive":
-            return h4.find_parent().find_parent().find( 'li' ).text
+    for a in soup.select( 'a#ch_lblVerb' ):
+        if a.attrs.get("tooltip", "").strip().lower() == "existing infinitive":
+            return a.text
+        if a.attrs.get("tooltip", "").strip().lower() == "unknown infinitive":
+            log.warning( "Unknown infinitive: %s", a.text )
+            return a.text
 
 
 def get_verbs( page: Page, soup ) -> defaultdict :
@@ -65,17 +68,35 @@ def get_verbs( page: Page, soup ) -> defaultdict :
                     pronoun = ""
                     verb = ""
 
+                    # <hr class="sex musculine" noshade="">
+                    # <hr class="sex feminine" noshade="">
+                    is_musculine = li.find( "hr", attrs={"class": "musculine"}, recursive=True )
+                    is_feminine  = li.find( "hr", attrs={"class": "feminine"} )
+
                     for i_el in li.select( "i" ):
-                        if "graytxt" in i_el.attrs[ "class" ]:
-                            pronoun_el = li.find( "i", class_ = "graytxt" )
-                            pronoun = pronoun_el.text if pronoun_el else ""
+                        # skip transliteration
+                        if i_el.find_parents( attrs={"class": "transliteration"} ):
+                            continue
+
+                        # skip transliteration 2
+                        if i_el.find_parents( "div", class_="transliteration" ):
+                            continue
+
+                        # skip parts on one
+                        if i_el.find_parents( "i", attrs={"h": "1"} ):
+                            continue
+
+                        #
+                        if "graytxt" in i_el.attrs.get( "class" , []):
+                            pronoun = i_el.text
                         else:
-                            verb += i_el.text
+                            # verbtxt, maroontxt
+                            verb += ' ' + i_el.text
 
                     pronoun = pronoun.strip().lstrip('(').rstrip(')').strip()
                     verb = verb.strip().lstrip('(').rstrip(')').strip()
 
-                    verbs[ tense ].append( ( pronoun, verb ) )
+                    verbs[ tense ].append( ( pronoun, verb, is_musculine, is_feminine ) )
 
     return verbs
 
@@ -87,83 +108,73 @@ def get_single_plural_variant( tense, pronoun, verb, verbs_group ):
     s = None
     p = None
 
-    index = defaultdict( None )
+    index = defaultdict( str )
 
     for x in verbs_group:
         if x[0]:
             xs1 = x[1] if x[1] else ""
             index[ x[0] ] = xs1
 
-    if pronoun == 'I':
-        p = index[ 'we' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'he/she/it':
-        p = index[ 'they' ]
+    if pronoun == 'я':
+        p = index[ 'мы' ]
+    elif pronoun == 'я/ты/он':
+        p = index[ 'мы' ]
+    elif pronoun == 'я/ты/она':
+        p = index[ 'мы' ]
+    elif pronoun == 'ты':
+        p = index[ 'вы' ]
+    elif pronoun == 'он/она/оно':
+        p = index[ 'они' ]
+    elif pronoun == 'оно':
+        p = index[ 'они' ]
 
-    elif pronoun == 'we':
-        s = index[ 'I' ]
-    elif pronoun == 'you':
-        s = index[ 'you' ]
-        p = index[ 'you' ]
-    elif pronoun == 'they':
-        s = index[ 'he/she/it' ]
+    elif pronoun == 'мы/вы/они':
+        s = index[ 'я' ]
+    elif pronoun == 'мы':
+        s = index[ 'я' ]
+    elif pronoun == 'вы':
+        s = index[ 'ты' ]
+    elif pronoun == 'они':
+        s = index[ 'он/она/оно' ]
 
     return (s, p)
 
 
 def decode_conj_tense( tense, pronoun, verb ):
     conj_map = {
-        "Simple present"                                : (0, 1, 0),
-        "Indicative Present continuous"                 : (0, 1, 0),
-        "Indicative Present perfect"                    : (0, 1, 0),
-        "Indicative Future"                             : (0, 0, 1),
-        "Indicative Present"                            : (0, 1, 0),
-        "Indicative Preterite"                          : (0, 1, 0),
-        "Indicative Future perfect"                     : (0, 0, 1),
-        "Indicative Past continous"                     : (1, 0, 0),
-        "Indicative Past perfect"                       : (1, 0, 0),
-        "Indicative Future continuous"                  : (0, 0, 1),
-        "Indicative Present perfect continuous"         : (0, 1, 0),
-        "Indicative Past perfect continuous"            : (1, 0, 0),
-        "Indicative Future perfect continuous"          : (0, 0, 1),
-        # "Imperative"                                  : (0, 1, 0),
-        "Participle Present"                            : (0, 1, 0),
-        "Participle Past"                               : (1, 0, 0),
-        # "Infinitive"                                  : (0, 1, 0),
-        "Perfect participle"                            : (0, 1, 0),
+        "настоящее"                          : (0, 1, 0),
+        "прошедшее"                          : (1, 0, 0),
+        "будущее"                            : (0, 0, 1),
+        "Изъявительное наклонение настоящее" : (0, 1, 0),
+        "Изъявительное наклонение прошедшее" : (1, 0, 0),
+        "Изъявительное наклонение будущее"   : (0, 0, 1),
+        "Деепричастие настоящее"             : (0, 1, 0),
+        "Деепричастие прошедшее"             : (1, 0, 0),
+        "Причастие настоящее"                : (0, 1, 0),
+        "Причастие прошедшее"                : (1, 0, 0),
+        "Императив"                          : (0, 1, 0),
+        "Сослагательное наклонение"          : (0, 1, 0),
+        "Причастие активный залог"           : (0, 1, 0),
+        "Причастие пассивный залог"          : (0, 1, 0),
+    }
 
-        "Simple past"                                   : (1, 0, 0),
-        "Present perfect simple"                        : (0, 1, 0),
-        "Present progressive/continuous"                : (0, 1 ,0),
-        "Past progressive/continuous"                   : (1, 0, 0),
-        "Present perfect progressive/continuous"        : (0, 1, 0),
-        "Past perfect"                                  : (1, 0, 0),
-        "Past perfect progressive/continuous"           : (1, 0, 0),
-        "Future"                                        : (0, 0, 1),
-        "Future progressive/continuous"                 : (0, 0, 1),
-        "Future perfect"                                : (0, 0, 1),
-        "Future perfect continuous"                     : (0, 0, 1),
-        "Imperative"                                    : (0, 1, 0),
-        "Infinitive"                                    : (0, 1, 0),
-        "Present Participle"                            : (0, 1, 0),
-        "Past Participle"                               : (1, 0, 0),
-        "Perfect participle "                           : (0, 1, 0),
-        "Indicative Present "                           : (0, 1, 0),
-    } 
+    key = tense
 
-    return conj_map[ tense ]
+    return conj_map[ key ]
 
 
 def decode_conj_amount( tense, pronoun, verb ):
     amount_map = {
-        'I'         : (1, 0),
-        'you'       : (1, 1),
-        'he/she/it' : (1, 0),
-        'we'        : (0, 1),
-        # 'you'     : (0, 1),
-        'they'      : (0, 1),
+        'я/ты/он'   : (1, 0),
+        'я/ты/она'  : (1, 0),
+        'оно'       : (1, 0),
+        'я'         : (1, 0),
+        'ты'        : (1, 0),
+        'он/она/оно': (1, 0),
+        'мы/вы/они' : (0, 1),
+        'мы'        : (0, 1),
+        'вы'        : (0, 1),
+        'они'       : (0, 1),
         ''          : (0, 0),
     }
 
@@ -198,8 +209,8 @@ def scrap( page: Page ):
     i = 0
 
     #
-    for tense, verbs_group in verbs.items():
-        for pronoun, verb in verbs_group:                           # for each verb
+    for (tense, verbs_group) in verbs.items():
+        for pronoun, verb, is_musculine, is_feminine in verbs_group:                           # for each verb
             #
             item = ConjugationsItem()
 
@@ -228,6 +239,13 @@ def scrap( page: Page ):
             sv, pv = get_single_plural_variant( tense, pronoun, verb, verbs_group )
             item.SingleVariant = sv
             item.PluralVariant = pv
+
+            #
+            if is_musculine:
+                item.IsMale = True
+
+            if is_feminine:
+                item.IsFeminine = True
 
             #
             item.LabelName = verb.strip()

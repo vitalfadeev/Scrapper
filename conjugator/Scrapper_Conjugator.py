@@ -16,8 +16,16 @@ DB_NAME         = "conjugations.db"
 DBConjugations  = sqlite3.connect(DB_NAME, isolation_level=None)
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
-english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
-ASCII           = set(string.printable)
+
+language_map = {
+    "en": "english-verb",
+    "fr": "french-verb",
+    "es": "spanish-verb",
+    "it": "italian-verb",
+    "pt": "portuguese-verb",
+    "ru": "russian-verb",
+    "de": "german-verb",
+}
 
 if os.path.isfile( os.path.join( 'conjugator', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'conjugator', 'logging.ini' ) )
@@ -65,7 +73,7 @@ def make_request( url ):
 
 
 def get_one_verb_page( lang, label ):
-    conjs_url = "http://conjugueur.reverso.net/conjugaison-" + "anglais" + '-verbe-' + label.lower() + '.html'
+    conjs_url = "http://conjugator.reverso.net/conjugation-" + language_map[ lang ] + '-' + label.lower() + '.html'
 
     log.info( "Fetching verb: %s", conjs_url )
     conjs_text = make_request( conjs_url )
@@ -132,7 +140,11 @@ def scrap_one( lang: str, page: Page ) -> list:
 
     item: ConjugationsItem
     for item in items:
-        DBWrite( DBConjugations, item )
+        try:
+            DBWrite( DBConjugations, item )
+        except sqlite3.IntegrityError:
+            log.warning( "PK: not unique: %s", item.PK )
+            pass
 
     return items
 
