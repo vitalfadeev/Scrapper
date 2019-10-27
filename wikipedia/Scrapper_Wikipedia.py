@@ -18,7 +18,7 @@ from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Helpers import create_storage, is_ascii, is_lang
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
-DB_NAME         = "wikipedia.db"
+DB_NAME         = "wikipedia.sqlite3"
 DBWikipedia     = sqlite3.connect(DB_NAME, isolation_level=None)
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)

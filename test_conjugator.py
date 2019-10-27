@@ -9,7 +9,7 @@ def test_one( lang="en", label="do" ):
 
 
 def test_all( lang="en", workers=1 ):
-    Scrapper_Conjugator.scrap( workers=workers )
+    Scrapper_Conjugator.scrap( lang=lang, workers=workers )
 
 
 if __name__ == "__main__":

@@ -28,6 +28,9 @@ if __name__ == "__main__":
     for item in Read( "v4/tests/plain.txt" ).by_line()[2]:
         print( item )
 
+    for item in Read( "v4/wikipedia.sqlite3" )[:3]:
+        print( item )
+
 
 # stream
 # range

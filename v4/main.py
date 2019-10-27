@@ -88,4 +88,4 @@ if __name__ == "__main__":
 #     xml.open( f )
 
 # for item in Read( 'dump.xml.bz2' ):
-#   Write( 'sqlite:///wikipedia.db', item )
+#   Write( 'sqlite:///wikipedia.sqlite3', item )

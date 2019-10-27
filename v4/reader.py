@@ -37,18 +37,18 @@ def Read( url, readers=None, encoding='UTF-8', streamed=False ):
 
     f = io.FileIO( path )
 
-    wf = wrap( f, classes )
+    wf = wrap( f, url, classes )
 
     return Range( wf )
 
 
-def wrap( f, classes ):
+def wrap( f, url, classes ):
     if classes:
         cls = classes[0]
 
-        wf = cls( f )
+        wf = cls( f, url )
 
-        return wrap( wf, classes[1:] )
+        return wrap( wf, url, classes[1:] )
 
     else:
         return f

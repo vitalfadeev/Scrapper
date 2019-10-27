@@ -1,3 +1,3 @@
-def Reader( filename: str ):
+def Reader( filename: str, url ):
     with open( filename, 'rb' ) as f:
         return f
