@@ -13,7 +13,7 @@ from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 
 DB_NAME         = "conjugations.db"
-DBConjugations  = sqlite3.connect( DB_NAME )
+DBConjugations  = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 
@@ -137,14 +137,6 @@ def scrap_one( lang: str, page: Page ) -> list:
         log.error( "(%s): HTTP-response: parse error: ", page.label, exc_info=1 )
         return []
 
-    item: ConjugationsItem
-    for item in items:
-        try:
-            DBWrite( DBConjugations, item )
-        except sqlite3.IntegrityError:
-            log.warning( "PK: not unique: %s", item.PK )
-            pass
-
     return items
 
 
@@ -158,9 +150,10 @@ def scrap_one_wrapper(args):
         args (tuple):  Args
     """
     try:
-        scrap_one( *args )
+        return scrap_one( *args )
     except Exception as e:
         log.error( "  %s", args, exc_info=True )
+        return []
 
 
 def scrap( lang: str ="en", workers: int = 1 ):
@@ -172,13 +165,32 @@ def scrap( lang: str ="en", workers: int = 1 ):
         import itertools
 
         pool = multiprocessing.Pool( workers )
+
+        # scrap in `workers` processes
         for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
-            pass
+            # write to DB
+            item: ConjugationsItem
+            for item in result:
+                try:
+                    DBWrite( DBConjugations, item )
+                except sqlite3.IntegrityError:
+                    log.warning( "PK: not unique: %s", item.PK )
+                    pass
+
         pool.close()
         pool.join()
 
     else: # single process
         for page in reader:
-            scrap_one( lang, page )
+            result = scrap_one( lang, page )
+
+            # write to DB
+            item: ConjugationsItem
+            for item in result:
+                try:
+                    DBWrite( DBConjugations, item )
+                except sqlite3.IntegrityError:
+                    log.warning( "PK: not unique: %s", item.PK )
+                    pass
 
 
