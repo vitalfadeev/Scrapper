@@ -243,19 +243,90 @@ def get_explaination_from_api( js, html, soup ):
 
     for main_container in soup.select( ".mw-parser-output" ):
         for child in main_container.findChildren( recursive=False ):
-            # p
-            if child.name == 'p' and ( len( child.attrs.get("class", []) ) == 0 ):
-                text = child.text
-                # 2. remove [1]. [2], ...
-                cleaned = re.sub( '\[[0-9]+\]', '', text )
-                # 3. remove pronunciation (/...)
-                if cleaned.find( '(/' ) != -1:
-                    cleaned = replace_text_in_brackets( cleaned, '', op='(', cl=')' )
-                explainations.append( cleaned )
-
             # TOC -> stop
             if child.name == 'div' and ("toc" in child.attrs.get("class", []) ):
                 break
+
+            if child.name == 'div' and ("tocright" in child.attrs.get("class", []) ):
+                break
+
+            # skip WP alerts
+            if "ambox" in child.attrs.get("class", []):
+                continue
+
+            # skip wikimedia links
+            if "plainlinks" in child.attrs.get("class", []):
+                continue
+
+            if "sistersitebox" in child.attrs.get("class", []):
+                continue
+
+            # skip links to related terms
+            if "nowraplinks" in child.attrs.get("class", []):
+                continue
+
+            if "vertical-navbox" in child.attrs.get("class", []):
+                continue
+
+            # skip notes
+            if "hatnote" in child.attrs.get("class", []):
+                continue
+
+            if "navigation-not-searchable" in child.attrs.get("class", []):
+                continue
+
+            if "shortdescription" in child.attrs.get("class", []):
+                continue
+
+            if "noprint" in child.attrs.get("class", []):
+                continue
+
+            # thumbs at right
+            if "thumb" in child.attrs.get("class", []):
+                continue
+
+            if "tright" in child.attrs.get("class", []):
+                continue
+
+            # WP notifications
+            if "box-No_footnotes" in child.attrs.get("class", []):
+                continue
+
+            if "metadata" in child.attrs.get("class", []):
+                continue
+
+            if "plainlinks" in child.attrs.get("class", []):
+                continue
+
+            if "ambox" in child.attrs.get("class", []):
+                continue
+
+            if "ambox-No_footnotes" in child.attrs.get("class", []):
+                continue
+
+            # skip infobox
+            if "infobox" in child.attrs.get("class", []):
+                continue
+
+            if "vcard" in child.attrs.get("class", []):
+                continue
+
+            # skip coordinates
+            if child.find( id="coordinates" ):
+                continue
+
+            # skip non p, ul, ol, dl, dt, dd
+            if child.name not  in ["p", "ul", "ol", "dl", "dt", "dd"]:
+                continue
+
+            # text
+            text = child.text
+            # 2. remove [1]. [2], ...
+            cleaned = re.sub( '\[[0-9]+\]', '', text )
+            # 3. remove pronunciation (/...)
+            if cleaned.find( '(/' ) != -1:
+                cleaned = replace_text_in_brackets( cleaned, '', op='(', cl=')' )
+            explainations.append( cleaned )
 
     return explainations
 

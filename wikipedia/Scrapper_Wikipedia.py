@@ -18,8 +18,8 @@ from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Helpers import create_storage, is_ascii, is_lang
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
-DB_NAME         = "wikipedia.sqlite3"
-DBWikipedia     = sqlite3.connect(DB_NAME, isolation_level=None)
+DB_NAME         = "wikipedia.db"
+DBWikipedia     = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
@@ -30,7 +30,6 @@ if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
 
 
 # init DB
-DBExecute( DBWikipedia, "PRAGMA journal_mode = OFF" )
 DBExecuteScript( DBWikipedia, WikipediaItem.Meta.DB_INIT )
 
 
@@ -302,14 +301,6 @@ def scrap_one( lang: str, page: Page ):
         log.error( "(%s): HTTP-response: parse error: ", page.label, exc_info=1 )
         return []
 
-    item: WikipediaItem
-    for item in items:
-        # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
-        if len( item.ExplainationWPTxt ) > 15:
-            DBWrite( DBWikipedia, item )
-        else:
-            log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", page.label )
-
     return items
 
 
@@ -323,7 +314,8 @@ def scrap_one_wrapper(args):
         args (tuple):  Args
     """
     try:
-        scrap_one( *args )
+        return scrap_one( *args )
+
     except Exception as e:
         log.error( "  %s", args, exc_info=True )
 
@@ -345,13 +337,27 @@ def scrap( lang: str ="en", workers: int = 1 ):
         import itertools
 
         pool = multiprocessing.Pool( workers )
+
+        # scrap in `workers` processes
         for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
-            pass
-        pool.close()
-        pool.join()
+            item: WikipediaItem
+            for item in result:
+                # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
+                if len( item.ExplainationWPTxt ) > 15:
+                    DBWrite( DBWikipedia, item )
+                else:
+                    log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", item.LabelName )
 
     else: # single process
         for page in reader:
             log.warning( page )
-            scrap_one( lang, page )
+            result = scrap_one( lang, page )
+
+            item: WikipediaItem
+            for item in result:
+                # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
+                if len( item.ExplainationWPTxt ) > 15:
+                    DBWrite( DBWikipedia, item )
+                else:
+                    log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", item.LabelName )
 

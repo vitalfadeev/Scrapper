@@ -126,4 +126,5 @@ def DBWrite(DB, item:object ):
 
     c = DB.cursor()
     c.execute(sql, values)
+    DB.commit()
 
