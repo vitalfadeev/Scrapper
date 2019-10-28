@@ -2,7 +2,7 @@ from wikipedia import Scrapper_Wikipedia
 
 if __name__ == "__main__":
     # Scrap all pages
-    Scrapper_Wikipedia.scrap( lang="en", workers=5 )
+    Scrapper_Wikipedia.scrap( lang="en", workers=4 )
 
     # Single page test
     # from Scrapper_DB import DBExecute, DBWrite

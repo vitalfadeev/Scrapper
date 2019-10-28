@@ -17,12 +17,11 @@ import Scrapper_Downloader
 
 #
 DB_NAME      = "wikidata.db"
-DBWWikidata  = sqlite3.connect(DB_NAME, isolation_level=None)
+DBWWikidata  = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER = "cached"  # folder where stored downloadad dumps
 log          = logging.getLogger(__name__)
 
 # init DB
-DBExecute( DBWWikidata,  "PRAGMA journal_mode = OFF" )
 DBExecuteScript( DBWWikidata, WikidataItem.Meta.DB_INIT )
 
 if os.path.isfile( os.path.join( 'wikidata', 'logging.ini' ) ):
@@ -296,8 +295,7 @@ def process_one(item, lang, id_, item_type, i):
     w.WikipediaLinkCountTotal    = wikipedia_link_count_total
     w.PrimaryKey                 = lang + "§" + w.LabelName + "§" + w.CodeInWiki
 
-    # save
-    DBWrite( DBWWikidata, w )
+    return w
 
 
 def process_dump_record_mp(args):
@@ -308,7 +306,7 @@ def process_dump_record(data, lang, i):
     item = data
     id_ = data.get('id', '')
     item_type = data.get('type', '')
-    process_one(item, lang, id_, item_type, i)
+    return process_one(item, lang, id_, item_type, i)
 
 
 def process_web_record(data, lang, id_):
@@ -445,13 +443,18 @@ def scrap(lang="en", from_point=None, workers=1):
     if workers > 1:
         # multiprocessing
         pool = multiprocessing.Pool( workers )
-        pool.imap(process_dump_record_mp, DumpReader(lang, local_file, from_point))
+        for w in pool.imap(process_dump_record_mp, DumpReader(lang, local_file, from_point)):
+            if w is not None:
+                DBWrite( DBWWikidata, w )
+
         pool.close()
         pool.join()
 
     else: # single process
         for (data, lang, i) in DumpReader(lang, local_file, from_point):
-            process_dump_record(data, lang, i)
+            w = process_dump_record(data, lang, i)
+            if w is not None:
+                DBWrite( DBWWikidata, w )
 
 
 # main
@@ -462,3 +465,4 @@ if __name__ == "__main__":
     #check_one("Q729", "en")
     #check_one("Q4847309", "en")
     scrap("en", from_point="Q6393585")
+

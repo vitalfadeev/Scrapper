@@ -33,7 +33,7 @@ DOWNLOAD_TIMEOUT = 33   # maximum time to connect and fetch data block
 DOWNLOAD_RETRY = 5      # maximum retries attempts to connect and download file
 
 
-def requests_retry_session( retries=5 ):
+def requests_retry_session( retries=DOWNLOAD_RETRY ):
     """
     Helper function. It help retry download when link broken. `retries` retries.
 
