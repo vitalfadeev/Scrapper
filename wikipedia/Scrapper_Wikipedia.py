@@ -22,8 +22,6 @@ DB_NAME         = "wikipedia.db"
 DBWikipedia     = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
-english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
-ASCII           = set(string.printable)
 
 if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
@@ -58,7 +56,7 @@ def filterPageProblems( page: "Page" ):
     - skip words contains :
     - skip more than 3 spaces
     - skip #
-    - skip non ASCII
+    - skip non language
 
     Args:
         page (Page):    Page instance
@@ -342,11 +340,12 @@ def scrap( lang: str ="en", workers: int = 1 ):
         for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
             item: WikipediaItem
             for item in result:
-                # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
-                if len( item.ExplainationWPTxt ) > 15:
-                    DBWrite( DBWikipedia, item )
-                else:
-                    log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", item.LabelName )
+                if item is not None:
+                    # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
+                    if len( item.ExplainationWPTxt ) > 15:
+                        DBWrite( DBWikipedia, item )
+                    else:
+                        log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", item.LabelName )
 
     else: # single process
         for page in reader:

@@ -17,7 +17,7 @@ from . Scrapper_Wiktionary_Item import WikictionaryItem
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 
 DB_NAME         = "wiktionary.db"
-DBWikictionary  = sqlite3.connect(DB_NAME, isolation_level=None)
+DBWikictionary  = sqlite3.connect(DB_NAME, timeout=5.0)
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
@@ -28,7 +28,6 @@ if os.path.isfile( os.path.join( 'wiktionary', 'logging.ini' ) ):
 
 
 # init DB
-DBExecute( DBWikictionary, "PRAGMA journal_mode = OFF" )
 DBExecuteScript( DBWikictionary, WikictionaryItem.Meta.DB_INIT )
 
 
@@ -360,11 +359,6 @@ def scrap_one(lang, page):
         log.error( "(%s): HTTP-response: parse error: ", page.label, exc_info=1 )
         return []
 
-    item: WikictionaryItem
-    for item in items:
-        item.dump()
-        DBWrite( DBWikictionary, item )
-
     return items
 
 
@@ -378,7 +372,7 @@ def scrap_one_wrapper(args):
         args (tuple):  Args
     """
     try:
-        scrap_one( *args )
+        return scrap_one( *args )
     except Exception as e:
         log.error( "  %s", args, exc_info=True )
 
@@ -392,7 +386,7 @@ def scrap( lang: str ="en", workers: int = 1 ):
     :param workers:     int     Number of workers in multiprocessing. If workers=1, then run in single process.
                                 Recommendation: workers = 10 (for parallel network requests)
     """
-    result = DBDeleteLangRecords( lang )
+    DBDeleteLangRecords( lang )
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
     if workers > 1:
@@ -401,12 +395,20 @@ def scrap( lang: str ="en", workers: int = 1 ):
 
         pool = multiprocessing.Pool( workers )
         for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
-            pass
+            if result is not None:
+                for item in result:
+                    item.dump()
+                    DBWrite( DBWikictionary, item )
+
         pool.close()
         pool.join()
 
     else: # single process
         for page in reader:
             log.warning( page )
-            scrap_one( lang, page )
+            items = scrap_one( lang, page )
+
+            for item in items:
+                item.dump()
+                DBWrite( DBWikictionary, item )
 
