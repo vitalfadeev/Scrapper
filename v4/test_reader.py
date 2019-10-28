@@ -30,6 +30,45 @@ if __name__ == "__main__":
 
     for item in Read( "v4/wikipedia.sqlite3" )[:3]:
         print( item )
+        
+	#
+	lang = "en"
+	url = "https://dumps.wikimedia.org/" + lang + "wiki/latest/" + lang + "wiki-latest-pages-articles.xml.bz2"
+	read( url, cache=True ).filter().convert( converter, workers=1 ).filter().write( "v4/wikipedia.sqlite3" )
+	# download to cache, and parse while downloading: parse downloaded strem
+	# save state: savepoint
+	# on restart:
+	#   case 1: Resume downloading. Continue parsing fron savepoint
+	#   case 2: Resume downloading. Parse fron start
+	#   case 3: Resume downloading. Parse one item
+	#   case 4: Parse one item
+	
+	# mpdule WiktionaryConverter
+	def convert( row ):
+		xml = row
+		
+		# parse
+		wikitext = xml.by_element( "page" ).text  	# by_element( "page" )
+		
+		lexems = wikoo.parse( wikitext )  			# convert( 'wiki' )
+		
+		toc = build_toc_tree( lexems )    			# convert( 'wikioo_toc' )
+		
+		page = Page( lang, row, wikitext, lexems, toc )
+		
+		# parents = {
+		#   "/"   : { "lang": "en" },
+		#   "bz2" : {},
+		#   "xml" : { "page": page },
+		#   "."   : { "toc": toc },
+		# }
+		
+		# analyze
+		# page
+		#   sections
+		#     sences
+		#       words | links
+		
 
 
 # stream

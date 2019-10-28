@@ -1,4 +1,6 @@
-from .reader import Read
+from pandas.tests.io.parser.test_converters import test_converter_index_col_bug
+
+from .reader import Read, read
 from .writer import Write
 from .converter import Converter
 
@@ -36,6 +38,33 @@ def main():
 
     for item in Read( "savepoint.txt" ):
         Write( "sqlite:///scrapped.sqlite3", item )
+
+    #
+    read( "dump.xml.bz2" ).convert().write( "scrapped.sqlite3" )
+
+    class ConverterClass:
+        def __call__(self, row, *args, **kwargs):
+            item = dict( row )
+            return item
+    converter_instance = ConverterClass()
+    read( "dump.xml.bz2" ).convert( converter_instance ).write( "scrapped.sqlite3" )
+
+    def converter_callback( row ):
+        item = dict( row )
+        return item
+    read( "dump.xml.bz2" ).convert( converter_callback ).write( "scrapped.sqlite3" )
+
+    read( "dump.xml.bz2" ).convert( module ).write( "scrapped.sqlite3" )
+    read( "dump.xml.bz2" ).convert( "module" ).write( "scrapped.sqlite3" )
+
+    read( "dump.xml.bz2" ).convert( "Wikipedia" ).write( "scrapped.sqlite3" )
+
+    read( "dump.xml.bz2" ).filter().convert().write( "scrapped.sqlite3" )
+
+    read( "dump.xml.bz2" ).filter().convert().filter().write( "scrapped.sqlite3" )
+
+    #
+    read( "dump.xml.bz2" ).filter().convert( converter, workers=10 ).filter().write( "scrapped.sqlite3" )
 
 
 if __name__ == "__main__":

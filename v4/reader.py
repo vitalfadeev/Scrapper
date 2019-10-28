@@ -15,6 +15,9 @@ from .range import Range
 # 6. if ''
 #    pass to xml.reader( 'dump.xml.bz2' )
 #
+def read( *args, **kvargs ):
+    Read( *args, **kvargs )
+
 
 # pass to last reader 'dump.xml.bz2'
 # pass to reader opened stream

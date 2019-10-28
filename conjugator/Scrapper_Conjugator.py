@@ -13,7 +13,7 @@ from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 
 DB_NAME         = "conjugations.db"
-DBConjugations  = sqlite3.connect(DB_NAME, isolation_level=None)
+DBConjugations  = sqlite3.connect( DB_NAME )
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 
@@ -33,7 +33,6 @@ if os.path.isfile( os.path.join( 'conjugator', 'logging.ini' ) ):
 log = logging.getLogger(__name__)
 
 # init DB
-DBExecute( DBConjugations, "PRAGMA journal_mode = OFF" )
 DBExecuteScript( DBConjugations, ConjugationsItem.Meta.DB_INIT )
 
 
