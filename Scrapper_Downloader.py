@@ -72,10 +72,10 @@ def get_http_file_size( url ):
         remote_file_size = get_http_file_size( url )
 
     """
-    session = requests_retry_session( retries=DOWNLOAD_RETRY )
-    response = session.get(url, stream=True, verify=False, allow_redirects=True, timeout=DOWNLOAD_TIMEOUT)
-    size = response.headers['Content-length']
-    response.close()
+    with requests_retry_session( retries=1 ) as session:
+        response = session.get(url, stream=True, verify=False, allow_redirects=True, timeout=DOWNLOAD_TIMEOUT)
+        size = response.headers['Content-length']
+        response.close()
     return int(size)
 
 
@@ -175,7 +175,7 @@ def _continue_downloading(url, local_file, remote_file_size, resume_byte_pos=0):
 
     if resume_byte_pos == 0:
         # new file
-        session = requests_retry_session( retries=DOWNLOAD_RETRY )
+        session = requests_retry_session( retries=1 )
         response = session.get(url, stream=True, verify=False, allow_redirects=True, timeout=DOWNLOAD_TIMEOUT)
 
         with open(local_file, 'wb') as f:
@@ -186,7 +186,7 @@ def _continue_downloading(url, local_file, remote_file_size, resume_byte_pos=0):
     else:
         # append
         resume_header = { 'Range': 'bytes=%d-' % resume_byte_pos }
-        session = requests_retry_session( retries=DOWNLOAD_RETRY )
+        session = requests_retry_session( retries=1 )
         response = session.get(url, stream=True, verify=False, allow_redirects=True, timeout=DOWNLOAD_TIMEOUT,
                          headers=resume_header)
 
@@ -197,7 +197,7 @@ def _continue_downloading(url, local_file, remote_file_size, resume_byte_pos=0):
         response.close()
 
 
-def _download_with_resume(url, local_file):
+def _download( url, local_file ):
     """
     Download `url` to `local_file`.
 
@@ -244,8 +244,10 @@ def _download_with_resume(url, local_file):
 
     # rename part_file to local_file
     local = get_local_file_size(part_file)
+
     if local == remote:
         os.rename(part_file, local_file)
+        return True
 
 
 def download( url, local_file, attempts=5 ):
@@ -272,7 +274,7 @@ def download( url, local_file, attempts=5 ):
     log.debug( "download: %s", url )
     for i in range( attempts ):
         try:
-            _download_with_resume( url, local_file )
+            _download( url, local_file )
             return  True
 
         except requests.exceptions.ConnectionError as e:
