@@ -173,45 +173,42 @@ def DBCheckStructure( DB, table, columns ):
 
 
 def DBCheckIndex( DB, table, columns ):
-    # 1. check table structure for column name
-    # 2. add column
-    if _is_column_exists( DB, table, column ):
-        pass
+    if isinstance( columns, str ):
+        columns = [columns]
 
-    else:
+    sql = """
+        SELECT name 
+          FROM sqlite_master 
+        WHERE type='index' AND tbl_name = '{}'
+    """.format( table )
+
+    c = DB.cursor()
+
+    c.execute(sql)
+
+    indb = []
+
+    for rec in c.fetchall():
+        indb.append( rec[0] )
+
+    # compare
+    if (table + "_" + columns.join('_')) not in indb:
+        # create
+        #   index_name ON table ( columns )
+        index_name = table + "_" + columns.join('_')
+        columns_str = columns.join(',')
+        pk = ""
         sql = """
-            SELECT name 
-              FROM sqlite_master 
-            WHERE type='index' AND tbl_name = '{}'
-        """.format( table )
-
-        c = DB.cursor()
-
-        c.execute(sql)
-
-        indb = []
-
-        for rec in c.fetchall():
-            indb.append( rec[0] )
-
-        # compare
-        if (table + "_" + columns.join('_')) not in indb:
-            # create
-            #   index_name ON table ( columns )
-            index_name = table + "_" + columns.join('_')
-            columns_str = columns.join(',')
-            pk = ""
-            sql = """
-                CREATE {} INDEX IF NOT EXISTS {} 
-                    ON {} ({})
-            """\
-            .format(
-                pk,
-                index_name,
-                table,
-                columns_str
-            )
-            DBExecute( DB, sql )
+            CREATE {} INDEX IF NOT EXISTS {} 
+                ON {} ({})
+        """\
+        .format(
+            pk,
+            index_name,
+            table,
+            columns_str
+        )
+        DBExecute( DB, sql )
 
 
 def DBCheckIndexes( DB, table, indexes ):
