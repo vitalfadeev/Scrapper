@@ -121,6 +121,8 @@ class WordItem:
         self.Otherwise                   = []
         self.ExplainationExamplesRaw     = []
         self.ExplainationExamplesTxt     = []
+
+        # Conjugations
         self.IsMale                      = bool
         self.IsFeminine                  = bool  # ""
         self.IsNeutre                    = bool  # ""
@@ -150,9 +152,6 @@ class WordItem:
         self.SeeAlsoWiktionaryLinks 	 = []
         self.ExplainationExamplesRaw	 = []
         self.ExplainationExamplesTxt	 = []
-
-        # Conjugations
-        # ...
 
 
     def __repr__( self ):

@@ -261,8 +261,16 @@ def merge():
     w.IsVerbFutur                    = cj.IsVerbFutur
 
 
+def load_wikidata():
+    read( WikidataDB ).conver().write( WDB )
+    read( ConjugationsDB ).conver().write( WDB )
+    read( WikipediaDB ).conver( merge_wikipedia_with_wikidata ).write( WDB ) # if same pk - overwrite
+    read( WiktionaryDB ).conver( merge_wiktionary_with_wikidata ).write( WDB )
+
+
 def main():
     check_structure()
+    load_wikidata()
 
 
 if __name__ == "__main__":
