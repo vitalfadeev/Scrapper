@@ -18,3 +18,5 @@ wikipedia
 pandas
 mputil
 #papy
+# extend built-in types
+forbiddenfruit

@@ -128,3 +128,44 @@ def DBWrite(DB, item:object ):
     c.execute(sql, values)
     DB.commit()
 
+
+def _is_column_exists( DB, table, column ):
+    # 1.select info from DB info_scheme
+    # 2. find column
+    # 3. return True - ok, False - not
+    sql = """
+        SELECT * FROM {table} LIMIT 1 
+    """.format(
+        table=table
+    )
+    c = DB.cursor()
+    c.execute( sql )
+    # get first row, and fetch row titles
+    db_fields = [ description[ 0 ] for description in c.description ]
+
+    # find required column
+    if column in db_fields:
+        return True
+    else:
+        return False
+
+
+def DBAddColumn( DB, table, column, t ):
+    # 1. check table structure for column name
+    # 2. add column
+    if _is_column_exists( DB, table, column ):
+        pass
+
+    else:
+        sql = """
+            ALTER TABLE {table} ADD {column} {t}
+            """.format(
+                table=table,
+                column=column,
+                t=t,
+            )
+        DB.execute( sql )
+
+
+def DBCheckStructure( DB, table, columns ):
+    ...
