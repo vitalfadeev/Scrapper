@@ -3,7 +3,7 @@
 # 3. Load Wiktionary
 import sqlite3
 import logging
-from Scrapper_DB import DBAddColumn, DBCheckStructure, DBExecuteScript
+from Scrapper_DB import DBAddColumn, DBCheckStructure, DBExecuteScript, DBCheckIndex, DBCheckIndexes
 from Scrapper_Item import ItemProxy
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 from merger.Scrapper_Merger_Item import WordItem
@@ -60,6 +60,14 @@ def check_structure():
         "Operation_Wikipedia": "INTEGER NULL",
         "LabelNamePreference": "INTEGER NULL",
     } )
+    DBCheckIndex( DBWikipedia, "LabelTypeWP" )
+    DBCheckIndex( DBWikipedia, ["LabelTypeWP", "LabelType"] )
+    DBCheckIndex( DBWikipedia, ["LabelTypeWD", "LabelTypeWP", "LabelType"] )
+
+    DBCheckIndexes( DBWikipedia, [
+        "LabelTypeWP",
+        ["LabelTypeWD", "LabelTypeWP", "LabelType"],
+    ] )
 
 
 def Set_Property_LabelNamePreference():
