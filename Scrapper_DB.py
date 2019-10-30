@@ -67,7 +67,7 @@ def DBRead( DB, table, id=None, where=None, args=tuple ):
     yield from item
 
 
-def DBWrite(DB, item:object ):
+def DBWrite(DB, item:object, table=None, if_exists="fail" ):
     """
     Write item into database `DB`.
 
@@ -79,6 +79,20 @@ def DBWrite(DB, item:object ):
         DBWrite( DBWikictionary, item )
 
     """
+    if if_exists == "replace":
+        mode = "OR REPLACE"
+
+    elif if_exists == "fail":
+        mode = "OR FAIL"
+
+    elif if_exists == "ignore":
+        mode = "OR IGNORE"
+
+    else:
+        mode = ""
+
+
+    #
     fields = []
     values = []
 
@@ -112,16 +126,20 @@ def DBWrite(DB, item:object ):
     #    print( field.ljust(40), str(value).ljust(20), type(value) )
 
     #table = item.__class__.__name__
-    table = item.Meta.DB_TABLE_NAME
+    if table is None:
+        if hasattr( item, "Meta" ) and hasattr( item.Meta, "DB_TABLE_NAME" ):
+            table = item.Meta.DB_TABLE_NAME
+
     sql = """
-        INSERT INTO `{0}` 
-            ({1}) 
+        INSERT {mode} INTO `{table}` 
+            ({fields}) 
         VALUES 
-            ({2})
+            ({values})
     """.format(
-            table,
-            ", ".join(fields),
-            ", ".join(itertools.repeat('?', len(values)))
+            mode=mode,
+            table=table,
+            fields=", ".join(fields),
+            values=", ".join(itertools.repeat('?', len(values)))
         )
 
     c = DB.cursor()

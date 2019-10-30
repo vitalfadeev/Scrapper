@@ -20,3 +20,6 @@ mputil
 #papy
 # extend built-in types
 forbiddenfruit
+pipe
+#
+sqlalchemy

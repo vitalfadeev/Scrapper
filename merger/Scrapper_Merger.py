@@ -5,8 +5,10 @@ import sqlite3
 import logging
 from Scrapper_DB import DBAddColumn, DBCheckStructure, DBExecuteScript, DBCheckIndex, DBCheckIndexes
 from Scrapper_Item import ItemProxy
+from _dev_scripts.v4.reader import read
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 from merger.Scrapper_Merger_Item import WordItem
+from wikidata.Scrapper_Wikidata import DBWWikidata
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
 from wikipedia.Scrapper_Wikipedia import DBWikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
@@ -18,10 +20,6 @@ log    = logging.getLogger(__name__)
 
 # init DB
 DBExecuteScript( DBWord, WordItem.Meta.DB_INIT )
-
-
-def read( src ):
-    ...
 
 
 def load_conjugations():
@@ -137,6 +135,34 @@ def Set_Property_LabelNamePreference():
     # If <0 then : =0 elif >1 then : =1
 
     # After done, set Field Operation_Pref=1
+
+
+def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
+    log.info( wd )
+
+    w = WordItem()
+
+    w.PK                             = wd.PrimaryKey
+    w.LabelName                      = wd.LabelName
+    w.LabelType                      = Scrapper_Merger_Wikidata.LabelType( wd )
+    w.LanguageCode                   = wd.LanguageCode
+    w.Description                    = wd.Description
+    w.AlsoKnownAs                    = wd.AlsoKnownAs
+    w.SelfUrlWikidata                = wd.SelfUrl
+    w.Instance_of                    = Scrapper_Merger_Wikidata.Instance_of( wd )
+    w.Subclass_of                    = Scrapper_Merger_Wikidata.Subclass_of( wd )
+    w.Part_of                        = Scrapper_Merger_Wikidata.Part_of( wd )
+    w.Translation_EN                 = wd.Translation_EN
+    w.Translation_FR                 = wd.Translation_FR
+    w.Translation_DE                 = wd.Translation_DE
+    w.Translation_IT                 = wd.Translation_IT
+    w.Translation_ES                 = wd.Translation_ES
+    w.Translation_RU                 = wd.Translation_RU
+    w.Translation_PT                 = wd.Translation_PT
+    w.Ext_Wikipedia_URL              = Scrapper_Merger_Wikidata.Ext_Wikipedia_URL( wd )
+    w.CountTotalOfWikipediaUrl       = Scrapper_Merger_Wikidata.CountTotalOfWikipediaUrl( wd )
+
+    return w
 
 
 def merge():
@@ -270,14 +296,16 @@ def merge():
 
 
 def load_wikidata():
-    read( WikidataDB ).conver().write( WDB )
-    read( ConjugationsDB ).conver().write( WDB )
-    read( WikipediaDB ).conver( merge_wikipedia_with_wikidata ).write( WDB ) # if same pk - overwrite
-    read( WiktionaryDB ).conver( merge_wiktionary_with_wikidata ).write( WDB )
+    with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+        with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
+
+            read( DBWWikidata, table="wikidata", cls=WikidataItem ) \
+                .map( convert_wikidata_to_word ) \
+                .write( DBWord, table="words", if_exists="replace" )
 
 
 def main():
-    check_structure()
+    # check_structure()
     load_wikidata()
 
 

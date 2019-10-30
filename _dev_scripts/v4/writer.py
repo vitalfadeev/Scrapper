@@ -1,3 +1,6 @@
+import sqlite3
+
+
 class Writer:
     def element( self ):
         ...
@@ -16,6 +19,19 @@ class Writer:
 
     def __call__(self, *args, **kwargs):
         ...
+
+
+def get_writer( url, *args, **kwargs ):
+    # writer factory
+    if isinstance( url, str ):
+        ...
+
+    elif isinstance( url, sqlite3.Connection ):
+        from .writers.sqlite3 import Writer
+        return Writer( url )
+
+    else:
+        assert 0, "unsupported"
 
 
 def Write( url, writers=None, encoding='UTF-8', streaming=False, *args ):

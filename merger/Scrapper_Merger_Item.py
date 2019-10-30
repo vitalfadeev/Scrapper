@@ -3,9 +3,9 @@ class WordItem:
         DB_TABLE_NAME = "words"
         DB_INIT = """
             CREATE TABLE IF NOT EXISTS words (
-                PrimaryKey                 VARCHAR(255) NOT   NULL  PRIMARY KEY,
+                PK                         VARCHAR(255) NOT   NULL  PRIMARY KEY,
                 LabelName                  VARCHAR(255) NULL,
-                LabelTypeWD                VARCHAR(255) NULL,
+                LabelType                  VARCHAR(255) NULL,
                 LanguageCode               CHAR(2),
                 Description                TEXT         NULL,
                 AlsoKnownAs                TEXT         NULL,
@@ -75,7 +75,7 @@ class WordItem:
         # Wikidata
         self.PK                        = ""
         self.LabelName                 = ""
-        self.LabelTypeWD               = ""
+        self.LabelType                 = ""
         self.LanguageCode              = ""
         self.Description               = ""
         self.AlsoKnownAs               = ""

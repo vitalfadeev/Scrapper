@@ -1,9 +1,11 @@
+import functools
 import io
 import os
 import importlib
+import sqlite3
 from contextlib import contextmanager
 from urllib.parse import urlparse
-from .range import Range
+from .range import Range, R
 
 
 # Example: 'dump.xml.bz2'
@@ -15,8 +17,59 @@ from .range import Range
 # 6. if ''
 #    pass to xml.reader( 'dump.xml.bz2' )
 #
-def read( *args, **kvargs ):
-    Read( *args, **kvargs )
+# def read( *args, **kvargs ):
+#     return Read( *args, **kvargs )
+
+def read_sqlite( db, table=None, sql=None, cls=None, *args, **kwargs ):
+    assert isinstance( db, sqlite3.Connection ), "expect sqlite3.Connection"
+
+    connection = db
+
+    if sql is None:
+        sql = """
+        SELECT *
+          FROM {table}
+        """.format(
+            table=table,
+        )
+
+    cursor = connection.cursor()
+    query_result = cursor.execute( sql, args )
+
+    # convert result to object | list | dict | ...
+    if cls is tuple:
+        result = query_result
+
+    elif cls is list:
+        result = query_result
+
+    elif cls is dict:
+        def convert_to_dict( fields, row ):
+            return dict( zip( fields, row ) )
+
+        fields = [ x[0] for x in query_result.description ]
+        fn = functools.partial( convert_to_dict, fields )
+
+        result = map( fn, query_result )
+
+    else:
+        def convert_to_cls( cls, fields, row ):
+            o = cls()
+            o.__dict__.update( dict( zip( fields, row ) ) )
+            return o
+
+        fields = [ x[0] for x in query_result.description ]
+        fn = functools.partial( convert_to_cls, cls, fields )
+
+        result = map( fn, query_result )
+
+    return R( result )
+
+
+def read( src, *args, **kwargs ):
+    if isinstance( src, sqlite3.Connection ):
+        return read_sqlite( src, *args, **kwargs )
+
 
 
 # pass to last reader 'dump.xml.bz2'
