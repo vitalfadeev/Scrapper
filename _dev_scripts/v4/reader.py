@@ -20,11 +20,12 @@ from .range import Range, R
 # def read( *args, **kvargs ):
 #     return Read( *args, **kvargs )
 
-def read_sqlite( db, table=None, sql=None, cls=None, *args, **kwargs ):
+def read_sqlite( db, table=None, sql=None, cls=None, params=None, *args, **kwargs ):
     assert isinstance( db, sqlite3.Connection ), "expect sqlite3.Connection"
 
     connection = db
 
+    #
     if sql is None:
         sql = """
         SELECT *
@@ -33,8 +34,13 @@ def read_sqlite( db, table=None, sql=None, cls=None, *args, **kwargs ):
             table=table,
         )
 
+    #
+    if params is None:
+        params = args
+
+    # execute
     cursor = connection.cursor()
-    query_result = cursor.execute( sql, args )
+    query_result = cursor.execute( sql, params )
 
     # convert result to object | list | dict | ...
     if cls is tuple:

@@ -67,7 +67,7 @@ def DBRead( DB, table, id=None, where=None, args=tuple ):
     yield from item
 
 
-def DBWrite(DB, item:object, table=None, if_exists="fail" ):
+def DBWrite(DB, item:object, table=None, if_exists="fail", *args, **kwargs ):
     """
     Write item into database `DB`.
 
@@ -209,22 +209,24 @@ def DBCheckIndex( DB, table, columns ):
     for rec in c.fetchall():
         indb.append( rec[0] )
 
+    #
+    index_name = table + "_" + '_'.join( columns )
+
     # compare
-    if (table + "_" + columns.join('_')) not in indb:
+    if index_name not in indb:
         # create
         #   index_name ON table ( columns )
-        index_name = table + "_" + columns.join('_')
-        columns_str = columns.join(',')
+        columns_str = ','.join(columns)
         pk = ""
         sql = """
-            CREATE {} INDEX IF NOT EXISTS {} 
-                ON {} ({})
+            CREATE {pk} INDEX IF NOT EXISTS {index_name} 
+                ON {table} ({columns})
         """\
         .format(
-            pk,
-            index_name,
-            table,
-            columns_str
+            pk=pk,
+            index_name=index_name,
+            table=table,
+            columns=columns_str
         )
         DBExecute( DB, sql )
 

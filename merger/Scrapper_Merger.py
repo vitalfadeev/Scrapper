@@ -35,14 +35,20 @@ def check_structure():
         "Operation_Wikipedia": "INTEGER NULL",
         "LabelNamePreference": "INTEGER NULL",
     } )
-    DBCheckIndex( DBWikipedia, "LabelTypeWP" )
-    DBCheckIndex( DBWikipedia, ["LabelTypeWP", "LabelType"] )
-    DBCheckIndex( DBWikipedia, ["LabelTypeWD", "LabelTypeWP", "LabelType"] )
 
-    DBCheckIndexes( DBWikipedia, [
-        "LabelTypeWP",
-        ["LabelTypeWD", "LabelTypeWP", "LabelType"],
-    ] )
+
+def check_indexes():
+    # DBCheckIndex( DBWikipedia, "LabelTypeWP" )
+    # DBCheckIndex( DBWikipedia, ["LabelTypeWP", "LabelType"] )
+    # DBCheckIndex( DBWikipedia, ["LabelTypeWD", "LabelTypeWP", "LabelType"] )
+    #
+    # DBCheckIndexes( DBWikipedia, [
+    #     "LabelTypeWP",
+    #     ["LabelTypeWD", "LabelTypeWP", "LabelType"],
+    # ] )
+
+    DBCheckIndex( DBWord, "words", ["Ext_Wikipedia_URL", "LabelTypeWP"] )
+
 
 
 def Set_Property_LabelNamePreference():
@@ -226,8 +232,33 @@ def convert_wiktionary_to_word( wt: WikictionaryItem ) -> WordItem:
     return w
 
 
+def merge_with_wikipedia( wp ):
+    return w
+
+
 def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
+    # load all wikipedia
+    # and merge with exisiting word (wikidata)
+    #   if same Ext_Wikipedia_URL,
+    #   and also check if there is exisiting word with same labelname (not case sensitive),
+    #   then use PKS_ListMatch to see if we merge or not
+
     log.info( wp )
+
+    # if same Ext_Wikipedia_URL
+    sql = """ SELECT * 
+                FROM words 
+               WHERE Ext_Wikipedia_URL = ? 
+                 AND LabelName = ? COLLATE NOCASE """ # ci_index
+
+    items = read( DBWord, sql=sql, cls=WordItem, params=[wp.SelfUrlWikipedia, wp.LabelName] ) \
+        .map( merge_with_wikipedia ) \
+        .as_list()
+
+    if items:
+        if PKS_ListMatch( items, wp ):
+            # merge
+            ...
 
     w = WordItem()
 
@@ -257,134 +288,134 @@ def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
     return w
 
 
-def merge():
-    w = WordItem()
-    wd = WikidataItem()
-    wt = WikictionaryItem()
-    wp = WikipediaItem()
-    cj = ConjugationsItem()
-
-    # Wikidata
-    w.PK                             = wd.PrimaryKey
-    w.LabelName                      = wd.LabelName
-    w.LabelTypeWD                    = Scrapper_Merger_Wikidata.LabelTypeWD( wd )
-    w.LanguageCode                   = wd.LanguageCode
-    w.Description                    = wd.Description
-    w.AlsoKnownAs                    = wd.AlsoKnownAs
-    w.SelfUrlWikidata                = wd.SelfUrl
-    w.Instance_of                    = Scrapper_Merger_Wikidata.Instance_of( wd )
-    w.Subclass_of                    = Scrapper_Merger_Wikidata.Subclass_of( wd )
-    w.Part_of                        = Scrapper_Merger_Wikidata.Part_of( wd )
-    w.Translation_EN                 = wd.Translation_EN
-    w.Translation_FR                 = wd.Translation_FR
-    w.Translation_DE                 = wd.Translation_DE
-    w.Translation_IT                 = wd.Translation_IT
-    w.Translation_ES                 = wd.Translation_ES
-    w.Translation_RU                 = wd.Translation_RU
-    w.Translation_PT                 = wd.Translation_PT
-    w.Ext_Wikipedia_URL              = Scrapper_Merger_Wikidata.Ext_Wikipedia_URL( wd )
-    w.CountTotalOfWikipediaUrl       = Scrapper_Merger_Wikidata.CountTotalOfWikipediaUrl( wd )
-    #
-    # w.Operation_Merging              = 0
-    # w.Operation_Wikipedia            = 0
-    # w.Operation_Vectorizer           = 0
-    # w.Operation_PropertiesInv        = 0
-    # w.Operation_VectSentences        = 0
-    # w.Operation_Pref                 = 0
-
-    # Wiktionary
-    w.PK                             = wt.PrimaryKey
-    w.LabelName                      = wt.LabelName
-    w.LabelType                      = wt.LabelType
-    w.LanguageCode                   = wt.LanguageCode
-    w.Type                           = wt.Type
-    w.IndexInPageWiktionary          = wt.IndexinPage
-    w.ExplainationTxt                = wt.ExplainationTxt
-    w.ExplainationRaw                = wt.ExplainationRaw
-    w.DescriptionWikipediaLinks      = wt.DescriptionWikipediaLinks
-    w.DescriptionWiktionaryLinks     = wt.DescriptionWiktionaryLinks
-    w.AlternativeFormsOther          = wt.AlternativeFormsOther
-    w.SelfUrlWiktionary              = wt.SelfUrl
-    w.Synonymy                       = wt.Synonymy
-    w.Antonymy                       = wt.Antonymy
-    w.Hypernymy                      = wt.Hypernymy
-    w.Hyponymy                       = wt.Hyponymy
-    w.Meronymy                       = wt.Meronymy
-    w.RelatedTerms                   = wt.RelatedTerms
-    w.CoordinateTerms                = wt.RelatedTerms
-    w.Otherwise                      = wt.RelatedTerms
-    w.Translation_EN                 = wt.Translation_EN
-    w.Translation_FR                 = wt.Translation_FR
-    w.Translation_DE                 = wt.Translation_DE
-    w.Translation_IT                 = wt.Translation_IT
-    w.Translation_ES                 = wt.Translation_ES
-    w.Translation_RU                 = wt.Translation_RU
-    w.Translation_PT                 = wt.Translation_PT
-    w.ExplainationExamplesRaw        = wt.ExplainationExamplesRaw
-    w.ExplainationExamplesTxt        = wt.ExplainationExamplesTxt
-    w.IsMale                         = wt.IsMale
-    w.IsFeminine                     = wt.IsFeminine
-    w.IsNeutre                       = wt.IsNeutre
-    w.IsSingle                       = wt.IsSingle
-    w.IsPlural                       = wt.IsPlural
-    w.SingleVariant                  = wt.SingleVariant
-    w.PluralVariant                  = wt.PluralVariant
-    w.MaleVariant                    = wt.MaleVariant
-    w.FemaleVariant                  = wt.FemaleVariant
-    w.IsVerbPast                     = wt.IsVerbPast
-    w.IsVerbPresent                  = wt.IsVerbPresent
-    w.IsVerbFutur                    = wt.IsVerbFutur
-    w.VerbInfinitive                 = ""
-    w.VerbTense                      = ""
-    #
-    # w.Operation_Merging              = 0
-    # w.Operation_Wikipedia            = 0
-    # w.Operation_Vectorizer           = 0
-    # w.Operation_PropertiesInv        = 0
-    # w.Operation_VectSentences        = 0
-    # w.Operation_Pref                 = 0
-
-    # Wikipedia
-    w.PK                             = wp.PK
-    w.LabelName                      = wp.LabelName
-    w.LabelTypeWP                    = wp.LabelTypeWP
-    w.LanguageCode                   = wp.LanguageCode
-    w.ExplainationWPTxt              = wp.ExplainationWPTxt
-    w.ExplainationWPRaw              = wp.ExplainationWPRaw
-    w.DescriptionWikipediaLinks      = wp.DescriptionWikipediaLinks
-    w.DescriptionWiktionaryLinks     = wp.DescriptionWiktionaryLinks
-    w.DescriptionWikidataLinks       = wp.DescriptionWikidataLinks
-    w.SelfUrlWikipedia               = wp.SelfUrlWikipedia
-    w.SeeAlso                        = wp.SeeAlsoWikipediaLinks
-    w.SeeAlsoWikipediaLinks          = wp.SeeAlso
-    #w.SeeAlsoWiktionaryLinks         = wp.SeeAlsoWiktionaryLinks
-    w.ExplainationExamplesRaw        = wp.ExplainationExamplesRaw
-    w.ExplainationExamplesTxt        = wp.ExplainationExamplesTxt
-    #
-    # w.Operation_Merging              = 0
-    # w.Operation_Wikipedia            = 0
-    # w.Operation_Vectorizer           = 0
-    # w.Operation_PropertiesInv        = 0
-    # w.Operation_VectSentences        = 0
-    # w.Operation_Pref                 = 0
-
-    # Conjugations
-    w.PK                             = cj.PK
-    w.LabelName                      = cj.LabelName
-    w.LabelType                      = cj.LabelType
-    w.LanguageCode                   = cj.LanguageCode
-    w.Type                           = cj.Type
-    w.ExplainationTxt                = cj.ExplainationTxt
-    w.AlternativeFormsOther          = cj.AlternativeFormsOther
-    w.Otherwise                      = cj.OtherwiseRelated
-    w.IsMale                         = cj.IsMale
-    w.IsFeminine                     = cj.IsFeminine
-    #w.IsNeutre                       = cj.IsNeutre
-    w.IsSingle                       = cj.IsSingle
-    w.IsPlural                       = cj.IsPlural
-    w.IsVerbPast                     = cj.IsVerbPast
-    w.IsVerbPresent                  = cj.IsVerbPresent
-    w.IsVerbFutur                    = cj.IsVerbFutur
+# def merge():
+#     w = WordItem()
+#     wd = WikidataItem()
+#     wt = WikictionaryItem()
+#     wp = WikipediaItem()
+#     cj = ConjugationsItem()
+#
+#     # Wikidata
+#     w.PK                             = wd.PrimaryKey
+#     w.LabelName                      = wd.LabelName
+#     w.LabelTypeWD                    = Scrapper_Merger_Wikidata.LabelTypeWD( wd )
+#     w.LanguageCode                   = wd.LanguageCode
+#     w.Description                    = wd.Description
+#     w.AlsoKnownAs                    = wd.AlsoKnownAs
+#     w.SelfUrlWikidata                = wd.SelfUrl
+#     w.Instance_of                    = Scrapper_Merger_Wikidata.Instance_of( wd )
+#     w.Subclass_of                    = Scrapper_Merger_Wikidata.Subclass_of( wd )
+#     w.Part_of                        = Scrapper_Merger_Wikidata.Part_of( wd )
+#     w.Translation_EN                 = wd.Translation_EN
+#     w.Translation_FR                 = wd.Translation_FR
+#     w.Translation_DE                 = wd.Translation_DE
+#     w.Translation_IT                 = wd.Translation_IT
+#     w.Translation_ES                 = wd.Translation_ES
+#     w.Translation_RU                 = wd.Translation_RU
+#     w.Translation_PT                 = wd.Translation_PT
+#     w.Ext_Wikipedia_URL              = Scrapper_Merger_Wikidata.Ext_Wikipedia_URL( wd )
+#     w.CountTotalOfWikipediaUrl       = Scrapper_Merger_Wikidata.CountTotalOfWikipediaUrl( wd )
+#     #
+#     # w.Operation_Merging              = 0
+#     # w.Operation_Wikipedia            = 0
+#     # w.Operation_Vectorizer           = 0
+#     # w.Operation_PropertiesInv        = 0
+#     # w.Operation_VectSentences        = 0
+#     # w.Operation_Pref                 = 0
+#
+#     # Wiktionary
+#     w.PK                             = wt.PrimaryKey
+#     w.LabelName                      = wt.LabelName
+#     w.LabelType                      = wt.LabelType
+#     w.LanguageCode                   = wt.LanguageCode
+#     w.Type                           = wt.Type
+#     w.IndexInPageWiktionary          = wt.IndexinPage
+#     w.ExplainationTxt                = wt.ExplainationTxt
+#     w.ExplainationRaw                = wt.ExplainationRaw
+#     w.DescriptionWikipediaLinks      = wt.DescriptionWikipediaLinks
+#     w.DescriptionWiktionaryLinks     = wt.DescriptionWiktionaryLinks
+#     w.AlternativeFormsOther          = wt.AlternativeFormsOther
+#     w.SelfUrlWiktionary              = wt.SelfUrl
+#     w.Synonymy                       = wt.Synonymy
+#     w.Antonymy                       = wt.Antonymy
+#     w.Hypernymy                      = wt.Hypernymy
+#     w.Hyponymy                       = wt.Hyponymy
+#     w.Meronymy                       = wt.Meronymy
+#     w.RelatedTerms                   = wt.RelatedTerms
+#     w.CoordinateTerms                = wt.RelatedTerms
+#     w.Otherwise                      = wt.RelatedTerms
+#     w.Translation_EN                 = wt.Translation_EN
+#     w.Translation_FR                 = wt.Translation_FR
+#     w.Translation_DE                 = wt.Translation_DE
+#     w.Translation_IT                 = wt.Translation_IT
+#     w.Translation_ES                 = wt.Translation_ES
+#     w.Translation_RU                 = wt.Translation_RU
+#     w.Translation_PT                 = wt.Translation_PT
+#     w.ExplainationExamplesRaw        = wt.ExplainationExamplesRaw
+#     w.ExplainationExamplesTxt        = wt.ExplainationExamplesTxt
+#     w.IsMale                         = wt.IsMale
+#     w.IsFeminine                     = wt.IsFeminine
+#     w.IsNeutre                       = wt.IsNeutre
+#     w.IsSingle                       = wt.IsSingle
+#     w.IsPlural                       = wt.IsPlural
+#     w.SingleVariant                  = wt.SingleVariant
+#     w.PluralVariant                  = wt.PluralVariant
+#     w.MaleVariant                    = wt.MaleVariant
+#     w.FemaleVariant                  = wt.FemaleVariant
+#     w.IsVerbPast                     = wt.IsVerbPast
+#     w.IsVerbPresent                  = wt.IsVerbPresent
+#     w.IsVerbFutur                    = wt.IsVerbFutur
+#     w.VerbInfinitive                 = ""
+#     w.VerbTense                      = ""
+#     #
+#     # w.Operation_Merging              = 0
+#     # w.Operation_Wikipedia            = 0
+#     # w.Operation_Vectorizer           = 0
+#     # w.Operation_PropertiesInv        = 0
+#     # w.Operation_VectSentences        = 0
+#     # w.Operation_Pref                 = 0
+#
+#     # Wikipedia
+#     w.PK                             = wp.PK
+#     w.LabelName                      = wp.LabelName
+#     w.LabelTypeWP                    = wp.LabelTypeWP
+#     w.LanguageCode                   = wp.LanguageCode
+#     w.ExplainationWPTxt              = wp.ExplainationWPTxt
+#     w.ExplainationWPRaw              = wp.ExplainationWPRaw
+#     w.DescriptionWikipediaLinks      = wp.DescriptionWikipediaLinks
+#     w.DescriptionWiktionaryLinks     = wp.DescriptionWiktionaryLinks
+#     w.DescriptionWikidataLinks       = wp.DescriptionWikidataLinks
+#     w.SelfUrlWikipedia               = wp.SelfUrlWikipedia
+#     w.SeeAlso                        = wp.SeeAlsoWikipediaLinks
+#     w.SeeAlsoWikipediaLinks          = wp.SeeAlso
+#     #w.SeeAlsoWiktionaryLinks         = wp.SeeAlsoWiktionaryLinks
+#     w.ExplainationExamplesRaw        = wp.ExplainationExamplesRaw
+#     w.ExplainationExamplesTxt        = wp.ExplainationExamplesTxt
+#     #
+#     # w.Operation_Merging              = 0
+#     # w.Operation_Wikipedia            = 0
+#     # w.Operation_Vectorizer           = 0
+#     # w.Operation_PropertiesInv        = 0
+#     # w.Operation_VectSentences        = 0
+#     # w.Operation_Pref                 = 0
+#
+#     # Conjugations
+#     w.PK                             = cj.PK
+#     w.LabelName                      = cj.LabelName
+#     w.LabelType                      = cj.LabelType
+#     w.LanguageCode                   = cj.LanguageCode
+#     w.Type                           = cj.Type
+#     w.ExplainationTxt                = cj.ExplainationTxt
+#     w.AlternativeFormsOther          = cj.AlternativeFormsOther
+#     w.Otherwise                      = cj.OtherwiseRelated
+#     w.IsMale                         = cj.IsMale
+#     w.IsFeminine                     = cj.IsFeminine
+#     #w.IsNeutre                       = cj.IsNeutre
+#     w.IsSingle                       = cj.IsSingle
+#     w.IsPlural                       = cj.IsPlural
+#     w.IsVerbPast                     = cj.IsVerbPast
+#     w.IsVerbPresent                  = cj.IsVerbPresent
+#     w.IsVerbFutur                    = cj.IsVerbFutur
 
 
 def load_wikidata():
@@ -411,7 +442,7 @@ def load_wikipedia():
 
             read( DBWikipedia, table="wikipedia", cls=WikipediaItem ) \
                 .map( convert_wikipedia_to_word ) \
-                .write( DBWord, table="words", if_exists="fail" )
+                .write( DBWord, table="words", if_exists="replace" )
 
 
 def load_wiktionary():
@@ -425,9 +456,16 @@ def load_wiktionary():
 
 def main():
     # check_structure()
+
+    # load 1
     #load_wikidata()
-    load_conjugations()
-    #load_wikipedia()
+    #load_conjugations()
+
+    # create indexes
+    check_indexes()
+
+    # load 2
+    load_wikipedia()
     #load_wiktionary()
 
 

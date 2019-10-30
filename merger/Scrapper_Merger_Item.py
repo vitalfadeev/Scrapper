@@ -4,7 +4,7 @@ class WordItem:
         DB_INIT = """
             CREATE TABLE IF NOT EXISTS words (
                 PK                         VARCHAR(255) NOT   NULL  PRIMARY KEY,
-                LabelName                  VARCHAR(255) NULL,
+                LabelName                  VARCHAR(255) NULL COLLATE NOCASE,
                 LabelType                  VARCHAR(255) NULL,
                 LanguageCode               CHAR(2),
                 Description                TEXT         NULL,
@@ -20,7 +20,7 @@ class WordItem:
                 Translation_ES             TEXT         NULL,
                 Translation_RU             TEXT         NULL,
                 Translation_PT             TEXT         NULL,
-                Ext_Wikipedia_URL          TEXT         NULL,
+                Ext_Wikipedia_URL          TEXT         NULL COLLATE NOCASE,
                 CountTotalOfWikipediaUrl   INTEGER      NULL,
                 Operation_Merging          INTEGER      NULL,
                 Operation_Wikipedia        INTEGER      NULL,

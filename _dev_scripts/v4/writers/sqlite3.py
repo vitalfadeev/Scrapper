@@ -10,7 +10,7 @@ class Writer:
         assert isinstance( db, sqlite3.Connection )
         self.db = db
 
-    def write( self, iterable: Range, table: str=None, pk: str="PrimaryKey", if_exists: str="replace" ):
+    def write( self, iterable: Range, table: str=None, pk: str="PrimaryKey", if_exists: str="fail", *args, **kwargs ):
         assert isinstance( iterable, Range )
 
         # #
@@ -33,7 +33,7 @@ class Writer:
 
         for item in iterable:
             if isinstance( item, WordItem ):
-                DBWrite( self.db, item )
+                DBWrite( self.db, item, table=table, if_exists=if_exists, *args, **kwargs )
 
             #     fields = [ f for f in vars( item ) if not callable( f ) and not f.startswith('_') and f[0].isupper() ]
             #     values = [ getattr( item, f ) for f in fields ]
