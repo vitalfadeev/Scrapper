@@ -28,23 +28,6 @@ def load_conjugations():
     read( conjugations_db )
 
 
-def load_wikipedia():
-    # load all wikipedia and merge with exisiting word (wikidata)
-    #   if same Ext_Wikipedia_URL,
-    #   and also check if there is exisiting word with same labelname (not case sensitive),
-    #   then use PKS_ListMatch to see if we merge or not
-    wikipedia_db = "wikipedia.db"
-    wp = read( wikipedia_db )
-
-    wikidata_db = "wikidata.db"
-    wd = read( wikidata_db )
-
-    # wd.select(
-    #     wd.LabelName.lower() = wp.LabelName.lower() and
-    #     wd.Ext_Wikipedia_URL = wp.Wikipedia_URL
-    # )
-
-
 def check_structure():
     # Wikipedia
     DBCheckStructure( DBWikipedia, "wikipedia", {
@@ -224,6 +207,37 @@ def convert_wiktionary_to_word( wt: WikictionaryItem ) -> WordItem:
     return w
 
 
+def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
+    log.info( wp )
+
+    w = WordItem()
+
+    w.PK                             = wp.PK
+    w.LabelName                      = wp.LabelName
+    w.LabelTypeWP                    = wp.LabelTypeWP
+    w.LanguageCode                   = wp.LanguageCode
+    w.ExplainationWPTxt              = wp.ExplainationWPTxt
+    w.ExplainationWPRaw              = wp.ExplainationWPRaw
+    w.DescriptionWikipediaLinks      = wp.DescriptionWikipediaLinks
+    w.DescriptionWiktionaryLinks     = wp.DescriptionWiktionaryLinks
+    w.DescriptionWikidataLinks       = wp.DescriptionWikidataLinks
+    w.SelfUrlWikipedia               = wp.SelfUrlWikipedia
+    w.SeeAlso                        = wp.SeeAlsoWikipediaLinks
+    w.SeeAlsoWikipediaLinks          = wp.SeeAlso
+    #w.SeeAlsoWiktionaryLinks         = wp.SeeAlsoWiktionaryLinks
+    w.ExplainationExamplesRaw        = wp.ExplainationExamplesRaw
+    w.ExplainationExamplesTxt        = wp.ExplainationExamplesTxt
+    #
+    # w.Operation_Merging              = 0
+    # w.Operation_Wikipedia            = 0
+    # w.Operation_Vectorizer           = 0
+    # w.Operation_PropertiesInv        = 0
+    # w.Operation_VectSentences        = 0
+    # w.Operation_Pref                 = 0
+
+    return w
+
+
 def merge():
     w = WordItem()
     wd = WikidataItem()
@@ -362,6 +376,16 @@ def load_wikidata():
                 .map( convert_wikidata_to_word ) \
                 .write( DBWord, table="words", if_exists="fail" )
 
+
+def load_wikipedia():
+    with sqlite3.connect( "wikipedia.db", timeout=5.0 ) as DBWikipedia:
+        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+
+            read( DBWikipedia, table="wikipedia", cls=WikipediaItem ) \
+                .map( convert_wikipedia_to_word ) \
+                .write( DBWord, table="words", if_exists="fail" )
+
+
 def load_wiktionary():
     with sqlite3.connect( "wiktionary.db", timeout=5.0 ) as DBWiktionary:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
@@ -374,7 +398,8 @@ def load_wiktionary():
 def main():
     # check_structure()
     #load_wikidata()
-    load_wiktionary()
+    load_wikipedia()
+    #load_wiktionary()
 
 
 if __name__ == "__main__":
