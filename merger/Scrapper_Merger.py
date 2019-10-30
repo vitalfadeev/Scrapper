@@ -165,6 +165,65 @@ def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     return w
 
 
+def convert_wiktionary_to_word( wt: WikictionaryItem ) -> WordItem:
+    log.info( wt )
+
+    w = WordItem()
+
+    w.PK                             = wt.PrimaryKey
+    w.LabelName                      = wt.LabelName
+    w.LabelType                      = wt.LabelType
+    w.LanguageCode                   = wt.LanguageCode
+    w.Type                           = wt.Type
+    w.IndexInPageWiktionary          = wt.IndexinPage
+    w.ExplainationTxt                = wt.ExplainationTxt
+    w.ExplainationRaw                = wt.ExplainationRaw
+    w.DescriptionWikipediaLinks      = wt.DescriptionWikipediaLinks
+    w.DescriptionWiktionaryLinks     = wt.DescriptionWiktionaryLinks
+    w.AlternativeFormsOther          = wt.AlternativeFormsOther
+    w.SelfUrlWiktionary              = wt.SelfUrl
+    w.Synonymy                       = wt.Synonymy
+    w.Antonymy                       = wt.Antonymy
+    w.Hypernymy                      = wt.Hypernymy
+    w.Hyponymy                       = wt.Hyponymy
+    w.Meronymy                       = wt.Meronymy
+    w.RelatedTerms                   = wt.RelatedTerms
+    w.CoordinateTerms                = wt.RelatedTerms
+    w.Otherwise                      = wt.RelatedTerms
+    w.Translation_EN                 = wt.Translation_EN
+    w.Translation_FR                 = wt.Translation_FR
+    w.Translation_DE                 = wt.Translation_DE
+    w.Translation_IT                 = wt.Translation_IT
+    w.Translation_ES                 = wt.Translation_ES
+    w.Translation_RU                 = wt.Translation_RU
+    w.Translation_PT                 = wt.Translation_PT
+    w.ExplainationExamplesRaw        = wt.ExplainationExamplesRaw
+    w.ExplainationExamplesTxt        = wt.ExplainationExamplesTxt
+    w.IsMale                         = wt.IsMale
+    w.IsFeminine                     = wt.IsFeminine
+    w.IsNeutre                       = wt.IsNeutre
+    w.IsSingle                       = wt.IsSingle
+    w.IsPlural                       = wt.IsPlural
+    w.SingleVariant                  = wt.SingleVariant
+    w.PluralVariant                  = wt.PluralVariant
+    w.MaleVariant                    = wt.MaleVariant
+    w.FemaleVariant                  = wt.FemaleVariant
+    w.IsVerbPast                     = wt.IsVerbPast
+    w.IsVerbPresent                  = wt.IsVerbPresent
+    w.IsVerbFutur                    = wt.IsVerbFutur
+    w.VerbInfinitive                 = ""
+    w.VerbTense                      = ""
+    #
+    # w.Operation_Merging              = 0
+    # w.Operation_Wikipedia            = 0
+    # w.Operation_Vectorizer           = 0
+    # w.Operation_PropertiesInv        = 0
+    # w.Operation_VectSentences        = 0
+    # w.Operation_Pref                 = 0
+
+    return w
+
+
 def merge():
     w = WordItem()
     wd = WikidataItem()
@@ -296,17 +355,26 @@ def merge():
 
 
 def load_wikidata():
-    with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
-        with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
+    with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
+        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
 
             read( DBWWikidata, table="wikidata", cls=WikidataItem ) \
                 .map( convert_wikidata_to_word ) \
-                .write( DBWord, table="words", if_exists="replace" )
+                .write( DBWord, table="words", if_exists="fail" )
+
+def load_wiktionary():
+    with sqlite3.connect( "wiktionary.db", timeout=5.0 ) as DBWiktionary:
+        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+
+            read( DBWiktionary, table="wiktionary", cls=WikictionaryItem ) \
+                .map( convert_wiktionary_to_word ) \
+                .write( DBWord, table="words", if_exists="fail" )
 
 
 def main():
     # check_structure()
-    load_wikidata()
+    #load_wikidata()
+    load_wiktionary()
 
 
 if __name__ == "__main__":
