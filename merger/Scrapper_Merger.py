@@ -251,41 +251,40 @@ def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
                WHERE Ext_Wikipedia_URL = ? 
                  AND LabelName = ? COLLATE NOCASE """ # ci_index
 
-    items = read( DBWord, sql=sql, cls=WordItem, params=[wp.SelfUrlWikipedia, wp.LabelName] ) \
+    items = read( DBWord, sql=sql, params=[wp.SelfUrlWikipedia, wp.LabelName], cls=WordItem ) \
         .map( merge_with_wikipedia ) \
         .as_list()
 
     if items:
         if PKS_ListMatch( items, wp ):
             # merge
-            ...
+            w = WordItem()
 
-    w = WordItem()
+            w.PK                             = wp.PK
+            w.LabelName                      = wp.LabelName
+            w.LabelTypeWP                    = wp.LabelTypeWP
+            w.LanguageCode                   = wp.LanguageCode
+            w.ExplainationWPTxt              = wp.ExplainationWPTxt
+            w.ExplainationWPRaw              = wp.ExplainationWPRaw
+            w.DescriptionWikipediaLinks      = wp.DescriptionWikipediaLinks
+            w.DescriptionWiktionaryLinks     = wp.DescriptionWiktionaryLinks
+            w.DescriptionWikidataLinks       = wp.DescriptionWikidataLinks
+            w.SelfUrlWikipedia               = wp.SelfUrlWikipedia
+            w.SeeAlso                        = wp.SeeAlsoWikipediaLinks
+# [] - extend
+            w.SeeAlsoWikipediaLinks          = wp.SeeAlso
+            #w.SeeAlsoWiktionaryLinks         = wp.SeeAlsoWiktionaryLinks
+            w.ExplainationExamplesRaw        = wp.ExplainationExamplesRaw
+            w.ExplainationExamplesTxt        = wp.ExplainationExamplesTxt
+            #
+            # w.Operation_Merging              = 0
+            # w.Operation_Wikipedia            = 0
+            # w.Operation_Vectorizer           = 0
+            # w.Operation_PropertiesInv        = 0
+            # w.Operation_VectSentences        = 0
+            # w.Operation_Pref                 = 0
 
-    w.PK                             = wp.PK
-    w.LabelName                      = wp.LabelName
-    w.LabelTypeWP                    = wp.LabelTypeWP
-    w.LanguageCode                   = wp.LanguageCode
-    w.ExplainationWPTxt              = wp.ExplainationWPTxt
-    w.ExplainationWPRaw              = wp.ExplainationWPRaw
-    w.DescriptionWikipediaLinks      = wp.DescriptionWikipediaLinks
-    w.DescriptionWiktionaryLinks     = wp.DescriptionWiktionaryLinks
-    w.DescriptionWikidataLinks       = wp.DescriptionWikidataLinks
-    w.SelfUrlWikipedia               = wp.SelfUrlWikipedia
-    w.SeeAlso                        = wp.SeeAlsoWikipediaLinks
-    w.SeeAlsoWikipediaLinks          = wp.SeeAlso
-    #w.SeeAlsoWiktionaryLinks         = wp.SeeAlsoWiktionaryLinks
-    w.ExplainationExamplesRaw        = wp.ExplainationExamplesRaw
-    w.ExplainationExamplesTxt        = wp.ExplainationExamplesTxt
-    #
-    # w.Operation_Merging              = 0
-    # w.Operation_Wikipedia            = 0
-    # w.Operation_Vectorizer           = 0
-    # w.Operation_PropertiesInv        = 0
-    # w.Operation_VectSentences        = 0
-    # w.Operation_Pref                 = 0
-
-    return w
+            return w
 
 
 # def merge():
