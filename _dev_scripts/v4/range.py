@@ -57,6 +57,12 @@ class Range:
         return Range( map( fn, self.iterable ) )
 
 
+    def generate( self, fn ):
+        assert callable( fn )
+        generated = ( fn( x ) for x in self.iterable )
+        return Range( generated )
+
+
     def get_words( self ):
         words = re.split( "\W+", self.iterable )
         return Range( words )

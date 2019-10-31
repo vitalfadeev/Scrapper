@@ -3,9 +3,8 @@ import io
 import os
 import importlib
 import sqlite3
-from contextlib import contextmanager
 from urllib.parse import urlparse
-from .range import Range, R
+from .range import Range
 
 
 # Example: 'dump.xml.bz2'
@@ -27,10 +26,7 @@ def read_sqlite( db, table=None, sql=None, cls=None, params=None, *args, **kwarg
 
     #
     if sql is None:
-        sql = """
-        SELECT *
-          FROM {table}
-        """.format(
+        sql = """ SELECT * FROM {table} """.format(
             table=table,
         )
 
@@ -69,7 +65,7 @@ def read_sqlite( db, table=None, sql=None, cls=None, params=None, *args, **kwarg
 
         result = map( fn, query_result )
 
-    return R( result )
+    return Range( result )
 
 
 def read( src, *args, **kwargs ):

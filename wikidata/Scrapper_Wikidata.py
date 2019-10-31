@@ -17,12 +17,12 @@ import Scrapper_Downloader
 
 #
 DB_NAME      = "wikidata.db"
-DBWWikidata  = sqlite3.connect( DB_NAME, timeout=5.0 )
+DBWikidata  = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER = "cached"  # folder where stored downloadad dumps
 log          = logging.getLogger(__name__)
 
 # init DB
-DBExecuteScript( DBWWikidata, WikidataItem.Meta.DB_INIT )
+DBExecuteScript( DBWikidata, WikidataItem.Meta.DB_INIT )
 
 if os.path.isfile( os.path.join( 'wikidata', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wikidata', 'logging.ini' ) )
@@ -426,7 +426,7 @@ def check_one(id_, lang):
 
     # delete old record
     if os.path.isfile( DB_NAME ):
-        DBExecute( DBWWikidata, "DELETE FROM wikidata WHERE CodeInWiki = ?", (id_, ))
+        DBExecute( DBWikidata, "DELETE FROM wikidata WHERE CodeInWiki = ?", (id_,) )
 
     # process
     process_web_record(data, lang, id_)
@@ -445,7 +445,7 @@ def scrap(lang="en", from_point=None, workers=1):
         pool = multiprocessing.Pool( workers )
         for w in pool.imap(process_dump_record_mp, DumpReader(lang, local_file, from_point)):
             if w is not None:
-                DBWrite( DBWWikidata, w )
+                DBWrite( DBWikidata, w )
 
         pool.close()
         pool.join()
@@ -454,7 +454,7 @@ def scrap(lang="en", from_point=None, workers=1):
         for (data, lang, i) in DumpReader(lang, local_file, from_point):
             w = process_dump_record(data, lang, i)
             if w is not None:
-                DBWrite( DBWWikidata, w )
+                DBWrite( DBWikidata, w )
 
 
 # main
