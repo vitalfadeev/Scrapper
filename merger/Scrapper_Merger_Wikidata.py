@@ -1,4 +1,6 @@
+import functools
 import logging
+import math
 import sqlite3
 
 from Scrapper_Item import Str, ItemProxy
@@ -45,6 +47,15 @@ def to_names( wikidata_id_list ):
     return R( wikidata_id_list ).map( to_name ).as_list()
 
 
+def get_sentences_with_label( Description, LabelName ):
+    return []
+
+
+@functools.lru_cache( maxsize=32 )
+def wds_value_of( wid ):
+    return 0
+
+
 def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     log.info( wd )
 
@@ -67,8 +78,39 @@ def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     w.Translation_ES           = wd.Translation_ES
     w.Translation_RU           = wd.Translation_RU
     w.Translation_PT           = wd.Translation_PT
-    w.Ext_Wikipedia_URL        = getattr( wd, "Wikipedia{}URL".format(wd.LanguageCode.upper()) )
+    w.Ext_Wikipedia_URL        = getattr( wd, "Wikipedia{}URL".format( wd.LanguageCode.upper() ) )
     w.CountTotalOfWikipediaUrl = wd.WikipediaLinkCountTotal
+
+    # PKN preparing
+    # LabelNamePreference
+    ExplainationExamplesTxt = get_sentences_with_label( wd.Description, wd.LabelName )
+    ExplainationTxt = wd.Description
+
+    wds = \
+        len( wd.AlsoKnownAs ) + \
+        len( wd.Instance_of ) + \
+        len( wd.Subclass_of ) + \
+        len( wd.Part_of ) + \
+        len( wd.Translation_EN ) + \
+        len( wd.Translation_PT ) + \
+        len( wd.Translation_DE ) + \
+        len( wd.Translation_ES ) + \
+        len( wd.Translation_FR ) + \
+        len( wd.Translation_IT ) + \
+        len( wd.Translation_RU ) + \
+        math.sqrt( wd.WikipediaLinkCountTotal ) + \
+        math.sqrt( len( ExplainationExamplesTxt ) ) + \
+        math.sqrt( len( ExplainationTxt ) )
+
+    # then divide by value of ( CAT-FELIDAE ) and divide by 2
+    # If <0 then : =0 elif >1 then : =1
+
+    x = wds / wds_value_of( 'CAT-FELIDAE' ) / 2
+
+    if x <= 0:
+        w.LabelNamePreference = 0
+    else:
+        w.LabelNamePreference = 1
 
     return w
 

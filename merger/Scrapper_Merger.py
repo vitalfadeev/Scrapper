@@ -128,14 +128,14 @@ def main():
     # check_structure()
 
     # load 1
-    #load_wikidata()
+    load_wikidata()
     #load_conjugations()
 
     # create indexes
     check_indexes()
 
     # load 2
-    load_wikipedia()
+    #load_wikipedia()
     #load_wiktionary()
 
 

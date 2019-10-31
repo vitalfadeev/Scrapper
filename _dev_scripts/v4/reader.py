@@ -1,5 +1,6 @@
 import functools
 import io
+import json
 import os
 import importlib
 import sqlite3
@@ -39,7 +40,10 @@ def read_sqlite( db, table=None, sql=None, cls=None, params=None, *args, **kwarg
     query_result = cursor.execute( sql, params )
 
     # convert result to object | list | dict | ...
-    if cls is tuple:
+    if cls is None:
+        result = query_result
+
+    elif cls is tuple:
         result = query_result
 
     elif cls is list:
@@ -54,10 +58,35 @@ def read_sqlite( db, table=None, sql=None, cls=None, params=None, *args, **kwarg
 
         result = map( fn, query_result )
 
-    else:
+    else: # cls is class
         def convert_to_cls( cls, fields, row ):
+            # str -> str
+            #     -> []
+            #     -> {}
+            # int -> int
+            # nul -> str
+            #     -> []
+            #     -> {}
+            #     -> int
+            # depends of cls.attr type
+
             o = cls()
-            o.__dict__.update( dict( zip( fields, row ) ) )
+
+            for field, value in dict( zip( fields, row ) ):
+                a = getattr( o, field )
+
+                if value is None:
+                    pass
+                else:
+                    if isinstance( a, list ):
+                        setattr( o, field, json.loads( value ) )
+
+                    elif isinstance( a, dict ):
+                        setattr( o, field, json.loads( value ) )
+
+                    else:
+                        setattr( o, field, value )
+
             return o
 
         fields = [ x[0] for x in query_result.description ]
