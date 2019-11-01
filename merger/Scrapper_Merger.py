@@ -6,9 +6,11 @@ import sqlite3
 import logging
 import logging.config
 from Scrapper_DB import DBAddColumn, DBCheckStructure, DBExecuteScript, DBCheckIndex, DBCheckIndexes
+from Scrapper_IxiooAPI import Vectorize_database_record
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 from conjugator.Scrapper_Conjugator import DBConjugations
 from merger.Scrapper_Merger_Item import WordItem
+from merger.Scrapper_Merger_Vectorizer import vectorize_properties
 from wikidata.Scrapper_Wikidata import DBWikidata
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
 from wikipedia.Scrapper_Wikipedia import DBWikipedia
@@ -63,9 +65,23 @@ def check_structure():
     # Word
     DBWord = sqlite3.connect( "word.db", timeout=5.0 )
     DBCheckStructure( DBWord, "words", {
-        "Operation_Merging": "INTEGER NULL",
-        "Operation_Wikipedia": "INTEGER NULL",
-        "LabelNamePreference": "INTEGER NULL",
+        "Operation_Merging"          : "INTEGER NULL",
+        "Operation_Wikipedia"        : "INTEGER NULL",
+        "LabelNamePreference"        : "INTEGER NULL",
+        "AlsoKnownAs_Vect"           : "TEXT NULL",
+        "Instance_of_Vect"           : "TEXT NULL",
+        "Subclass_of_Vect"           : "TEXT NULL",
+        "Part_of_Vect"               : "TEXT NULL",
+        "ExplainationTxt_Vect"       : "TEXT NULL",
+        "AlternativeFormsOther_Vect" : "TEXT NULL",
+        "Synonymy_Vect"              : "TEXT NULL",
+        "Antonymy_Vect"              : "TEXT NULL",
+        "Hypernymy_Vect"             : "TEXT NULL",
+        "Hyponymy_Vect"              : "TEXT NULL",
+        "Meronymy_Vect"              : "TEXT NULL",
+        "RelatedTerms_Vect"          : "TEXT NULL",
+        "CoordinateTerms_Vect"       : "TEXT NULL",
+        "Otherwise_Vect"             : "TEXT NULL",
     } )
 
 
@@ -139,18 +155,18 @@ def main():
     check_indexes_wikidata()
 
     # load 1
-    load_wikidata()
+    #load_wikidata()
     #load_conjugations()
 
     # create indexes
     check_indexes()
 
     # load 2
-    #load_wikipedia()
+    load_wikipedia()
     #load_wiktionary()
 
     # Vectorize
-
+    #vectorize_properties()
 
 
 if __name__ == "__main__":

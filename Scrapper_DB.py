@@ -139,7 +139,7 @@ def DBRead( DB, table=None, where=None, sql=None, params=None, cls=None, *args, 
     return result
 
 
-def DBWrite(DB, item:object, table=None, if_exists="fail", *args, **kwargs ):
+def DBWrite( DB, item:object, table=None, if_exists="fail", *args, **kwargs ):
     """
     Write item into database `DB`.
 

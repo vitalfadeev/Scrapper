@@ -55,6 +55,8 @@ class ConjugationsItem:
         self.IsVerbPast                  = bool
         self.IsVerbPresent               = bool
         self.IsVerbFutur                 = bool
+        self.LabelNamePreference         = 0
+        self.Operation_Merging           = 0
 
     def __repr__(self):
         return "ConjugationsItem(" + self.LabelName + ': ' + self.PK + ")"

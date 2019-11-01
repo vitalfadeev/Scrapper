@@ -1,6 +1,7 @@
 import logging
 import sqlite3
 
+from Scrapper_DB import DBRead, DBWrite, DBExecute
 from Scrapper_IxiooAPI import Match_List_PKS_With_Lists_Of_PKS
 from _dev_scripts.v4.reader import read
 from merger.Scrapper_Merger import DBWord
@@ -27,7 +28,7 @@ def merge_words( w, wp ):
     w.DescriptionWikidataLinks = wp.DescriptionWikidataLinks
     w.SelfUrlWikipedia = wp.SelfUrlWikipedia
     w.SeeAlso = wp.SeeAlso
-    w.SeeAlso.extends( wp.SeeAlsoWikipediaLinks )
+    w.SeeAlso.extend( wp.SeeAlsoWikipediaLinks )
     w.SeeAlsoWikipediaLinks = wp.SeeAlso
     # w.SeeAlsoWiktionaryLinks                    = wp.SeeAlsoWiktionaryLinks
     w.ExplainationExamplesRaw = wp.ExplainationExamplesRaw
@@ -93,6 +94,11 @@ def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
 def load_wikipedia():
     with sqlite3.connect( "wikipedia.db", timeout=5.0 ) as DBWikipedia:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
-            read( DBWikipedia, table="wikipedia", cls=WikipediaItem ) \
-                .generate( convert_wikipedia_to_word ) \
-                .write( DBWord, table="words", if_exists="replace" )
+            for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
+                log.info( "%s", wd )
+
+                for w in convert_wikipedia_to_word( wd ):
+                    DBWrite( DBWord, w, table="words", if_exists="fail" )
+
+                DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", 1 )
+

@@ -1,10 +1,9 @@
 import logging
 import sqlite3
 
-from _dev_scripts.v4.reader import read
+from Scrapper_DB import DBRead, DBWrite, DBExecute
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
 from merger.Scrapper_Merger_Item import WordItem
-from wikidata.Scrapper_Wikidata_Item import WikidataItem
 
 log    = logging.getLogger(__name__)
 
@@ -38,6 +37,11 @@ def load_conjugations():
     with sqlite3.connect( "conjugations.db", timeout=5.0 ) as DBConjugations:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
 
-            read( DBConjugations, table="conjugations", cls=WikidataItem ) \
-                .map( convert_conjugations_to_word ) \
-                .write( DBWord, table="words", if_exists="fail" )
+            for wd in DBRead( DBConjugations, table="conjugations", cls=ConjugationsItem ):
+                log.info( "%s", wd )
+
+                w = convert_conjugations_to_word( wd )
+                DBWrite( DBWord, w, table="words", if_exists="fail" )
+
+                DBExecute( DBConjugations, "UPDATE conjugations SET Operation_Merging = 1 WHERE PK = ?", 1 )
+

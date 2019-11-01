@@ -4,3 +4,4 @@
 /*.log
 /*.db
 /*.db-journal
+/_dev_scripts/pony-orm/

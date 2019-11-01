@@ -3,10 +3,9 @@ import logging
 import math
 import sqlite3
 
-from Scrapper_DB import DBWrite, DBRead
+from Scrapper_DB import DBWrite, DBRead, DBExecute
 from _dev_scripts.Scrapper_Item import Str
 from _dev_scripts.v4.range import R, Range
-from _dev_scripts.v4.reader import read
 from merger.Scrapper_Merger_Item import WordItem
 from wikidata.Scrapper_Wikidata import DBWikidata
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
@@ -53,7 +52,31 @@ def get_sentences_with_label( Description, LabelName ):
 
 
 @functools.lru_cache( maxsize=32 )
-def wds_value_of( wid ):
+def wds_value_of( s: str ):
+    rows = DBRead( DBWikidata, sql="SELECT * FROM wikidata WHERE PrimaryKey=?", params=[s], cls=WordItem )
+    #rows = Read( "SELECT * FROM wikidata WHERE PrimaryKey=?", 'CAT-FELIDAE' ).as_objects( WordItem )
+    try:
+        wd = next( rows )
+
+    except StopIteration:
+        return None
+
+    wds = \
+        len( wd.AlsoKnownAs ) + \
+        len( wd.Instance_of ) + \
+        len( wd.Subclass_of ) + \
+        len( wd.Part_of ) + \
+        len( wd.Translation_EN ) + \
+        len( wd.Translation_PT ) + \
+        len( wd.Translation_DE ) + \
+        len( wd.Translation_ES ) + \
+        len( wd.Translation_FR ) + \
+        len( wd.Translation_IT ) + \
+        len( wd.Translation_RU ) + \
+        math.sqrt( wd.WikipediaLinkCountTotal ) + \
+        math.sqrt( len( wd.ExplainationExamplesTxt ) ) + \
+        math.sqrt( len( wd.ExplainationTxt ) )
+
     return 1
 
 
@@ -106,6 +129,12 @@ def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     # then divide by value of ( CAT-FELIDAE ) and divide by 2
     # If <0 then : =0 elif >1 then : =1
 
+    wds = wds_value_of( 'CAT-FELIDAE' )
+
+    if wds is None:
+        return w
+
+    #
     x = wds / wds_value_of( 'CAT-FELIDAE' ) / 2
 
     if x <= 0:
@@ -126,6 +155,5 @@ def load_wikidata():
                 w = convert_wikidata_to_word( wd )
                 DBWrite( DBWord, w, table="words", if_exists="fail" )
 
-                wd.Operation_Merging = 1
-                #DBWrite( DBWWikidata, wd, table="wikidata", if_exists="replace" )
+                DBExecute( DBWWikidata, "UPDATE wikidata SET Operation_Merging = 1 WHERE PrimaryKey = ?", 1 )
 

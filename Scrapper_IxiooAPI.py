@@ -78,3 +78,72 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
         log.error( "  %s", response.text )
         return None
 
+
+@retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
+def Vectorize_database_record( database_record: dict ) -> list:
+    url = DOMAIN + '/Vectorize_database_record'
+
+    # database_record = { 'LabelType': 'Noun-EXTENSION-LIST',
+    #                     'AlternativeFormsOther': None,
+    #                     'Antonymy': None,
+    #                     'Conjugation': None,
+    #                     'Coordinate': None,
+    #                     'ExplainationExamplesRaw': None,
+    #                     'ExplainationExamplesTxt': None,
+    #                     'ExplainationRaw': '# {{lb|en|by extension}} Any work that has a [[list]] of [[material]] organized alphabetically; e.g., [[biographic]]al dictionary, [[encyclopedic]] dictionary.',
+    #                     'ExplainationTxt': 'Any work that has a list of material organized alphabetically; e.g., biographical dictionary, encyclopedic dictionary.',
+    #                     'Holonymy': None,
+    #                     'Hypernymy': None,
+    #                     'Hyponymy': None,
+    #                     'IsSingle': 1,
+    #                     'LabelName': 'dictionary',
+    #                     'LanguageCode': 'en',
+    #                     'Meronymy': None,
+    #                     'Otherwise': None,
+    #                     'PluralVariant': 'dictionaries',
+    #                     'PrimaryKey': 'en§dictionary§Noun-EXTENSION-LIST§1§84', 'RelatedTerms': '[\n    "diction"\n]',
+    #                     'SelfUrl': 'https://en.wiktionary.org/wiki/dictionary',
+    #                     'Synonymy': '[\n    "Thesaurus:dictionary"\n]',
+    #                     'Translation_DE': '[\n    "assoziatives Datenfeld",\n    "Wörterbuch",\n    "Diktionär"\n]',
+    #                     'Translation_EN': None,
+    #                     'Translation_ES': '[\n    "diccionario"\n]',
+    #                     'Translation_FR': '[\n    "table d\'association",\n    "dictionnaire",\n    "dico",\n    "tableau associatif"\n]',
+    #                     'Translation_IT': '[\n    "dizionario",\n    "vocabolario"\n]',
+    #                     'Translation_PT': '[\n    "array associativo",\n    "dicionário"\n]',
+    #                     'Translation_RU': '[\n    "слова́рь"\n]',
+    #                     'Troponymy': None, 'Type': 'noun',
+    #                     'TypeLabelName': None,
+    #                     'IsPlural': None,
+    #                     'SingleVariant': None,
+    #                     'IsFeminine': None,
+    #                     'IsMale': None,
+    #                     'MaleVariant': None,
+    #                     'IsVerbPast': None,
+    #                     'IsVerbPresent': None,
+    #                     'FemaleVariant': None,
+    #                     'IsVerbFutur': None,
+    #                     'PopularityOfWord': None }
+    data = {
+        'database_record':database_record
+    }
+
+    #
+    log.debug( "    Request to: %s", url )
+    response = requests.post(url, json=data, timeout=(11, 33))
+
+    if response.status_code == 200:
+        try:
+            result = json.loads( response.content, encoding='UTF-8' )
+            pairs = result[ 'result' ]
+            return pairs
+
+        except json.decoder.JSONDecodeError as e:
+            log.error( '  database_record: %s', database_record )
+            log.error( '  response.text: %s', response.text )
+            raise e
+
+    else:
+        log.error( "  %s", response.status_code )
+        log.error( "  %s", response.text )
+        return None
+

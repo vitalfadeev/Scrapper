@@ -67,7 +67,22 @@ class WordItem:
                 SelfUrlWikipedia           VARCHAR(255) NULL,
                 SeeAlso                    TEXT         NULL,
                 SeeAlsoWikipediaLinks      TEXT         NULL,
-                SeeAlsoWiktionaryLinks     TEXT         NULL
+                SeeAlsoWiktionaryLinks     TEXT         NULL,
+                
+                AlsoKnownAs_Vect           TEXT         NULL,
+                Instance_of_Vect           TEXT         NULL,
+                Subclass_of_Vect           TEXT         NULL,
+                Part_of_Vect               TEXT         NULL,
+                ExplainationTxt_Vect       TEXT         NULL,
+                AlternativeFormsOther_Vect TEXT         NULL,
+                Synonymy_Vect              TEXT         NULL,
+                Antonymy_Vect              TEXT         NULL,
+                Hypernymy_Vect             TEXT         NULL,
+                Hyponymy_Vect              TEXT         NULL,
+                Meronymy_Vect              TEXT         NULL,
+                RelatedTerms_Vect          TEXT         NULL,
+                CoordinateTerms_Vect       TEXT         NULL,
+                Otherwise_Vect             TEXT         NULL
             )
         """
 
@@ -152,6 +167,22 @@ class WordItem:
         self.SeeAlsoWiktionaryLinks 	 = []
         self.ExplainationExamplesRaw	 = []
         self.ExplainationExamplesTxt	 = []
+        
+        # Vect
+        self.AlsoKnownAs_Vect             = ""
+        self.Instance_of_Vect             = ""
+        self.Subclass_of_Vect             = ""
+        self.Part_of_Vect                 = ""
+        self.ExplainationTxt_Vect         = ""
+        self.AlternativeFormsOther_Vect   = ""
+        self.Synonymy_Vect                = ""
+        self.Antonymy_Vect                = ""
+        self.Hypernymy_Vect               = ""
+        self.Hyponymy_Vect                = ""
+        self.Meronymy_Vect                = ""
+        self.RelatedTerms_Vect            = ""
+        self.CoordinateTerms_Vect         = ""
+        self.Otherwise_Vect               = ""
 
 
     def __repr__( self ):

@@ -29,6 +29,7 @@ class WikipediaItem:
                     SeeAlsoWiktionaryLinks		TEXT,
                     ExplainationExamplesRaw		TEXT,
                     ExplainationExamplesTxt		TEXT,
+                    LabelNamePreference    		INTEGER 
                     Operation_Merging    		INTEGER 
             );
             
@@ -52,6 +53,7 @@ class WikipediaItem:
         self.ExplainationExamplesRaw	 = []
         self.ExplainationExamplesTxt	 = []
 
+        self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
 
     def __repr__(self):
