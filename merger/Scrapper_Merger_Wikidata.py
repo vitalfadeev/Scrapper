@@ -3,8 +3,9 @@ import logging
 import math
 import sqlite3
 
-from Scrapper_Item import Str, ItemProxy
-from _dev_scripts.v4.range import R
+from Scrapper_DB import DBWrite, DBRead
+from _dev_scripts.Scrapper_Item import Str
+from _dev_scripts.v4.range import R, Range
 from _dev_scripts.v4.reader import read
 from merger.Scrapper_Merger_Item import WordItem
 from wikidata.Scrapper_Wikidata import DBWikidata
@@ -119,8 +120,12 @@ def load_wikidata():
     with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
 
-            read( DBWWikidata, table="wikidata", cls=WikidataItem ) \
-                .map( convert_wikidata_to_word ) \
-                .write( DBWord, table="words", if_exists="fail" )
+            for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem ):
+                log.info( "%s", wd )
 
+                w = convert_wikidata_to_word( wd )
+                #DBWrite( DBWord, w, table="words", if_exists="fail" )
+
+                wd.Operation_Merging = 1
+                #DBWrite( DBWWikidata, wd, table="wikidata", if_exists="replace" )
 

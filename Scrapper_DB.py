@@ -5,9 +5,10 @@ Scrapper's high-level functions for work with DB.
 
 For scrapping functions see: wiktionary.*, wikidata.*
 """
-
+import functools
 import json
 import itertools
+import sqlite3
 
 
 def DBExecute( DB, sql, *args ):
@@ -44,7 +45,7 @@ def DBExecuteScript( DB, sql, *args ):
     DB.executescript( sql )
 
 
-def DBRead( DB, table, id=None, where=None, args=tuple ):
+def DBRead( DB, table=None, where=None, sql=None, params=None, cls=None, *args, **kwargs ):
     """
     Read item from database `DB`.
 
@@ -53,18 +54,86 @@ def DBRead( DB, table, id=None, where=None, args=tuple ):
 
     ::
 
-        item = DBRead( DBWikictionary, 'wiktionary', where="PrimaryKey='...'" )
+        rows = DBRead( DBWikictionary, 'wiktionary', where="PrimaryKey='...'" )
+        rows = DBRead( DBWikictionary, 'SELECT * FROM wiktionary" )
+        rows = DBRead( DBWikictionary, 'SELECT * FROM wiktionary LabelName=?", 'Cat' )
+        rows = DBRead( DBWikictionary, 'SELECT * FROM wiktionary LabelName=?", 'Cat', cls=WiktionaryItem )
 
     """
-    if where is None:
-        sql = "SELECT * FROM `{}`".format( table )
-    else:
-        sql = "SELECT * FROM `{}` WHERE ".format( table ) + where
+    assert isinstance( DB, sqlite3.Connection ), "expect sqlite3.Connection"
 
-    DB.execute( sql, args )
+    connection = DB
 
-    item = []
-    yield from item
+    #
+    if sql is None:
+        sql = f"SELECT * FROM {table}"
+
+    if where is not None:
+        sql = f"{sql} WHERE {where}"
+
+    #
+    if params is None:
+        params = args
+
+    # execute
+    cursor = connection.cursor()
+    query_result = cursor.execute( sql, params )
+    # convert result to object | list | dict | ...
+    if cls is None:
+        result = query_result
+
+    elif cls is tuple:
+        result = query_result
+
+    elif cls is list:
+        result = query_result
+
+    elif cls is dict:
+        def convert_to_dict( fields, row ):
+            return dict( zip( fields, row ) )
+
+        fields = [ x[0] for x in query_result.description ]
+        fn = functools.partial( convert_to_dict, fields )
+
+        result = map( fn, query_result )
+
+    else: # cls is class
+        def convert_to_cls( cls, fields, row ):
+            # str -> str
+            #     -> []
+            #     -> {}
+            # int -> int
+            # nul -> str
+            #     -> []
+            #     -> {}
+            #     -> int
+            # depends of cls.attr type
+
+            o = cls()
+
+            for field, value in zip( fields, row ):
+                a = getattr( o, field )
+
+                if value is None:
+                    pass
+                else:
+                    if isinstance( a, list ):
+                        setattr( o, field, json.loads( value ) )
+
+                    elif isinstance( a, dict ):
+                        setattr( o, field, json.loads( value ) )
+
+                    else:
+                        setattr( o, field, value )
+
+            return o
+
+        fields = [ x[0] for x in query_result.description ]
+        fn = functools.partial( convert_to_cls, cls, fields )
+
+        result = map( fn, query_result )
+
+    return result
 
 
 def DBWrite(DB, item:object, table=None, if_exists="fail", *args, **kwargs ):
@@ -151,11 +220,8 @@ def _is_column_exists( DB, table, column ):
     # 1.select info from DB info_scheme
     # 2. find column
     # 3. return True - ok, False - not
-    sql = """
-        SELECT * FROM {table} LIMIT 1 
-    """.format(
-        table=table
-    )
+    sql = f""" SELECT * FROM {table} LIMIT 1 """
+
     c = DB.cursor()
     c.execute( sql )
     # get first row, and fetch row titles
@@ -175,18 +241,15 @@ def DBAddColumn( DB, table, column, t ):
         pass
 
     else:
-        sql = """
-            ALTER TABLE {table} ADD {column} {t}
-            """.format(
-                table=table,
-                column=column,
-                t=t,
-            )
+        sql = f""" 
+            ALTER TABLE {table} 
+                    ADD {column} {t} 
+            """
         DB.execute( sql )
 
 
-def DBCheckStructure( DB, table, columns ):
-    for column, column_type in columns:
+def DBCheckStructure( DB, table:str, columns:dict ):
+    for column, column_type in columns.items():
         DBAddColumn( DB, table, column, column_type )
 
 
@@ -194,11 +257,12 @@ def DBCheckIndex( DB, table, columns ):
     if isinstance( columns, str ):
         columns = [columns]
 
-    sql = """
+    sql = f"""
         SELECT name 
           FROM sqlite_master 
-        WHERE type='index' AND tbl_name = '{}'
-    """.format( table )
+         WHERE type='index' 
+           AND tbl_name = '{table}'
+        """
 
     c = DB.cursor()
 
@@ -218,16 +282,10 @@ def DBCheckIndex( DB, table, columns ):
         #   index_name ON table ( columns )
         columns_str = ','.join(columns)
         pk = ""
-        sql = """
+        sql = f"""
             CREATE {pk} INDEX IF NOT EXISTS {index_name} 
-                ON {table} ({columns})
-        """\
-        .format(
-            pk=pk,
-            index_name=index_name,
-            table=table,
-            columns=columns_str
-        )
+                ON {table} ({columns_str})
+        """
         DBExecute( DB, sql )
 
 

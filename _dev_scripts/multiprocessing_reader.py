@@ -24,3 +24,6 @@ if __name__ == '__main__':
     p.close()
     p.join()
 
+# python -m memory_profiler multiprocessing_reader.py
+# mprof run --include-children python multiprocessing_reader.py
+# mprof plot --output memory-profile.png

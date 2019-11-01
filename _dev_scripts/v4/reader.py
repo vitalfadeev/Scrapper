@@ -27,9 +27,7 @@ def read_sqlite( db, table=None, sql=None, cls=None, params=None, *args, **kwarg
 
     #
     if sql is None:
-        sql = """ SELECT * FROM {table} """.format(
-            table=table,
-        )
+        sql = f""" SELECT * FROM {table} """
 
     #
     if params is None:

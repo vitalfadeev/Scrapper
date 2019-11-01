@@ -34,43 +34,50 @@ class WikidataItem:
                 Translation_RU             TEXT NULL,
                 Translation_PT             TEXT NULL,
                 WikipediaLinkCountTotal    INTEGER,
-                EncyclopediaGreatRussianRU VARCHAR(255)
+                EncyclopediaGreatRussianRU VARCHAR(255),
+                Operation_Merging    	   INTEGER, 
+                LabelNamePreference    	   INTEGER, 
+                Operation_Pref       	   INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktidata (LanguageCode);
         """
 
     def __init__( self ):
-        self.PrimaryKey = ""
-        self.SelfUrl = ""
-        self.LabelName = ""
-        self.LanguageCode = ""
-        self.CodeInWiki = ""
-        self.Description = ""
-        self.AlsoKnownAs = [ ]
-        self.SelfUrl = ""
-        self.WikipediaENURL = ""
-        self.WikipediaFRURL = ""
-        self.WikipediaDEURL = ""
-        self.WikipediaITURL = ""
-        self.WikipediaESURL = ""
-        self.WikipediaRUURL = ""
-        self.WikipediaPTURL = ""
-        self.EncyclopediaBritannicaEN = ""
-        self.EncyclopediaUniversalisFR = ""
-        self.DescriptionUrl = ""
-        self.Instance_of = [ ]
-        self.Subclass_of = [ ]
-        self.Part_of = [ ]
-        self.Translation_EN = [ ]
-        self.Translation_FR = [ ]
-        self.Translation_DE = [ ]
-        self.Translation_IT = [ ]
-        self.Translation_ES = [ ]
-        self.Translation_RU = [ ]
-        self.Translation_PT = [ ]
-        self.WikipediaLinkCountTotal = 0
-        self.EncyclopediaGreatRussianRU = ""
+        self.PrimaryKey                         = ""
+        self.SelfUrl                            = ""
+        self.LabelName                          = ""
+        self.LanguageCode                       = ""
+        self.CodeInWiki                         = ""
+        self.Description                        = ""
+        self.AlsoKnownAs                        = [ ]
+        self.SelfUrl                            = ""
+        self.WikipediaENURL                     = ""
+        self.WikipediaFRURL                     = ""
+        self.WikipediaDEURL                     = ""
+        self.WikipediaITURL                     = ""
+        self.WikipediaESURL                     = ""
+        self.WikipediaRUURL                     = ""
+        self.WikipediaPTURL                     = ""
+        self.EncyclopediaBritannicaEN           = ""
+        self.EncyclopediaUniversalisFR          = ""
+        self.DescriptionUrl                     = ""
+        self.Instance_of                        = [ ]
+        self.Subclass_of                        = [ ]
+        self.Part_of                            = [ ]
+        self.Translation_EN                     = [ ]
+        self.Translation_FR                     = [ ]
+        self.Translation_DE                     = [ ]
+        self.Translation_IT                     = [ ]
+        self.Translation_ES                     = [ ]
+        self.Translation_RU                     = [ ]
+        self.Translation_PT                     = [ ]
+        self.WikipediaLinkCountTotal            = 0
+        self.EncyclopediaGreatRussianRU         = ""
+        self.Operation_Merging                  = 0
+        self.LabelNamePreference                = 0
+        self.Operation_Pref                     = 0
+
 
     def __repr__( self ):
         return "WikidataItem(" + self.LabelName + ")"

@@ -30,7 +30,8 @@ class ConjugationsItem:
                     PluralVariant               VARCHAR(255),
                     IsVerbPast                  INTEGER NULL,
                     IsVerbPresent               INTEGER NULL,
-                    IsVerbFutur                 INTEGER NULL
+                    IsVerbFutur                 INTEGER NULL,
+                    Operation_Merging    		INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON conjugations (LanguageCode);

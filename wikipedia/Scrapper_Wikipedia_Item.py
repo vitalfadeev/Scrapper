@@ -28,7 +28,8 @@ class WikipediaItem:
                     SeeAlsoWikipediaLinks		TEXT,
                     SeeAlsoWiktionaryLinks		TEXT,
                     ExplainationExamplesRaw		TEXT,
-                    ExplainationExamplesTxt		TEXT
+                    ExplainationExamplesTxt		TEXT,
+                    Operation_Merging    		INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wikipedia (LanguageCode);
@@ -50,7 +51,9 @@ class WikipediaItem:
         self.SeeAlsoWiktionaryLinks 	 = []
         self.ExplainationExamplesRaw	 = []
         self.ExplainationExamplesTxt	 = []
-            
+
+        self.Operation_Merging           = 0
+
     def __repr__(self):
         return "WikipediaItem(" + self.LabelName + ': ' + self.PK + ")"
 

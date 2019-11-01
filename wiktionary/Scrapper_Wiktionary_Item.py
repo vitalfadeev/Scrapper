@@ -77,7 +77,8 @@ class WikictionaryItem:
                     Accent                      TEXT NULL,
                     Qualifier                   TEXT NULL,
                     DescriptionWikipediaLinks   TEXT NULL,
-                    DescriptionWiktionaryLinks  TEXT NULL
+                    DescriptionWiktionaryLinks  TEXT NULL,
+                    Operation_Merging    		INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);
@@ -150,6 +151,8 @@ class WikictionaryItem:
         self.Qualifier                   = []
         self.DescriptionWikipediaLinks   = []
         self.DescriptionWiktionaryLinks  = []
+
+        self.Operation_Merging           = 0
 
             
     def dump(self, print_header=False):

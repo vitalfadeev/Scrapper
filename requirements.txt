@@ -11,15 +11,25 @@ html5lib
 ijson
 # fetch content from Wikipedia
 wikipedia
+# split to sentences
+nltk
+# download files, make IAAS requests
+requests
+
 # scrapy
 #scrapy
 #html2text
 #
-pandas
-mputil
+#pandas
+#mputil
 #papy
 # extend built-in types
-forbiddenfruit
-pipe
+#forbiddenfruit
+#pipe
 #
-sqlalchemy
+#sqlalchemy
+# memory profiling
+objgraph
+pympler
+memory_profiler
+matplotlib

@@ -1,6 +1,8 @@
 import mputil
 import itertools
 import time
+import objgraph
+from memory_profiler import profile
 
 
 def scrap_one( lang, page ):
@@ -8,6 +10,7 @@ def scrap_one( lang, page ):
     time.sleep( 3 )
     return [lang, page]
 
+@profile(precision=4)
 def scrap_one_wrapper( args ):
     return scrap_one( *args )
 
@@ -27,10 +30,19 @@ if __name__ == '__main__':
         n_cpus=3
     )
 
+    objgraph.show_refs( result, filename='/tmp/1/sample-graph.png' )
+        # import sys
+        # print( sys.getsizeof( result ), "B" )
+        # import pympler.asizeof
+        # print( pympler.asizeof.asizeof( result ), "B" )
+        # import pympler.tracker
+        # print( pympler.tracker.summary.getsizeof( result ) )
+
     for item in result:
         print( item )
 
 
+# python -m memory_profiler multiprocess_retvaue.py
 
 if 0:
     import itertools
