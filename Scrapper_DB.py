@@ -9,6 +9,9 @@ import functools
 import json
 import itertools
 import sqlite3
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def DBExecute( DB, sql, *args ):
@@ -286,6 +289,9 @@ def DBCheckIndex( DB, table, columns ):
             CREATE {pk} INDEX IF NOT EXISTS {index_name} 
                 ON {table} ({columns_str})
         """
+
+        log.info( f"Creating index: ON {table} ({columns_str})" )
+
         DBExecute( DB, sql )
 
 

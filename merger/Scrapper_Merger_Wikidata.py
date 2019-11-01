@@ -54,7 +54,7 @@ def get_sentences_with_label( Description, LabelName ):
 
 @functools.lru_cache( maxsize=32 )
 def wds_value_of( wid ):
-    return 0
+    return 1
 
 
 def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
@@ -124,7 +124,7 @@ def load_wikidata():
                 log.info( "%s", wd )
 
                 w = convert_wikidata_to_word( wd )
-                #DBWrite( DBWord, w, table="words", if_exists="fail" )
+                DBWrite( DBWord, w, table="words", if_exists="fail" )
 
                 wd.Operation_Merging = 1
                 #DBWrite( DBWWikidata, wd, table="wikidata", if_exists="replace" )
