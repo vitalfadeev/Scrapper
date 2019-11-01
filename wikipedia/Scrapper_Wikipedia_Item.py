@@ -29,7 +29,7 @@ class WikipediaItem:
                     SeeAlsoWiktionaryLinks		TEXT,
                     ExplainationExamplesRaw		TEXT,
                     ExplainationExamplesTxt		TEXT,
-                    LabelNamePreference    		INTEGER 
+                    LabelNamePreference    		INTEGER, 
                     Operation_Merging    		INTEGER 
             );
             

@@ -156,5 +156,5 @@ def load_wikidata():
                 w = convert_wikidata_to_word( wd )
                 DBWrite( DBWord, w, table="words", if_exists="fail" )
 
-                DBExecute( DBWWikidata, "UPDATE wikidata SET Operation_Merging = 1 WHERE PrimaryKey = ?", 1 )
+                DBExecute( DBWWikidata, "UPDATE wikidata SET Operation_Merging = 1 WHERE PrimaryKey = ?", wd.PrimaryKey )
 

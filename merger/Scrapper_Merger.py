@@ -165,7 +165,7 @@ def main():
 
     # load 2
     load_wikipedia()
-    #load_wiktionary()
+    load_wiktionary()
 
     # Vectorize
     #vectorize_properties()

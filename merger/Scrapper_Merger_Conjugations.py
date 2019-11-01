@@ -44,5 +44,5 @@ def load_conjugations():
                 w = convert_conjugations_to_word( wd )
                 DBWrite( DBWord, w, table="words", if_exists="fail" )
 
-                DBExecute( DBConjugations, "UPDATE conjugations SET Operation_Merging = 1 WHERE PK = ?", 1 )
+                DBExecute( DBConjugations, "UPDATE conjugations SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
 

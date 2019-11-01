@@ -82,7 +82,8 @@ class WordItem:
                 Meronymy_Vect              TEXT         NULL,
                 RelatedTerms_Vect          TEXT         NULL,
                 CoordinateTerms_Vect       TEXT         NULL,
-                Otherwise_Vect             TEXT         NULL
+                Otherwise_Vect             TEXT         NULL,
+                LabelNamePreference        INTEGER
             )
         """
 
@@ -93,7 +94,7 @@ class WordItem:
         self.LabelType                 = ""
         self.LanguageCode              = ""
         self.Description               = ""
-        self.AlsoKnownAs               = ""
+        self.AlsoKnownAs               = []
         self.SelfUrlWikidata           = ""
         self.Instance_of               = [ ]
         self.Subclass_of               = [ ]
@@ -183,6 +184,8 @@ class WordItem:
         self.RelatedTerms_Vect            = ""
         self.CoordinateTerms_Vect         = ""
         self.Otherwise_Vect               = ""
+
+        self.LabelNamePreference          = 0
 
 
     def __repr__( self ):

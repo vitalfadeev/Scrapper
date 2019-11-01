@@ -84,11 +84,12 @@ def get_wikitext( title=None ):
 
     if response.status_code == 200:
         spos = response.text.find("<text>")
+        spos = response.text.find(">", spos)
         epos = response.text.find("</text>")
 
-        if epos != -1 and epos != -1:
+        if spos != -1 and epos != -1:
             # page found
-            spos = spos + len( "<text>" )
+            spos = spos + len( ">" )
             text = response.text[spos:epos]
             return text
 

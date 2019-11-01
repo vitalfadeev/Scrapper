@@ -105,5 +105,5 @@ def load_wikipedia():
                 for w in convert_wikipedia_to_word( wd ):
                     DBWrite( DBWord, w, table="words", if_exists="fail" )
 
-                DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", 1 )
+                DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
 

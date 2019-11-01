@@ -78,6 +78,7 @@ class WikictionaryItem:
                     Qualifier                   TEXT NULL,
                     DescriptionWikipediaLinks   TEXT NULL,
                     DescriptionWiktionaryLinks  TEXT NULL,
+                    LabelNamePreference    		INTEGER, 
                     Operation_Merging    		INTEGER 
             );
             
@@ -152,9 +153,10 @@ class WikictionaryItem:
         self.DescriptionWikipediaLinks   = []
         self.DescriptionWiktionaryLinks  = []
 
+        self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
 
-            
+
     def dump(self, print_header=False):
         """ Beauty logging tool """
         attrs = [
