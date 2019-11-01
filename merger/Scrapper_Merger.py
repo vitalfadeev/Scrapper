@@ -5,6 +5,11 @@ import os
 import sqlite3
 import logging
 import logging.config
+
+#
+if os.path.isfile( os.path.join( 'merger', 'logging.ini' ) ):
+    logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
+
 from Scrapper_DB import DBAddColumn, DBCheckStructure, DBExecuteScript, DBCheckIndex, DBCheckIndexes
 from Scrapper_IxiooAPI import Vectorize_database_record
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
@@ -23,9 +28,6 @@ log    = logging.getLogger(__name__)
 
 # init DB
 DBExecuteScript( DBWord, WordItem.Meta.DB_INIT )
-
-if os.path.isfile( os.path.join( 'merger', 'logging.ini' ) ):
-    logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
 
 #
 from merger.Scrapper_Merger_Wikidata import load_wikidata
@@ -155,8 +157,8 @@ def main():
     check_indexes_wikidata()
 
     # load 1
-    #load_wikidata()
-    #load_conjugations()
+    load_wikidata()
+    load_conjugations()
 
     # create indexes
     check_indexes()

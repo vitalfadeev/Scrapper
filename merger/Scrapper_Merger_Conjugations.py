@@ -37,7 +37,8 @@ def load_conjugations():
     with sqlite3.connect( "conjugations.db", timeout=5.0 ) as DBConjugations:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
 
-            for wd in DBRead( DBConjugations, table="conjugations", cls=ConjugationsItem ):
+#            for wd in DBRead( DBConjugations, table="conjugations", cls=ConjugationsItem ):
+            for wd in DBRead( DBConjugations, table="conjugations", cls=ConjugationsItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=["en", "Cat"] ):
                 log.info( "%s", wd )
 
                 w = convert_conjugations_to_word( wd )

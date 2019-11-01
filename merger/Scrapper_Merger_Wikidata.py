@@ -92,9 +92,9 @@ def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     w.Description              = wd.Description
     w.AlsoKnownAs              = wd.AlsoKnownAs
     w.SelfUrlWikidata          = wd.SelfUrl
-    w.Instance_of              = to_names( wd.Subclass_of )
-    w.Subclass_of              = to_names( wd.Instance_of )
-    w.Part_of                  = to_names( wd.Part_of )
+    w.Instance_of              = wd.Subclass_of
+    w.Subclass_of              = wd.Instance_of
+    w.Part_of                  = wd.Part_of
     w.Translation_EN           = wd.Translation_EN
     w.Translation_FR           = wd.Translation_FR
     w.Translation_DE           = wd.Translation_DE
@@ -135,7 +135,7 @@ def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
         return w
 
     #
-    x = wds / wds_value_of( 'CAT-FELIDAE' ) / 2
+    x = wds / wds / 2
 
     if x <= 0:
         w.LabelNamePreference = 0
@@ -149,7 +149,8 @@ def load_wikidata():
     with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
 
-            for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem ):
+            #for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem ):
+            for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=["en", "Cat"] ):
                 log.info( "%s", wd )
 
                 w = convert_wikidata_to_word( wd )

@@ -88,13 +88,18 @@ def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
         # append
         w = WordItem()
         merge_words( w, wp )
+        w.PK            = wp.PK
+        w.LabelName     = wp.LabelName
+        w.LanguageCode  = wp.LanguageCode
         yield w
 
 
 def load_wikipedia():
     with sqlite3.connect( "wikipedia.db", timeout=5.0 ) as DBWikipedia:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
-            for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
+
+            #for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
+            for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=["en", "Cat"] ):
                 log.info( "%s", wd )
 
                 for w in convert_wikipedia_to_word( wd ):
