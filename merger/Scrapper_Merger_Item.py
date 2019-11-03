@@ -27,6 +27,7 @@ class WordItem:
                 RelatedTerms                TEXT NULL,
                 AlsoKnownAs                 TEXT NULL,
                 IsMale                      INTEGER NULL,
+                IsNeutre                    INTEGER NULL,
                 IsFeminine                  INTEGER NULL,
                 IsSingle                    INTEGER NULL,
                 IsPlural                    INTEGER NULL,
@@ -87,6 +88,7 @@ class WordItem:
         self.RelatedTerms                = []
         self.AlsoKnownAs                 = []
         self.IsMale                      = None
+        self.IsNeutre                    = None
         self.IsFeminine                  = None
         self.IsSingle                    = None
         self.IsPlural                    = None
