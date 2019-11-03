@@ -80,30 +80,47 @@ def wds_value_of( s: str ):
     return 1
 
 
+def merge_words( w, wd, ):
+    w.PK                = wd.PrimaryKey
+    w.SelfUrlWikidata   = wd.SelfUrl
+    w.LabelName         = wd.LabelName
+    w.LanguageCode      = wd.LanguageCode
+    w.Description       = wd.Description
+    w.AlsoKnownAs       = wd.AlsoKnownAs
+    # wd.WikipediaENURL
+    # wd.WikipediaFRURL
+    # wd.WikipediaDEURL
+    # wd.WikipediaITURL
+    # wd.WikipediaESURL
+    # wd.WikipediaRUURL
+    # wd.WikipediaPTURL
+    w.Ext_Wikipedia_URL += getattr( wd, "Wikipedia{}URL".format( wd.LanguageCode.upper() ) )
+    # wd.EncyclopediaBritannicaEN
+    # wd.EncyclopediaUniversalisFR
+    # wd.DescriptionUrl
+    w.Hypernymy         += wd.Instance_of
+    w.Hypernymy         += wd.Subclass_of
+    w.Meronymy          += wd.Part_of
+    w.Translation_EN    += wd.Translation_EN
+    w.Translation_FR    += wd.Translation_FR
+    w.Translation_DE    += wd.Translation_DE
+    w.Translation_IT    += wd.Translation_IT
+    w.Translation_ES    += wd.Translation_ES
+    w.Translation_RU    += wd.Translation_RU
+    w.Translation_PT    += wd.Translation_PT
+    w.CountTotalOfWikipediaUrl = wd.WikipediaLinkCountTotal
+    # wd.EncyclopediaGreatRussianRU
+
+    w.FromWD.append( wd.PrimaryKey )
+
+
 def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     log.info( wd )
 
     w = WordItem()
 
-    w.PK                       = wd.PrimaryKey
-    w.LabelName                = wd.LabelName
-    w.LabelType                = LabelType( wd )
-    w.LanguageCode             = wd.LanguageCode
-    w.Description              = wd.Description
-    w.AlsoKnownAs              = wd.AlsoKnownAs
-    w.SelfUrlWikidata          = wd.SelfUrl
-    w.Instance_of              = wd.Subclass_of
-    w.Subclass_of              = wd.Instance_of
-    w.Part_of                  = wd.Part_of
-    w.Translation_EN           = wd.Translation_EN
-    w.Translation_FR           = wd.Translation_FR
-    w.Translation_DE           = wd.Translation_DE
-    w.Translation_IT           = wd.Translation_IT
-    w.Translation_ES           = wd.Translation_ES
-    w.Translation_RU           = wd.Translation_RU
-    w.Translation_PT           = wd.Translation_PT
-    w.Ext_Wikipedia_URL        = getattr( wd, "Wikipedia{}URL".format( wd.LanguageCode.upper() ) )
-    w.CountTotalOfWikipediaUrl = wd.WikipediaLinkCountTotal
+    # merge
+    merge_words( w, wd )
 
     # PKN preparing
     # LabelNamePreference
@@ -145,12 +162,24 @@ def convert_wikidata_to_word( wd: WikidataItem ) -> WordItem:
     return w
 
 
+def load_wikidata_one( lang, label ):
+    with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
+        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+
+            for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label ] ):
+                log.info( "%s", wd )
+
+                w = convert_wikidata_to_word( wd )
+                DBWrite( DBWord, w, table="words", if_exists="fail" )
+
+                DBExecute( DBWWikidata, "UPDATE wikidata SET Operation_Merging = 1 WHERE PrimaryKey = ?", wd.PrimaryKey )
+
+
 def load_wikidata():
     with sqlite3.connect( "wikidata.db", timeout=5.0 ) as DBWWikidata:
         with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
 
-            #for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem ):
-            for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=["en", "Cat"] ):
+            for wd in DBRead( DBWWikidata, table="wikidata", cls=WikidataItem ):
                 log.info( "%s", wd )
 
                 w = convert_wikidata_to_word( wd )

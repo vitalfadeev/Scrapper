@@ -29,7 +29,11 @@ requests
 #
 #sqlalchemy
 # memory profiling
-objgraph
-pympler
-memory_profiler
-matplotlib
+#objgraph
+#pympler
+#memory_profiler
+#matplotlib
+
+# read data
+git+https://github.com/vitalfadeev/read.git#egg=read
+#git+https://github.com/vitalfadeev/range.git#egg=range

@@ -1,4 +1,4 @@
-from _dev_scripts.v4.reader import Read, read
+from read import Read, read
 
 
 if __name__ == "__main__":

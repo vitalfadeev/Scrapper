@@ -24,16 +24,14 @@ from wiktionary.Scrapper_Wiktionary import DBWikictionary
 from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
 
 DBWord = sqlite3.connect( "word.db", timeout=5.0 )
+DBExecuteScript( DBWord, WordItem.Meta.DB_INIT )
 log    = logging.getLogger(__name__)
 
-# init DB
-DBExecuteScript( DBWord, WordItem.Meta.DB_INIT )
-
 #
-from merger.Scrapper_Merger_Wikidata import load_wikidata
-from merger.Scrapper_Merger_Conjugations import load_conjugations
-from merger.Scrapper_Merger_Wikipedia import load_wikipedia
-from merger.Scrapper_Merger_Wiktionary import load_wiktionary
+from merger.Scrapper_Merger_Wikidata import load_wikidata, load_wikidata_one
+from merger.Scrapper_Merger_Conjugations import load_conjugations, load_conjugations_one
+from merger.Scrapper_Merger_Wikipedia import load_wikipedia, load_wikipedia_one
+from merger.Scrapper_Merger_Wiktionary import load_wiktionary, load_wiktionary_one
 
 
 def check_structure():
@@ -152,6 +150,25 @@ def Set_Property_LabelNamePreference():
     # After done, set Field Operation_Pref=1
 
 
+def test_one( lang="en", label='Cat' ):
+    check_structure()
+    check_indexes_wikidata()
+
+    # load 1
+    load_wikidata_one( lang, label )
+    load_conjugations_one( lang, label )
+
+    # create indexes
+    check_indexes()
+
+    # load 2
+    load_wikipedia_one( lang, label )
+    load_wiktionary_one( lang, label )
+
+    # Vectorize
+    #vectorize_properties()
+
+
 def main():
     check_structure()
     check_indexes_wikidata()
@@ -172,7 +189,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    test_one( "en", "free" )
     # wd = ItemProxy( WikipediaItem() )
     # print( wd.ExplainationWPTxt.len() )
     # wd.ExplainationWPTxt = "123"

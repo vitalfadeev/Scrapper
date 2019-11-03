@@ -3,190 +3,137 @@ class WordItem:
         DB_TABLE_NAME = "words"
         DB_INIT = """
             CREATE TABLE IF NOT EXISTS words (
-                PK                         VARCHAR(255) NOT   NULL  PRIMARY KEY,
-                LabelName                  VARCHAR(255) NULL COLLATE NOCASE,
-                LabelType                  VARCHAR(255) NULL,
-                LanguageCode               CHAR(2),
-                Description                TEXT         NULL,
-                AlsoKnownAs                TEXT         NULL,
-                SelfUrlWikidata            VARCHAR(255) NULL,
-                Instance_of                TEXT         NULL,
-                Subclass_of                TEXT         NULL,
-                Part_of                    TEXT         NULL,
-                Translation_EN             TEXT         NULL,
-                Translation_FR             TEXT         NULL,
-                Translation_DE             TEXT         NULL,
-                Translation_IT             TEXT         NULL,
-                Translation_ES             TEXT         NULL,
-                Translation_RU             TEXT         NULL,
-                Translation_PT             TEXT         NULL,
-                Ext_Wikipedia_URL          TEXT         NULL COLLATE NOCASE,
-                CountTotalOfWikipediaUrl   INTEGER      NULL,
-                Operation_Merging          INTEGER      NULL,
-                Operation_Wikipedia        INTEGER      NULL,
-                Operation_Vectorizer       INTEGER      NULL,
-                Operation_PropertiesInv    INTEGER      NULL,
-                Operation_VectSentences    INTEGER      NULL,
-                Operation_Pref             INTEGER      NULL,
-                Type                       VARCHAR(255) NULL,
-                IndexInPageWiktionary      INTEGER      NULL,
-                ExplainationTxt            VARCHAR(255) NULL,
-                ExplainationRaw            VARCHAR(255) NULL,
-                DescriptionWikipediaLinks  TEXT         NULL,
-                DescriptionWiktionaryLinks TEXT         NULL,
-                AlternativeFormsOther      TEXT         NULL,
-                SelfUrlWiktionary          VARCHAR(255) NULL,
-                Synonymy                   TEXT         NULL,
-                Antonymy                   TEXT         NULL,
-                Hypernymy                  TEXT         NULL,
-                Hyponymy                   TEXT         NULL,
-                Meronymy                   TEXT         NULL,
-                RelatedTerms               TEXT         NULL,
-                CoordinateTerms            TEXT         NULL,
-                Otherwise                  TEXT         NULL,
-                ExplainationExamplesRaw    TEXT         NULL,
-                ExplainationExamplesTxt    TEXT         NULL,
-                IsMale                     INTEGER      NULL,
-                IsFeminine                 INTEGER      NULL, 
-                IsNeutre                   INTEGER      NULL,
-                IsSingle                   INTEGER      NULL,
-                IsPlural                   INTEGER      NULL,
-                SingleVariant              VARCHAR(255) NULL,
-                PluralVariant              VARCHAR(255) NULL,
-                MaleVariant                VARCHAR(255) NULL,
-                FemaleVariant              VARCHAR(255) NULL,
-                IsVerbPast                 INTEGER      NULL,
-                IsVerbPresent              INTEGER      NULL,
-                IsVerbFutur                INTEGER      NULL,
-                VerbInfinitive             VARCHAR(255) NULL,
-                VerbTense                  VARCHAR(255) NULL,
-                LabelTypeWP                VARCHAR(255) NULL,
-                ExplainationWPTxt          VARCHAR(255) NULL,
-                ExplainationWPRaw          VARCHAR(255) NULL,
-                DescriptionWikidataLinks   TEXT         NULL,
-                SelfUrlWikipedia           VARCHAR(255) NULL,
-                SeeAlso                    TEXT         NULL,
-                SeeAlsoWikipediaLinks      TEXT         NULL,
-                SeeAlsoWiktionaryLinks     TEXT         NULL,
-                
-                AlsoKnownAs_Vect           TEXT         NULL,
-                Instance_of_Vect           TEXT         NULL,
-                Subclass_of_Vect           TEXT         NULL,
-                Part_of_Vect               TEXT         NULL,
-                ExplainationTxt_Vect       TEXT         NULL,
-                AlternativeFormsOther_Vect TEXT         NULL,
-                Synonymy_Vect              TEXT         NULL,
-                Antonymy_Vect              TEXT         NULL,
-                Hypernymy_Vect             TEXT         NULL,
-                Hyponymy_Vect              TEXT         NULL,
-                Meronymy_Vect              TEXT         NULL,
-                RelatedTerms_Vect          TEXT         NULL,
-                CoordinateTerms_Vect       TEXT         NULL,
-                Otherwise_Vect             TEXT         NULL,
-                LabelNamePreference        INTEGER
+                PK                          VARCHAR(255) NOT NULL  PRIMARY KEY,
+                LabelName                   VARCHAR(255) NULL COLLATE NOCASE,
+                LabelType                   VARCHAR(255) NULL,
+                LanguageCode                CHAR(2),        
+                Type                        VARCHAR(255) NULL,
+                IndexInPageWiktionary       INTEGER NULL,
+                Description                 VARCHAR(255) NULL,
+                DescriptionWikipediaLinks   TEXT NULL,
+                DescriptionWiktionaryLinks  TEXT NULL,
+                SelfUrlWikidata             VARCHAR(255) NULL,
+                SelfUrlWiktionary           VARCHAR(255) NULL,
+                SelfUrlWikipedia            VARCHAR(255) NULL,
+                Synonymy                    TEXT NULL,
+                Antonymy                    TEXT NULL,
+                Hypernymy                   TEXT NULL,
+                Hyponymy                    TEXT NULL,
+                Holonymy                    TEXT NULL,
+                Troponymy                   TEXT NULL,
+                Meronymy                    TEXT NULL,
+                SeeAlso                     TEXT NULL,
+                SeeAlsoWikipediaLinks       TEXT NULL,
+                RelatedTerms                TEXT NULL,
+                AlsoKnownAs                 TEXT NULL,
+                IsMale                      INTEGER NULL,
+                IsFeminine                  INTEGER NULL,
+                IsSingle                    INTEGER NULL,
+                IsPlural                    INTEGER NULL,
+                SingleVariant               VARCHAR(255) NULL,
+                PluralVariant               VARCHAR(255) NULL,
+                IsVerbPast                  INTEGER NULL,
+                IsVerbPresent               INTEGER NULL,
+                IsVerbFutur                 INTEGER NULL,
+                VerbTense                   VARCHAR(255) NULL,
+                Translation_EN              TEXT NULL,
+                Translation_FR              TEXT NULL,
+                Translation_DE              TEXT NULL,
+                Translation_IT              TEXT NULL,
+                Translation_ES              TEXT NULL,
+                Translation_RU              TEXT NULL,
+                Translation_PT              TEXT NULL,
+                Ext_Wikipedia_URL           TEXT NULL,
+                CountTotalOfWikipediaUrl    INTEGER NULL,
+                ExplainationExamplesTxt     TEXT NULL,
+        
+                Operation_Merging           INTEGER NULL,
+                Operation_Wikipedia         INTEGER NULL,
+                Operation_Vectorizer        INTEGER NULL,
+                Operation_PropertiesInv     INTEGER NULL,
+                Operation_VectSentences     INTEGER NULL,
+                Operation_Pref              INTEGER NULL,
+                LabelNamePreference         INTEGER NULL,
+        
+                FromWP                      TEXT NULL,
+                FromWT                      TEXT NULL,
+                FromWD                      TEXT NULL,
+                FromCJ                      TEXT NULL 
             )
         """
 
     def __init__( self, parent=None ):
-        # Wikidata
-        self.PK                        = ""
-        self.LabelName                 = ""
-        self.LabelType                 = ""
-        self.LanguageCode              = ""
-        self.Description               = ""
-        self.AlsoKnownAs               = []
-        self.SelfUrlWikidata           = ""
-        self.Instance_of               = [ ]
-        self.Subclass_of               = [ ]
-        self.Part_of                   = [ ]
-        self.Translation_EN            = [ ]
-        self.Translation_FR            = [ ]
-        self.Translation_DE            = [ ]
-        self.Translation_IT            = [ ]
-        self.Translation_ES            = [ ]
-        self.Translation_RU            = [ ]
-        self.Translation_PT            = [ ]
-        #
-        self.Ext_Wikipedia_URL         = ""
-        self.CountTotalOfWikipediaUrl  = 0
-        #
-        self.Operation_Merging         = 0
-        self.Operation_Wikipedia       = 0
-        self.Operation_Vectorizer      = 0
-        self.Operation_PropertiesInv   = 0
-        self.Operation_VectSentences   = 0
-        self.Operation_Pref            = 0
-
-        # Wiktionary
-        self.LabelType                   = ""  #
-        self.Type                        = ""  #                        = noun,verb… see = WORD_TYPES
+        self.PK                          = ""
+        self.LabelName                   = ""
+        self.LabelType                   = ""
+        self.LanguageCode                = ""
+        self.Type                        = ""
         self.IndexInPageWiktionary       = 0
-        self.ExplainationTxt             = ""  #
-        self.ExplainationRaw             = ""  #
+        self.Description                 = ""
         self.DescriptionWikipediaLinks   = []
         self.DescriptionWiktionaryLinks  = []
-        self.AlternativeFormsOther       = []
+        self.SelfUrlWikidata             = ""
         self.SelfUrlWiktionary           = ""
+        self.SelfUrlWikipedia            = ""
         self.Synonymy                    = []
         self.Antonymy                    = []
         self.Hypernymy                   = []
         self.Hyponymy                    = []
+        self.Holonymy                    = []
+        self.Troponymy                   = []
         self.Meronymy                    = []
+        self.SeeAlso                     = []
+        self.SeeAlsoWikipediaLinks       = []
         self.RelatedTerms                = []
-        self.CoordinateTerms             = []
-        self.Otherwise                   = []
-        self.ExplainationExamplesRaw     = []
+        self.AlsoKnownAs                 = []
+        self.IsMale                      = None
+        self.IsFeminine                  = None
+        self.IsSingle                    = None
+        self.IsPlural                    = None
+        self.SingleVariant               = ""
+        self.PluralVariant               = ""
+        self.IsVerbPast                  = None
+        self.IsVerbPresent               = None
+        self.IsVerbFutur                 = None
+        self.VerbTense                   = ""
+        self.Translation_EN              = []
+        self.Translation_FR              = []
+        self.Translation_DE              = []
+        self.Translation_IT              = []
+        self.Translation_ES              = []
+        self.Translation_RU              = []
+        self.Translation_PT              = []
+        self.Ext_Wikipedia_URL           = []
+        self.CountTotalOfWikipediaUrl    = 0
         self.ExplainationExamplesTxt     = []
 
-        # Conjugations
-        self.IsMale                      = bool
-        self.IsFeminine                  = bool  # ""
-        self.IsNeutre                    = bool  # ""
-        self.IsSingle                    = bool
-        self.IsPlural                    = bool
-        self.SingleVariant               = ""  # ""
-        self.PluralVariant               = ""  # ""
-        self.MaleVariant                 = ""  # ""
-        self.FemaleVariant               = ""  # ""
-        self.IsVerbPast                  = bool
-        self.IsVerbPresent               = bool
-        self.IsVerbFutur                 = bool
-        #
-        self.VerbInfinitive              = ""
-        self.VerbTense                   = ""
+        self.Operation_Merging           = 0
+        self.Operation_Wikipedia         = 0
+        self.Operation_Vectorizer        = 0
+        self.Operation_PropertiesInv     = 0
+        self.Operation_VectSentences     = 0
+        self.Operation_Pref              = 0
+        self.LabelNamePreference         = 0
 
-        # Wikipedia
-        self.LabelTypeWP			     = ""
-        self.ExplainationWPTxt			 = ""
-        self.ExplainationWPRaw			 = ""
-        self.DescriptionWikipediaLinks   = []
-        self.DescriptionWiktionaryLinks  = []
-        self.DescriptionWikidataLinks    = []
-        self.SelfUrlWikipedia			 = ""
-        self.SeeAlso			         = []
-        self.SeeAlsoWikipediaLinks		 = []
-        self.SeeAlsoWiktionaryLinks 	 = []
-        self.ExplainationExamplesRaw	 = []
-        self.ExplainationExamplesTxt	 = []
-        
-        # Vect
-        self.AlsoKnownAs_Vect             = ""
-        self.Instance_of_Vect             = ""
-        self.Subclass_of_Vect             = ""
-        self.Part_of_Vect                 = ""
-        self.ExplainationTxt_Vect         = ""
-        self.AlternativeFormsOther_Vect   = ""
-        self.Synonymy_Vect                = ""
-        self.Antonymy_Vect                = ""
-        self.Hypernymy_Vect               = ""
-        self.Hyponymy_Vect                = ""
-        self.Meronymy_Vect                = ""
-        self.RelatedTerms_Vect            = ""
-        self.CoordinateTerms_Vect         = ""
-        self.Otherwise_Vect               = ""
+        self.FromWP                      = [] # PK from Wikipedia
+        self.FromWT                      = [] # PK from Wiktionary
+        self.FromWD                      = [] # PK from Wikidict
+        self.FromCJ                      = [] # PK from Conjugator
 
-        self.LabelNamePreference          = 0
-
+        self.AlsoKnownAs_Vect            = []
+        self.Instance_of_Vect            = []
+        self.Subclass_of_Vect            = []
+        self.Part_of_Vect                = []
+        self.ExplainationTxt_Vect        = []
+        self.AlternativeFormsOther_Vect  = []
+        self.Synonymy_Vect               = []
+        self.Antonymy_Vect               = []
+        self.Hypernymy_Vect              = []
+        self.Hyponymy_Vect               = []
+        self.Meronymy_Vect               = []
+        self.RelatedTerms_Vect           = []
+        self.CoordinateTerms_Vect        = []
+        self.Otherwise_Vect              = []
 
     def __repr__( self ):
-        return "Word(" + self.LabelName + ")"
+        return f"Word({self.LabelName}: {self.PK})"

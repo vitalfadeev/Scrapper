@@ -57,7 +57,7 @@ class WikipediaItem:
         self.Operation_Merging           = 0
 
     def __repr__(self):
-        return "WikipediaItem(" + self.LabelName + ': ' + self.PK + ")"
+        return f"WikipediaItem({self.LabelName}: {self.PK})"
 
 
 

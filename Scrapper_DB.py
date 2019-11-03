@@ -31,7 +31,7 @@ def DBExecute( DB, sql, *args ):
     DB.execute( sql, args )
 
 
-def DBExecuteScript( DB, sql, *args ):
+def DBExecuteScript( DB: sqlite3.Connection, sql:str, *args ):
     """
     Execute many SQL script in database `DB`
 
@@ -45,6 +45,7 @@ def DBExecuteScript( DB, sql, *args ):
             "CREATE TABLE wiktionary (LanguageCode CHAR(2));  CREATE INDEX LanguageCode ON wiktionary (LanguageCode);"
         )
     """
+    assert isinstance( DB, sqlite3.Connection )
     DB.executescript( sql )
 
 
