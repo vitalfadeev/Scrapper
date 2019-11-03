@@ -94,7 +94,7 @@ def merge_words( w, wd, ):
     # wd.WikipediaESURL
     # wd.WikipediaRUURL
     # wd.WikipediaPTURL
-    w.Ext_Wikipedia_URL += getattr( wd, "Wikipedia{}URL".format( wd.LanguageCode.upper() ) )
+    w.Ext_Wikipedia_URL += [getattr( wd, "Wikipedia{}URL".format( wd.LanguageCode.upper() ) )]
     # wd.EncyclopediaBritannicaEN
     # wd.EncyclopediaUniversalisFR
     # wd.DescriptionUrl
