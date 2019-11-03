@@ -29,6 +29,8 @@ class WordItem:
                 IsMale                      INTEGER NULL,
                 IsNeutre                    INTEGER NULL,
                 IsFeminine                  INTEGER NULL,
+                MaleVariant                 VARCHAR(255) NULL,
+                FemaleVariant               VARCHAR(255) NULL,
                 IsSingle                    INTEGER NULL,
                 IsPlural                    INTEGER NULL,
                 SingleVariant               VARCHAR(255) NULL,
@@ -47,6 +49,7 @@ class WordItem:
                 Ext_Wikipedia_URL           TEXT NULL,
                 CountTotalOfWikipediaUrl    INTEGER NULL,
                 ExplainationExamplesTxt     TEXT NULL,
+                PopularityOfWord            INTEGER NULL,
         
                 Operation_Merging           INTEGER NULL,
                 Operation_Wikipedia         INTEGER NULL,
@@ -90,6 +93,8 @@ class WordItem:
         self.IsMale                      = None
         self.IsNeutre                    = None
         self.IsFeminine                  = None
+        self.MaleVariant                 = ""
+        self.FemaleVariant               = ""
         self.IsSingle                    = None
         self.IsPlural                    = None
         self.SingleVariant               = ""
@@ -108,6 +113,7 @@ class WordItem:
         self.Ext_Wikipedia_URL           = []
         self.CountTotalOfWikipediaUrl    = 0
         self.ExplainationExamplesTxt     = []
+        self.PopularityOfWord            = 0
 
         self.Operation_Merging           = 0
         self.Operation_Wikipedia         = 0

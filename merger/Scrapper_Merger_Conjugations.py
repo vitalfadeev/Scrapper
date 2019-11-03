@@ -18,9 +18,9 @@ def convert_conjugations_to_word( c: ConjugationsItem ) -> WordItem:
     w.LabelType                      = c.LabelType
     w.LanguageCode                   = c.LanguageCode
     w.Type                           = c.Type
-    w.ExplainationTxt                = c.ExplainationTxt
-    w.AlternativeFormsOther          = c.AlternativeFormsOther
-    w.Otherwise                      = c.OtherwiseRelated
+    w.Description                    = c.ExplainationTxt
+    w.AlsoKnownAs                    = c.AlternativeFormsOther
+    w.RelatedTerms                   = c.OtherwiseRelated
     w.IsMale                         = c.IsMale
     w.IsFeminine                     = c.IsFeminine
     #w.IsNeutre                       = c.IsNeutre

@@ -17,8 +17,11 @@ def merge_words( w, wt ):
     w.LabelType                 = wt.LabelType
     w.LanguageCode              = wt.LanguageCode
     w.Type                      = wt.Type
-    w.Description               = w.Description + '\n' * 3 + wt.ExplainationTxt + '\n'*3 + wt.DescriptionTxt
-    w.ExplainationExamplesTxt  += wt.ExplainationExamplesTxt
+    if w.Description:
+        w.Description          += '\n' * 3 + wt.ExplainationTxt + '\n'*3 + wt.DescriptionTxt
+    else:
+        w.Description          += wt.ExplainationTxt + '\n' * 3 + wt.DescriptionTxt
+    w.ExplainationExamplesTxt  += [wt.ExplainationExamplesTxt]
     w.Synonymy                 += wt.Synonymy
     w.Antonymy                 += wt.Antonymy
     w.Hypernymy                += wt.Hypernymy

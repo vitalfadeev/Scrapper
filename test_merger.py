@@ -1,3 +1,4 @@
+
 if __name__ == "__main__":
     # Scrap all pages
     import os
@@ -9,9 +10,11 @@ if __name__ == "__main__":
 
     # conjugations
     from conjugator import Scrapper_Conjugator
+    from Scrapper_DB import DBWrite
     Scrapper_Conjugator.DBDeleteLangRecords( lang )
     page = Scrapper_Conjugator.get_one_verb_page( lang, label )
-    Scrapper_Conjugator.scrap_one( lang, page )
+    for item in Scrapper_Conjugator.scrap_one( lang, page ):
+        DBWrite( Scrapper_Conjugator.DBConjugations, item )
 
     # wikipedia
     from Scrapper_DB import DBExecute, DBWrite
