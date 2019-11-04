@@ -5,7 +5,6 @@ import sqlite3
 
 from Scrapper_DB import DBWrite, DBRead, DBExecute
 from _dev_scripts.Scrapper_Item import Str
-from _dev_scripts.v4.range import R, Range
 from merger.Scrapper_Merger_Item import WordItem
 from wikidata.Scrapper_Wikidata import DBWikidata
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
@@ -36,15 +35,20 @@ def LabelType( wd: WikidataItem ) -> str:
 
 def to_names( wikidata_id_list ):
     if wikidata_id_list is None:
-        return None
+        return []
 
-    def to_name( wid ):
-        return R( DBWikidata ) \
-            .from_sql( "SELECT * FROM wikidata WHERE CodeInWiki = ?", wid, cls=WikidataItem ) \
-            .first() \
-            .LabelName
+    wids = ",".join( wikidata_id_list )
 
-    return R( wikidata_id_list ).map( to_name ).as_list()
+    rows =  DBRead(
+        DBWikidata,
+        sql="SELECT LabelName FROM wikidata WHERE CodeInWiki IN (?)",
+        params=[wids] )
+
+    if rows:
+        return ",".join( row[0] for row in rows )
+    else:
+        log.warning( "No record for %s", wids )
+        return []
 
 
 def get_sentences_with_label( Description, LabelName ):
@@ -86,7 +90,7 @@ def merge_words( w, wd, ):
     w.LabelName         = wd.LabelName
     w.LanguageCode      = wd.LanguageCode
     w.Description       = wd.Description
-    w.AlsoKnownAs       = wd.AlsoKnownAs
+    w.AlsoKnownAs       = to_names( wd.AlsoKnownAs )
     # wd.WikipediaENURL
     # wd.WikipediaFRURL
     # wd.WikipediaDEURL
@@ -98,9 +102,9 @@ def merge_words( w, wd, ):
     # wd.EncyclopediaBritannicaEN
     # wd.EncyclopediaUniversalisFR
     # wd.DescriptionUrl
-    w.Hypernymy         += wd.Instance_of
-    w.Hypernymy         += wd.Subclass_of
-    w.Meronymy          += wd.Part_of
+    w.Hypernymy         += to_names( wd.Instance_of )
+    w.Hypernymy         += to_names( wd.Subclass_of )
+    w.Meronymy          += to_names( wd.Part_of )
     w.Translation_EN    += wd.Translation_EN
     w.Translation_FR    += wd.Translation_FR
     w.Translation_DE    += wd.Translation_DE
