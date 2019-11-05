@@ -51,7 +51,7 @@ def load_conjugations( db_words_connection ):
                 IsVerbPresent,
                 IsVerbFutur,
 
-                '[' || PK || ']' as FromCJ 
+                '["' || PK || '"]' as FromCJ 
             FROM db_conjugations.conjugations;
         """
 
@@ -105,7 +105,7 @@ def load_conjugations_one( db_words_connection, lang, label ):
                 IsVerbPast,
                 IsVerbPresent,
                 IsVerbFutur,
-                PK as FromCJ
+                '["' || PK || '"]' as FromCJ 
             FROM db_conjugations.conjugations
            WHERE 
                  LanguageCode = ? COLLATE NOCASE;

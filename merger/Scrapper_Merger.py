@@ -182,7 +182,7 @@ def main():
     # create indexes
     check_indexes_wikidata()
     check_indexes()
-    #
+
     # load 2
     load_wikipedia( DBWord )
     load_wiktionary( DBWord )
