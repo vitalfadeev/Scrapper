@@ -8,7 +8,7 @@ from wiktionary import Scrapper_Wiktionary, Scrapper_Wiktionary_Matcher
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 import Scrapper_WikitextParser
 from wiktionary.Scrapper_Wiktionary import Page
-from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
+from wiktionary.Scrapper_Wiktionary_Item import WiktionaryItem
 from wiktionary.Scrapper_Wiktionary_Checkers import check_node
 from Scrapper_WikitextParser import Header, Template, Li, Dl, Link, String
 from wiktionary.en.Scrapper_Wiktionary_EN_Sections import LANG_SECTIONS_INDEX, PART_OF_SPEECH_SECTIONS_INDEX, VALUED_SECTIONS_INDEX
@@ -463,7 +463,7 @@ def get_label_type( expl, item ):
 
     Args:
         expl (Explanation):         Explanation
-        item (WikictionaryItem):    WikictionaryItem
+        item (WiktionaryItem):    WikictionaryItem
 
     Returns:
         (str)   LabelType
@@ -1101,7 +1101,7 @@ def update_popularity_of_word( item ):
     Please, see source.
 
     Args:
-        item (WikictionaryItem):    item
+        item (WiktionaryItem):    item
     """
     item.PopularityOfWord = 0
 
@@ -1165,7 +1165,7 @@ def check_structure( toc: Root ):
         pass
 
 
-def scrap( page: Scrapper_Wiktionary.Page ) -> List[WikictionaryItem]:
+def scrap( page: Scrapper_Wiktionary.Page ) -> List[WiktionaryItem ]:
     """
     Main scrap function
 

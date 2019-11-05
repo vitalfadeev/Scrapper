@@ -2,7 +2,7 @@ from typing import Iterator
 from collections import defaultdict
 from wiktionary.Scrapper_Wiktionary_ValuableSections import VALUABLE_SECTIONS as ws
 from Scrapper_WikitextParser import Template, Li, Container
-from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
+from wiktionary.Scrapper_Wiktionary_Item import WiktionaryItem
 
 # High-level
 # Root
@@ -217,7 +217,7 @@ class ExplanationsRoot( Section ):
 class Explanation(Section):
     def __init__(self):
         super().__init__()
-        self.item = WikictionaryItem()
+        self.item = WiktionaryItem()
         self.is_leaf_explanation = False
         self.sense_raw = None
         self.sense_txt = None

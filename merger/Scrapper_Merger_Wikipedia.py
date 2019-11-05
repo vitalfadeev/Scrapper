@@ -4,8 +4,9 @@ from typing import Iterable
 
 from Scrapper_DB import DBRead, DBWrite, DBExecute
 from Scrapper_IxiooAPI import Match_List_PKS_With_Lists_Of_PKS
-from merger.Scrapper_Merger import DBWord
+from merger.Scrapper_Merger_DB import DBWord
 from merger.Scrapper_Merger_Item import WordItem
+from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
 log = logging.getLogger( __name__ )
@@ -79,41 +80,37 @@ def merge( wp: WikipediaItem ) -> Iterable[WordItem]:
 
         else:
             # append
-            log.debug( "new: %s", wd )
+            log.debug( "new: %s", wp )
             w = WordItem()
             merge_words( w, wp )
             yield w
 
     else:
         # append
-        log.debug( "new: %s", wd )
+        log.debug( "new: %s", wp )
         w = WordItem()
         merge_words( w, wp )
         yield w
 
 
-def load_wikipedia_one( lang, label ):
-    with sqlite3.connect( "wikipedia.db", timeout=5.0 ) as DBWikipedia:
-        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+def load_wikipedia_one( DBWord, lang, label ):
+    for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label ] ):
+        log.info( "%s", wd )
 
-            for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label ] ):
-                log.info( "%s", wd )
+        for w in merge( wd ):
+            DBWrite( DBWord, w, table="words", if_exists="fail" )
 
-                for w in merge( wd ):
-                    DBWrite( DBWord, w, table="words", if_exists="fail" )
-
-                DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
+        DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
 
 
-def load_wikipedia():
-    with sqlite3.connect( "wikipedia.db", timeout=5.0 ) as DBWikipedia:
-        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+def load_wikipedia( DBWord ):
+    log.info( "loading wikipedia" )
 
-            for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
-                log.info( "%s", wd )
+    for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
+        log.info( "%s", wd )
 
-                for w in merge( wd ):
-                    DBWrite( DBWord, w, table="words", if_exists="fail" )
+        for w in merge( wd ):
+            DBWrite( DBWord, w, table="words", if_exists="replace" )
 
-                DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
+        DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
 

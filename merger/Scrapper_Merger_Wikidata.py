@@ -1,4 +1,11 @@
+import logging
+
+log = logging.getLogger(__name__)
+
+
 def load_wikidata( db_words_connection ):
+    log.info( "loading wikidata" )
+
     db_wikidata = "wikidata.db"
 
     # load data to words from wikidata
@@ -53,6 +60,8 @@ def load_wikidata( db_words_connection ):
 
 
 def load_wikidata_one( db_words_connection, lang, label ):
+    log.info( "loading wikidata" )
+
     db_wikidata = "wikidata.db"
 
     # load data to words from wikidata

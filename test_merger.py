@@ -1,7 +1,9 @@
+import os
 
 if __name__ == "__main__":
     # Merge all
     # merge
+    if os.path.isfile("word.db"): os.remove("word.db")
     from merger import Scrapper_Merger
     Scrapper_Merger.main()
     exit(1)

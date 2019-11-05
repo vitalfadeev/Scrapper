@@ -2,7 +2,6 @@ import os
 import json
 import logging
 import sqlite3
-import string
 import logging.config
 import importlib
 import bs4
@@ -11,9 +10,8 @@ import requests
 
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
+from conjugator.Scrapper_Conjugator_DB import DBConjugations
 
-DB_NAME         = "conjugations.db"
-DBConjugations  = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 
@@ -31,9 +29,6 @@ if os.path.isfile( os.path.join( 'conjugator', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'conjugator', 'logging.ini' ) )
 
 log = logging.getLogger(__name__)
-
-# init DB
-DBExecuteScript( DBConjugations, ConjugationsItem.Meta.DB_INIT )
 
 
 def DBDeleteLangRecords( lang ):

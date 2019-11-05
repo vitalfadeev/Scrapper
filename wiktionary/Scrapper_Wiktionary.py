@@ -13,11 +13,10 @@ import importlib
 import string
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 import Scrapper_WikitextParser
-from . Scrapper_Wiktionary_Item import WikictionaryItem
+from wiktionary.Scrapper_Wiktionary_DB import DBWiktionary
+from . Scrapper_Wiktionary_Item import WiktionaryItem
 from wiktionary import Scrapper_Wiktionary_RemoteAPI
 
-DB_NAME         = "wiktionary.db"
-DBWikictionary  = sqlite3.connect(DB_NAME, timeout=5.0)
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 english_table   = str.maketrans( dict.fromkeys( string.punctuation ) )
@@ -26,9 +25,6 @@ ASCII           = set(string.printable)
 if os.path.isfile( os.path.join( 'wiktionary', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wiktionary', 'logging.ini' ) )
 
-
-# init DB
-DBExecuteScript( DBWikictionary, WikictionaryItem.Meta.DB_INIT )
 
 
 def create_storage(folder_name: str):
@@ -215,7 +211,7 @@ def DBDeleteLangRecords( lang ):
         lang (str): Lang. One of: en, de, it, es, pt, fr
     """
     log.info("Deleting old '%s' records...", lang)
-    return DBExecute(DBWikictionary, "DELETE FROM wiktionary WHERE LanguageCode = ?", lang)
+    return DBExecute( DBWiktionary, "DELETE FROM wiktionary WHERE LanguageCode = ?", lang )
 
 
 class Dump:
@@ -398,7 +394,7 @@ def scrap( lang: str ="en", workers: int = 1 ):
             if result is not None:
                 for item in result:
                     item.dump()
-                    DBWrite( DBWikictionary, item )
+                    DBWrite( DBWiktionary, item )
 
         pool.close()
         pool.join()
@@ -410,5 +406,5 @@ def scrap( lang: str ="en", workers: int = 1 ):
 
             for item in items:
                 item.dump()
-                DBWrite( DBWikictionary, item )
+                DBWrite( DBWiktionary, item )
 

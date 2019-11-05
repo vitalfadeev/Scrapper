@@ -1,4 +1,11 @@
+import logging
+
+log = logging.getLogger(__name__)
+
+
 def load_conjugations( db_words_connection ):
+    log.info( "loading conjugations" )
+
     db_conjugations = "conjugations.db"
 
     # load data to words from wikidata
@@ -51,6 +58,8 @@ def load_conjugations( db_words_connection ):
 
 
 def load_conjugations_one( db_words_connection, lang, label ):
+    log.info( "loading conjugations" )
+
     db_conjugations = "conjugations.db"
 
     # load data to words from wikidata

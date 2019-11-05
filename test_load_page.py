@@ -9,16 +9,16 @@ log = logging.getLogger(__name__)
 
 def setUp():
     # db
-    Scrapper_Wiktionary.DBWikictionary.close()
+    Scrapper_Wiktionary.DBWiktionary.close()
     DB_NAME = "test_wiktionary.db"
     if os.path.isfile( DB_NAME ):
         os.remove( DB_NAME )
     Scrapper_Wiktionary.DB_NAME = DB_NAME
-    Scrapper_Wiktionary.DBWikictionary = sqlite3.connect( DB_NAME, isolation_level=None )
+    Scrapper_Wiktionary.DBWiktionary = sqlite3.connect( DB_NAME, isolation_level=None )
     # init db
-    Scrapper_Wiktionary.DBWikictionary.execute( "PRAGMA journal_mode = OFF" )
-    Scrapper_Wiktionary.DBWikictionary.executescript(
-        Scrapper_Wiktionary.WikictionaryItem.Meta.DB_INIT
+    Scrapper_Wiktionary.DBWiktionary.execute( "PRAGMA journal_mode = OFF" )
+    Scrapper_Wiktionary.DBWiktionary.executescript(
+        Scrapper_Wiktionary.WiktionaryItem.Meta.DB_INIT
     )
 
 

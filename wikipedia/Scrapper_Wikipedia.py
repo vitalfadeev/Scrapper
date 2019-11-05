@@ -16,19 +16,14 @@ import string
 import Scrapper_WikitextParser
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Helpers import create_storage, is_ascii, is_lang
+from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
-DB_NAME         = "wikipedia.db"
-DBWikipedia     = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 log             = logging.getLogger(__name__)
 
 if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
-
-
-# init DB
-DBExecuteScript( DBWikipedia, WikipediaItem.Meta.DB_INIT )
 
 
 def DBDeleteLangRecords( lang ):

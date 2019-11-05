@@ -3,26 +3,23 @@
 import os
 import re
 import bz2
-import sqlite3
 import logging
 import logging.config
 import multiprocessing
 import ijson
 import bs4
 import requests
+
+from merger import DBWikidata
+from wikidata.Scrapper_Wikidata_DB import DB_NAME
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
 from Scrapper_Helpers import filterWodsProblems, clean_surrogates, pprint, create_storage, put_contents
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 import Scrapper_Downloader
 
 #
-DB_NAME      = "wikidata.db"
-DBWikidata  = sqlite3.connect( DB_NAME, timeout=5.0 )
 CACHE_FOLDER = "cached"  # folder where stored downloadad dumps
 log          = logging.getLogger(__name__)
-
-# init DB
-DBExecuteScript( DBWikidata, WikidataItem.Meta.DB_INIT )
 
 if os.path.isfile( os.path.join( 'wikidata', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wikidata', 'logging.ini' ) )

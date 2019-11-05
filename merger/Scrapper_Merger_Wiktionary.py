@@ -5,9 +5,10 @@ from typing import Iterator
 
 from Scrapper_DB import DBRead, DBExecute, DBWrite
 from Scrapper_IxiooAPI import Match_List_PKS_With_Lists_Of_PKS
-from merger.Scrapper_Merger import DBWord
+from merger.Scrapper_Merger_DB import DBWord
 from merger.Scrapper_Merger_Item import WordItem
-from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
+from wiktionary.Scrapper_Wiktionary_Item import WiktionaryItem
+from wiktionary.Scrapper_Wiktionary_DB import DBWiktionary
 
 log    = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ def update_MergedWith( wid, MergedWith, to ):
     DBExecute( DBWord, "UPDATE words SET MergedWith = ? WHERE PK = ?", MergedWith_str, wid )
 
 
-def merge_verbs( wt: WikictionaryItem ) -> Iterator[WordItem]:
+def merge_verbs( wt: WiktionaryItem ) -> Iterator[WordItem ]:
     # 1. find verbs with same LaabelName, Type='verb'
     # 2. do PKS_Match_List
     # 3. merge matched
@@ -134,7 +135,7 @@ def merge_verbs( wt: WikictionaryItem ) -> Iterator[WordItem]:
 
 
 
-def merge_other( wt: WikictionaryItem ) -> Iterator[WordItem]:
+def merge_other( wt: WiktionaryItem ) -> Iterator[WordItem ]:
     # find same verbs
     sql = """ SELECT * 
                 FROM words 
@@ -183,7 +184,7 @@ def merge_other( wt: WikictionaryItem ) -> Iterator[WordItem]:
         yield w
 
 
-def merge( wt: WikictionaryItem ) -> Iterator[WordItem]:
+def merge( wt: WiktionaryItem ) -> Iterator[WordItem ]:
     log.info( wt )
 
     if wt.Type == "verb":
@@ -192,28 +193,24 @@ def merge( wt: WikictionaryItem ) -> Iterator[WordItem]:
         return merge_other(wt )
 
 
-def load_wiktionary_one( lang, label ):
-    with sqlite3.connect( "wiktionary.db", timeout=5.0 ) as DBWiktionary:
-        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+def load_wiktionary_one( DBWord, lang, label ):
+    for wd in DBRead( DBWiktionary, table="wiktionary", cls=WiktionaryItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label ] ):
+        log.info( "%s", wd )
 
-            for wd in DBRead( DBWiktionary, table="wiktionary", cls=WikictionaryItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label ] ):
-                log.info( "%s", wd )
+        for w in merge( wd ):
+            DBWrite( DBWord, w, table="words", if_exists="replace" )
 
-                for w in merge( wd ):
-                    DBWrite( DBWord, w, table="words", if_exists="replace" )
-
-                DBExecute( DBWiktionary, "UPDATE wiktionary SET Operation_Merging = 1 WHERE PrimaryKey = ?", wd.PrimaryKey )
+        DBExecute( DBWiktionary, "UPDATE wiktionary SET Operation_Merging = 1 WHERE PrimaryKey = ?", wd.PrimaryKey )
 
 
-def load_wiktionary():
-    with sqlite3.connect( "wiktionary.db", timeout=5.0 ) as DBWiktionary:
-        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
+def load_wiktionary( DBWord ):
+    log.info( "loading wiktionary" )
 
-            #for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
-            for wd in DBRead( DBWiktionary, table="wiktionary", cls=WikictionaryItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=["en", "Cat"] ):
-                log.info( "%s", wd )
+    #for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
+    for wd in DBRead( DBWiktionary, table="wiktionary", cls=WiktionaryItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ "en", "Cat" ] ):
+        log.info( "%s", wd )
 
-                for w in merge( wd ):
-                    DBWrite( DBWord, w, table="words", if_exists="replace" )
+        for w in merge( wd ):
+            DBWrite( DBWord, w, table="words", if_exists="replace" )
 
-                DBExecute( DBWiktionary, "UPDATE wiktionary SET Operation_Merging = 1 WHERE PrimaryKey = ?", wd.PrimaryKey )
+        DBExecute( DBWiktionary, "UPDATE wiktionary SET Operation_Merging = 1 WHERE PrimaryKey = ?", wd.PrimaryKey )

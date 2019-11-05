@@ -2,39 +2,33 @@
 # 2. Load Wikipedia + Wikidata
 # 3. Load Wiktionary
 import os
-import sqlite3
 import logging
 import logging.config
 
-#
-if os.path.isfile( os.path.join( 'merger', 'logging.ini' ) ):
-    logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
-
-from Scrapper_DB import DBAddColumn, DBCheckStructure, DBExecuteScript, DBCheckIndex, DBCheckIndexes
-from Scrapper_IxiooAPI import Vectorize_database_record
+from merger.Scrapper_Merger_DB import DBWord
+from Scrapper_DB import DBCheckStructure, DBCheckIndex
 from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
-from conjugator.Scrapper_Conjugator import DBConjugations
-from merger.Scrapper_Merger_Item import WordItem
-from merger.Scrapper_Merger_Vectorizer import vectorize_properties
-from wikidata.Scrapper_Wikidata import DBWikidata
-from wikidata.Scrapper_Wikidata_Item import WikidataItem
-from wikipedia.Scrapper_Wikipedia import DBWikipedia
+from conjugator.Scrapper_Conjugator_DB import DBConjugations
+from wikidata.Scrapper_Wikidata_DB import DBWikidata
+from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
-from wiktionary.Scrapper_Wiktionary import DBWikictionary
-from wiktionary.Scrapper_Wiktionary_Item import WikictionaryItem
+from wiktionary.Scrapper_Wiktionary_DB import DBWiktionary
+from wiktionary.Scrapper_Wiktionary_Item import WiktionaryItem
 
-DBWord = sqlite3.connect( "word.db", timeout=5.0 )
-DBExecuteScript( DBWord, WordItem.Meta.DB_INIT )
-log    = logging.getLogger(__name__)
-
-#
 from merger.Scrapper_Merger_Wikidata import load_wikidata, load_wikidata_one
 from merger.Scrapper_Merger_Conjugations import load_conjugations, load_conjugations_one
 from merger.Scrapper_Merger_Wikipedia import load_wikipedia, load_wikipedia_one
 from merger.Scrapper_Merger_Wiktionary import load_wiktionary, load_wiktionary_one
 
+if os.path.isfile( os.path.join( 'merger', 'logging.ini' ) ):
+    logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
+
+log    = logging.getLogger(__name__)
+
 
 def check_structure():
+    log.info( "checking structure" )
+
     # Wikidata
     #DBCheckStructure( DBWikidata, "wikidata", WikidataItem )
 
@@ -51,7 +45,7 @@ def check_structure():
     } )
 
     # Wiktionary
-    DBCheckStructure( DBWikictionary, "wiktionary", {
+    DBCheckStructure( DBWiktionary, "wiktionary", {
         "Operation_Merging": "INTEGER NULL",
         "LabelNamePreference": "INTEGER NULL",
     } )
@@ -63,7 +57,6 @@ def check_structure():
     } )
 
     # Word
-    DBWord = sqlite3.connect( "word.db", timeout=5.0 )
     DBCheckStructure( DBWord, "words", {
         "Operation_Merging"          : "INTEGER NULL",
         "Operation_Wikipedia"        : "INTEGER NULL",
@@ -87,6 +80,7 @@ def check_structure():
 
 
 def check_indexes_wikidata():
+    log.info( "checking wikidata indexes" )
     DBCheckIndex( DBWikidata, "wikidata", "CodeInWiki" )
 
 
@@ -99,6 +93,7 @@ def check_indexes():
     #     "LabelTypeWP",
     #     ["LabelTypeWD", "LabelTypeWP", "LabelType"],
     # ] )
+    log.info( "checking words indexes" )
 
     DBCheckIndex( DBWord, "words",  ["LabelType"] )
     DBCheckIndex( DBWord, "words",  ["AlsoKnownAs"] )
@@ -127,7 +122,7 @@ def Set_Property_LabelNamePreference():
     # If <0 then : =0 elif >1 then : =1
 
     # Wiktionary
-    wt = WikictionaryItem()
+    wt = WiktionaryItem()
     wts = \
         0 - wt.IndexinPage * 3 + \
         wt.AlternativeFormsOther.count().sqrt() + \
@@ -170,8 +165,8 @@ def test_one( lang="en", label='Cat' ):
     check_indexes()
 
     # load 2
-    load_wikipedia_one( lang, label )
-    load_wiktionary_one( lang, label )
+    load_wikipedia_one( DBWord, lang, label )
+    load_wiktionary_one( DBWord, lang, label )
 
     # Vectorize
     #vectorize_properties()
@@ -179,8 +174,8 @@ def test_one( lang="en", label='Cat' ):
 
 def main():
     check_structure()
-
-    # load 1
+    #
+    # # load 1
     load_wikidata( DBWord )
     load_conjugations( DBWord )
 
@@ -189,8 +184,8 @@ def main():
     check_indexes()
 
     # load 2
-    #load_wikipedia()
-    #load_wiktionary()
+    load_wikipedia( DBWord )
+    load_wiktionary( DBWord )
 
     # Vectorize
     #vectorize_properties()

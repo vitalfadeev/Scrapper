@@ -1,14 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import logging
-from collections.abc import Iterable
-from Scrapper_Helpers import remove_comments, extract_from_link, filterWodsProblems
-
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
-
-
 class WikipediaItem:
     class Meta:
         DB_TABLE_NAME = "wikipedia"
