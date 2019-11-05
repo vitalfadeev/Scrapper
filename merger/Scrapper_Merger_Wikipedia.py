@@ -1,5 +1,6 @@
 import logging
 import sqlite3
+from typing import Iterable
 
 from Scrapper_DB import DBRead, DBWrite, DBExecute
 from Scrapper_IxiooAPI import Match_List_PKS_With_Lists_Of_PKS
@@ -37,7 +38,7 @@ def merge_words( w, wp ):
     w.FromWP.append( wp.PK )
 
 
-def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
+def merge( wp: WikipediaItem ) -> Iterable[WordItem]:
     # load all wikipedia
     # and merge with exisiting word (wikidata)
     #   if same Ext_Wikipedia_URL,
@@ -50,17 +51,18 @@ def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
     sql = """ SELECT * 
                 FROM words 
                WHERE LanguageCode = ?       COLLATE NOCASE
+                 AND LabelName = ?          COLLATE NOCASE 
                  AND Ext_Wikipedia_URL = ?  COLLATE NOCASE 
-                 AND LabelName = ?          COLLATE NOCASE """  # ci_index
+             """  # ci_index
 
     # do search
-    items = DBRead( DBWord, sql=sql, params=[ wp.LanguageCode, wp.SelfUrlWikipedia, wp.LabelName ], cls=WordItem )
+    items = DBRead( DBWord, sql=sql, params=[ wp.LanguageCode, wp.LabelName, wp.SelfUrlWikipedia ], cls=WordItem )
     items = list( items )
 
     #
     if items:
-        # Match_List_PKS_With_Lists_Of_PKS( explanations, translation_sentences )
-        sentences1 = [ item.ExplainationTxt for item in items ]
+        # Match_List_PKS_With_Lists_Of_PKS
+        sentences1 = [ item.Description for item in items ]
         sentences2 = [ wp.ExplainationWPTxt ]
 
         matches = Match_List_PKS_With_Lists_Of_PKS( tuple( sentences1 ), tuple( sentences2 ) )
@@ -70,22 +72,23 @@ def convert_wikipedia_to_word( wp: WikipediaItem ) -> WordItem:
         if matched_words:
             for w in matched_words:
                 # merge
+                log.debug( "[ OK ] matched: %s == %s", w, wp )
                 merge_words( w, wp )
+                w.MergedWith.append( wp.PK )
                 yield w
 
         else:
             # append
+            log.debug( "new: %s", wd )
             w = WordItem()
             merge_words( w, wp )
             yield w
 
     else:
         # append
+        log.debug( "new: %s", wd )
         w = WordItem()
         merge_words( w, wp )
-        w.PK            = wp.PK
-        w.LabelName     = wp.LabelName
-        w.LanguageCode  = wp.LanguageCode
         yield w
 
 
@@ -96,7 +99,7 @@ def load_wikipedia_one( lang, label ):
             for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label ] ):
                 log.info( "%s", wd )
 
-                for w in convert_wikipedia_to_word( wd ):
+                for w in merge( wd ):
                     DBWrite( DBWord, w, table="words", if_exists="fail" )
 
                 DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
@@ -109,7 +112,7 @@ def load_wikipedia():
             for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
                 log.info( "%s", wd )
 
-                for w in convert_wikipedia_to_word( wd ):
+                for w in merge( wd ):
                     DBWrite( DBWord, w, table="words", if_exists="fail" )
 
                 DBExecute( DBWikipedia, "UPDATE wikipedia SET Operation_Merging = 1 WHERE PK = ?", wd.PK )

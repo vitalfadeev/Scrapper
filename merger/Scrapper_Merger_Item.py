@@ -62,7 +62,8 @@ class WordItem:
                 FromWP                      TEXT NULL,
                 FromWT                      TEXT NULL,
                 FromWD                      TEXT NULL,
-                FromCJ                      TEXT NULL 
+                FromCJ                      TEXT NULL, 
+                MergedWith                  TEXT NULL 
             )
         """
 
@@ -110,7 +111,7 @@ class WordItem:
         self.Translation_ES              = []
         self.Translation_RU              = []
         self.Translation_PT              = []
-        self.Ext_Wikipedia_URL           = []
+        self.Ext_Wikipedia_URL           = ""
         self.CountTotalOfWikipediaUrl    = 0
         self.ExplainationExamplesTxt     = []
         self.PopularityOfWord            = 0
@@ -127,6 +128,7 @@ class WordItem:
         self.FromWT                      = [] # PK from Wiktionary
         self.FromWD                      = [] # PK from Wikidict
         self.FromCJ                      = [] # PK from Conjugator
+        self.MergedWith                  = []
 
         self.AlsoKnownAs_Vect            = []
         self.Instance_of_Vect            = []

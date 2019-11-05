@@ -233,7 +233,7 @@ def scrap( page: Page ):
             item.LabelName = verb.strip()
 
             # Type
-            item.Type = 'Verb'
+            item.Type = 'verb'
 
             # AlternativeFormsOther
             item.AlternativeFormsOther.append( infinitive )

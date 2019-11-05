@@ -592,7 +592,6 @@ def scrap( page: Scrapper_Wikipedia.Page ) -> List[WikipediaItem]:
     # - 1 Take page title `page.label`
     lang = page.lang
     title = page.label
-    #title = 'AbalonE'
 
     Scrapper_Wikipedia_RemoteAPI.DOMAIN = "https://{}.wikipedia.org".format( lang )
 

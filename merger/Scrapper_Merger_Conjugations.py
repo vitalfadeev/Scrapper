@@ -1,61 +1,105 @@
-import logging
-import sqlite3
+def load_conjugations( db_words_connection ):
+    db_conjugations = "conjugations.db"
 
-from Scrapper_DB import DBRead, DBWrite, DBExecute
-from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
-from merger.Scrapper_Merger_Item import WordItem
+    # load data to words from wikidata
+    sql = f"""
+        ATTACH DATABASE "{db_conjugations}" AS db_conjugations;
 
-log    = logging.getLogger(__name__)
+        INSERT INTO words ( 
+                PK,
+                LabelName,
+                LabelType,
+                LanguageCode,
+                Type,
+                Description,
+                AlsoKnownAs,
+                RelatedTerms,
+                IsMale,
+                IsFeminine,
+                IsSingle,
+                IsPlural,
+                SingleVariant,
+                PluralVariant,
+                IsVerbPast,
+                IsVerbPresent,
+                IsVerbFutur,
+                FromCJ
+            ) 
+            SELECT 
+                PK,
+                LabelName,
+                LabelType,
+                LanguageCode,
+                Type,
+                ExplainationTxt as Description,
+                AlternativeFormsOther as AlsoKnownAs,
+                OtherwiseRelated as RelatedTerms,
+                IsMale,
+                IsFeminine,
+                IsSingle,
+                IsPlural,
+                SingleVariant,
+                PluralVariant,
+                IsVerbPast,
+                IsVerbPresent,
+                IsVerbFutur,
+                PK as FromCJ
+            FROM db_conjugations.conjugations;
+        """
+
+    db_words_connection.executescript( sql )
 
 
-def convert_conjugations_to_word( c: ConjugationsItem ) -> WordItem:
-    log.info( c )
+def load_conjugations_one( db_words_connection, lang, label ):
+    db_conjugations = "conjugations.db"
 
-    w = WordItem()
+    # load data to words from wikidata
+    sql = f"""
+        ATTACH DATABASE "{db_conjugations}" AS db_conjugations;
 
-    w.PK                             = c.PK
-    w.LabelName                      = c.LabelName
-    w.LabelType                      = c.LabelType
-    w.LanguageCode                   = c.LanguageCode
-    w.Type                           = c.Type
-    w.Description                    = c.ExplainationTxt
-    w.AlsoKnownAs                    = c.AlternativeFormsOther
-    w.RelatedTerms                   = c.OtherwiseRelated
-    w.IsMale                         = c.IsMale
-    w.IsFeminine                     = c.IsFeminine
-    #w.IsNeutre                       = c.IsNeutre
-    w.IsSingle                       = c.IsSingle
-    w.IsPlural                       = c.IsPlural
-    w.IsVerbPast                     = c.IsVerbPast
-    w.IsVerbPresent                  = c.IsVerbPresent
-    w.IsVerbFutur                    = c.IsVerbFutur
-    w.FromCJ.append( c.PK )
+        INSERT INTO words ( 
+                PK,
+                LabelName,
+                LabelType,
+                LanguageCode,
+                Type,
+                Description,
+                AlsoKnownAs,
+                RelatedTerms,
+                IsMale,
+                IsFeminine,
+                IsSingle,
+                IsPlural,
+                SingleVariant,
+                PluralVariant,
+                IsVerbPast,
+                IsVerbPresent,
+                IsVerbFutur,
+                FromCJ
+            ) 
+            SELECT 
+                PK,
+                LabelName,
+                LabelType,
+                LanguageCode,
+                Type,
+                ExplainationTxt as Description,
+                AlternativeFormsOther as AlsoKnownAs,
+                OtherwiseRelated as RelatedTerms,
+                IsMale,
+                IsFeminine,
+                IsSingle,
+                IsPlural,
+                SingleVariant,
+                PluralVariant,
+                IsVerbPast,
+                IsVerbPresent,
+                IsVerbFutur,
+                PK as FromCJ
+            FROM db_conjugations.conjugations
+           WHERE 
+                 LanguageCode = ? COLLATE NOCASE;
+             AND LabelName = ? COLLATE NOCASE;
+        """
 
-    return w
-
-
-def load_conjugations_one( lang, label ):
-    with sqlite3.connect( "conjugations.db", timeout=5.0 ) as DBConjugations:
-        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
-
-            for wd in DBRead( DBConjugations, table="conjugations", cls=ConjugationsItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ lang, label] ):
-                log.info( "%s", wd )
-
-                w = convert_conjugations_to_word( wd )
-                DBWrite( DBWord, w, table="words", if_exists="fail" )
-
-                DBExecute( DBConjugations, "UPDATE conjugations SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
-
-
-def load_conjugations():
-    with sqlite3.connect( "conjugations.db", timeout=5.0 ) as DBConjugations:
-        with sqlite3.connect( "word.db", timeout=5.0 ) as DBWord:
-
-            for wd in DBRead( DBConjugations, table="conjugations", cls=ConjugationsItem ):
-                log.info( "%s", wd )
-
-                w = convert_conjugations_to_word( wd )
-                DBWrite( DBWord, w, table="words", if_exists="fail" )
-
-                DBExecute( DBConjugations, "UPDATE conjugations SET Operation_Merging = 1 WHERE PK = ?", wd.PK )
-
+    db_words_connection.executescript( sql, (lang, label) )

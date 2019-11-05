@@ -82,6 +82,7 @@ def check_structure():
         "RelatedTerms_Vect"          : "TEXT NULL",
         "CoordinateTerms_Vect"       : "TEXT NULL",
         "Otherwise_Vect"             : "TEXT NULL",
+        "MergedWith"                 : "TEXT NULL",
     } )
 
 
@@ -99,8 +100,15 @@ def check_indexes():
     #     ["LabelTypeWD", "LabelTypeWP", "LabelType"],
     # ] )
 
-    DBCheckIndex( DBWord, "words", ["LanguageCode", "Ext_Wikipedia_URL", "LabelName"] )
+    DBCheckIndex( DBWord, "words",  ["LabelType"] )
+    DBCheckIndex( DBWord, "words",  ["AlsoKnownAs"] )
+    DBCheckIndex( DBWord, "words",  ["SelfUrlWikidata"] )
+    DBCheckIndex( DBWord, "words",  ["SelfUrlWiktionary"] )
+    DBCheckIndex( DBWord, "words",  ["SelfUrlWikipedia"] )
+
     DBCheckIndex( DBWord, "words", ["LanguageCode", "LabelName"] )
+    DBCheckIndex( DBWord, "words", ["LanguageCode", "LabelName", "Ext_Wikipedia_URL"] )
+    DBCheckIndex( DBWord, "words", ["Type"] )
 
 
 
@@ -155,8 +163,8 @@ def test_one( lang="en", label='Cat' ):
     check_indexes_wikidata()
 
     # load 1
-    load_wikidata_one( lang, label )
-    load_conjugations_one( lang, label )
+    load_wikidata_one( DBWord, lang, label )
+    load_conjugations_one( DBWord, lang, label )
 
     # create indexes
     check_indexes()
@@ -171,26 +179,26 @@ def test_one( lang="en", label='Cat' ):
 
 def main():
     check_structure()
-    check_indexes_wikidata()
 
     # load 1
-    load_wikidata()
-    load_conjugations()
+    load_wikidata( DBWord )
+    load_conjugations( DBWord )
 
     # create indexes
+    check_indexes_wikidata()
     check_indexes()
 
     # load 2
-    load_wikipedia()
-    load_wiktionary()
+    #load_wikipedia()
+    #load_wiktionary()
 
     # Vectorize
     #vectorize_properties()
 
 
 if __name__ == "__main__":
-    #main()
-    test_one( "en", "free" )
+    main()
+    #test_one( "en", "free" )
     # wd = ItemProxy( WikipediaItem() )
     # print( wd.ExplainationWPTxt.len() )
     # wd.ExplainationWPTxt = "123"

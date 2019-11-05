@@ -29,6 +29,7 @@ def DBExecute( DB, sql, *args ):
         DBExecute( DBWikictionary, "SELECT * FROM wiktionary WHERE id = ?", (1, ) )
     """
     DB.execute( sql, args )
+    DB.commit()
 
 
 def DBExecuteScript( DB: sqlite3.Connection, sql:str, *args ):
@@ -47,6 +48,7 @@ def DBExecuteScript( DB: sqlite3.Connection, sql:str, *args ):
     """
     assert isinstance( DB, sqlite3.Connection )
     DB.executescript( sql )
+    DB.commit()
 
 
 def DBRead( DB, table=None, where=None, sql=None, params=None, cls=None, *args, **kwargs ):
