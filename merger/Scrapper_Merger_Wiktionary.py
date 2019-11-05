@@ -22,9 +22,9 @@ def merge_words( w, wt ):
     w.Type                      = wt.Type
 
     if w.Description:
-        w.Description          += '\n' * 3 + wt.ExplainationTxt + '\n'*3 + wt.DescriptionTxt
+        w.Description          += '\n' * 3 + wt.DescriptionTxt
     else:
-        w.Description          += wt.ExplainationTxt + '\n' * 3 + wt.DescriptionTxt
+        w.Description          += wt.DescriptionTxt
 
     if wt.ExplainationExamplesTxt:
         w.ExplainationExamplesTxt.append( wt.ExplainationExamplesTxt )

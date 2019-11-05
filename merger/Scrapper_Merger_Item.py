@@ -51,6 +51,12 @@ class WordItem:
                 ExplainationExamplesTxt     TEXT NULL,
                 PopularityOfWord            INTEGER NULL,
         
+                Instance_of                 TEXT NULL,              
+                Subclass_of                 TEXT NULL,
+                Part_of                     TEXT NULL,
+                WikipediaLinkCountTotal     TEXT NULL,
+                ExplainationTxt             TEXT NULL,
+
                 Operation_Merging           INTEGER NULL,
                 Operation_Wikipedia         INTEGER NULL,
                 Operation_Vectorizer        INTEGER NULL,
@@ -131,6 +137,12 @@ class WordItem:
         self.CountTotalOfWikipediaUrl    = 0
         self.ExplainationExamplesTxt     = []
         self.PopularityOfWord            = 0
+
+        self.Instance_of                 = []
+        self.Subclass_of                 = []
+        self.Part_of                     = []
+        self.WikipediaLinkCountTotal     = 0
+        self.ExplainationTxt             = ""
 
         self.Operation_Merging           = 0
         self.Operation_Wikipedia         = 0

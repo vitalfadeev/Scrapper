@@ -64,7 +64,7 @@ def get_preference( wid ):
     # Noun_Felidae_Cougar_Puma_Lynx
     rows = DBRead( DBWiktionary, sql=""" 
         SELECT * 
-          FROM wiktionary 
+          FROM words 
          WHERE LabelName = 'Cat' COLLATE NOCASE 
            AND LabelType = 'Noun_Felidae_Cougar_Puma_Lynx' 
          """, cls=WiktionaryItem )
@@ -79,7 +79,7 @@ def get_preference( wid ):
     ExplainationExamplesTxt = get_sentences_with_label( wd.Description, wd.LabelName )
     ExplainationTxt = wd.Description
 
-    wds = \
+    preference = \
         len( wd.AlsoKnownAs ) + \
         len( wd.Instance_of ) + \
         len( wd.Subclass_of ) + \
@@ -95,7 +95,7 @@ def get_preference( wid ):
         math.sqrt( len( ExplainationExamplesTxt ) ) + \
         math.sqrt( len( ExplainationTxt ) )
 
-    return wds
+    return preference
 
 
 def operation_pref_wikidata():

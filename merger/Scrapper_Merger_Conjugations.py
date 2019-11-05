@@ -50,7 +50,8 @@ def load_conjugations( db_words_connection ):
                 IsVerbPast,
                 IsVerbPresent,
                 IsVerbFutur,
-                PK as FromCJ
+
+                '[' || PK || ']' as FromCJ 
             FROM db_conjugations.conjugations;
         """
 

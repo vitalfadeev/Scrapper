@@ -31,6 +31,12 @@ def load_wikidata( db_words_connection ):
                 Translation_RU,    
                 Translation_PT,    
                 CountTotalOfWikipediaUrl,
+
+                Instance_of,              
+                Subclass_of,
+                Part_of,
+                WikipediaLinkCountTotal,
+
                 FromWD
             ) 
             SELECT 
@@ -51,8 +57,14 @@ def load_wikidata( db_words_connection ):
                 Translation_ES,                                                    
                 Translation_RU,                                                    
                 Translation_PT,
+                WikipediaLinkCountTotal as CountTotalOfWikipediaUrl,
+
+                Instance_of,              
+                Subclass_of,
+                Part_of,
                 WikipediaLinkCountTotal,
-                PrimaryKey as FromWD                                                    
+
+                '[' || PrimaryKey || ']' as FromWD                                                    
             FROM db_wikidata.wikidata;
         """
 
