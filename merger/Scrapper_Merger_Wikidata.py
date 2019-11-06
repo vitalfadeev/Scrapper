@@ -1,4 +1,5 @@
 import logging
+import sqlite3
 
 log = logging.getLogger(__name__)
 
@@ -76,6 +77,8 @@ def load_wikidata_one( db_words_connection, lang, label ):
 
     db_wikidata = "wikidata.db"
 
+    label = label.replace("'", "''")
+
     # load data to words from wikidata
     sql = f"""
         ATTACH DATABASE "{db_wikidata}" AS db_wikidata;
@@ -124,10 +127,10 @@ def load_wikidata_one( db_words_connection, lang, label ):
                 '["' || PrimaryKey || '"]' as FromWD                                                    
             FROM db_wikidata.wikidata
            WHERE 
-                 LanguageCode = ? COLLATE NOCASE;
-             AND LabelName = ? COLLATE NOCASE;
+                 LanguageCode = '{lang}' COLLATE NOCASE
+             AND LabelName = '{label}' COLLATE NOCASE;
         """
 
-    db_words_connection.executescript( sql, (lang, label) )
+    db_words_connection.executescript( sql )
 
 

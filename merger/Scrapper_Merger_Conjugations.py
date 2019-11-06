@@ -63,6 +63,8 @@ def load_conjugations_one( db_words_connection, lang, label ):
 
     db_conjugations = "conjugations.db"
 
+    label = label.replace('\'', '\'\'')
+
     # load data to words from wikidata
     sql = f"""
         ATTACH DATABASE "{db_conjugations}" AS db_conjugations;
@@ -108,8 +110,8 @@ def load_conjugations_one( db_words_connection, lang, label ):
                 '["' || PK || '"]' as FromCJ 
             FROM db_conjugations.conjugations
            WHERE 
-                 LanguageCode = ? COLLATE NOCASE;
-             AND LabelName = ? COLLATE NOCASE;
+                 LanguageCode = '{lang}' COLLATE NOCASE
+             AND LabelName = '{label}' COLLATE NOCASE;
         """
 
-    db_words_connection.executescript( sql, (lang, label) )
+    db_words_connection.executescript( sql )

@@ -92,7 +92,8 @@ def merge_verbs( wt: WiktionaryItem ) -> Iterator[WordItem ]:
                WHERE LanguageCode = ?       COLLATE NOCASE
                  AND LabelName = ?          COLLATE NOCASE
                  AND Type = 'verb'          COLLATE NOCASE
-                 AND FromWT is NULL """ # ci_index
+                 AND FromWT is NULL 
+             """ # ci_index
 
     items = DBRead( DBWord, sql=sql, params=[wt.LanguageCode, wt.LabelName], cls=WordItem )
     items = list( items )
@@ -142,7 +143,8 @@ def merge_other( wt: WiktionaryItem ) -> Iterator[WordItem ]:
                WHERE LanguageCode = ?       COLLATE NOCASE
                  AND LabelName = ?          COLLATE NOCASE
                  AND Type <> 'verb'         COLLATE NOCASE
-                 AND FromWT is NULL """ # ci_index
+                 AND FromWT is NULL 
+             """ # ci_index
 
     items = DBRead( DBWord, sql=sql, params=[wt.LanguageCode, wt.LabelName], cls=WordItem )
     items = list( items )
@@ -187,7 +189,7 @@ def merge_other( wt: WiktionaryItem ) -> Iterator[WordItem ]:
 def merge( wt: WiktionaryItem ) -> Iterator[WordItem ]:
     log.info( wt )
 
-    if wt.Type == "verb":
+    if wt.Type.lower() == "verb":
         return merge_verbs( wt )
     else:
         return merge_other(wt )
@@ -206,8 +208,7 @@ def load_wiktionary_one( DBWord, lang, label ):
 def load_wiktionary( DBWord ):
     log.info( "loading wiktionary" )
 
-    #for wd in DBRead( DBWikipedia, table="wikipedia", cls=WikipediaItem ):
-    for wd in DBRead( DBWiktionary, table="wiktionary", cls=WiktionaryItem, where="LanguageCode=? COLLATE NOCASE AND LabelName=? COLLATE NOCASE", params=[ "en", "Cat" ] ):
+    for wd in DBRead( DBWiktionary, table="wiktionary", cls=WiktionaryItem ):
         log.info( "%s", wd )
 
         for w in merge( wd ):

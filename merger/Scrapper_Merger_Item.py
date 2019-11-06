@@ -158,6 +158,7 @@ class WordItem:
         self.FromCJ                      = [] # PK from Conjugator
         self.MergedWith                  = []
 
+        self.Description_Vect            = []
         self.AlsoKnownAs_Vect            = []
         self.Instance_of_Vect            = []
         self.Subclass_of_Vect            = []

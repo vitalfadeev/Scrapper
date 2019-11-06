@@ -82,6 +82,9 @@ def check_structure():
 def check_indexes_wikidata():
     log.info( "checking wikidata indexes" )
     DBCheckIndex( DBWikidata, "wikidata", "CodeInWiki" )
+    DBCheckIndex( DBWikidata, "wikidata", "LabelName" )
+    DBCheckIndex( DBWikidata, "wikidata", "LanguageCode" )
+    DBCheckIndex( DBWikidata, "wikidata", ["LanguageCode", 'LabelName'] )
 
 
 def check_indexes():
@@ -101,8 +104,9 @@ def check_indexes():
     DBCheckIndex( DBWord, "words",  ["SelfUrlWiktionary"] )
     DBCheckIndex( DBWord, "words",  ["SelfUrlWikipedia"] )
 
-    DBCheckIndex( DBWord, "words", ["LanguageCode", "LabelName"] )
-    DBCheckIndex( DBWord, "words", ["LanguageCode", "LabelName", "Ext_Wikipedia_URL"] )
+    DBCheckIndex( DBWord, "words", ["LanguageCode"] )
+    DBCheckIndex( DBWord, "words", ["LabelName"] )
+    DBCheckIndex( DBWord, "words", ["Ext_Wikipedia_URL"] )
     DBCheckIndex( DBWord, "words", ["Type"] )
 
 
@@ -173,28 +177,20 @@ def test_one( lang="en", label='Cat' ):
 
 
 def main():
-    check_structure()
+    # check_structure()
+    # #
+    # # # load 1
+    # load_wikidata( DBWord )
+    # load_conjugations( DBWord )
     #
-    # # load 1
-    load_wikidata( DBWord )
-    load_conjugations( DBWord )
-
-    # create indexes
-    check_indexes_wikidata()
-    check_indexes()
-
-    # load 2
-    load_wikipedia( DBWord )
-    load_wiktionary( DBWord )
+    # # create indexes
+    # check_indexes_wikidata()
+    # check_indexes()
+    #
+    # # load 2
+    # load_wikipedia( DBWord )
+    # load_wiktionary( DBWord )
 
     # Vectorize
     #vectorize_properties()
-
-
-if __name__ == "__main__":
-    main()
-    #test_one( "en", "free" )
-    # wd = ItemProxy( WikipediaItem() )
-    # print( wd.ExplainationWPTxt.len() )
-    # wd.ExplainationWPTxt = "123"
-    # print( wd.ExplainationWPTxt.len() )
+    ...
