@@ -25,8 +25,8 @@ if __name__ == "__main__":
     operation_pref_wikipedia, operation_pref_conjugaison, calculate_they_read
 
     check_structure()
-    # score = operation_pref( "en" )
-    # operation_pref_wiktionary( "en" )
+    # operation_pref( "en" )
+    #operation_pref_wiktionary( "en" )
     # operation_pref_wikipedia( "en" )
     # calculate_they_read()
     # operation_pref_conjugaison( "en" )

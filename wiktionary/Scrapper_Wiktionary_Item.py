@@ -73,6 +73,23 @@ class WiktionaryItem:
                     Qualifier                   TEXT NULL,
                     DescriptionWikipediaLinks   TEXT NULL,
                     DescriptionWiktionaryLinks  TEXT NULL,
+                    
+                    ExplainationTxt_Vect        TEXT NULL,
+                    AlsoKnownAs_Vect            TEXT NULL,
+                    Instance_of_Vect            TEXT NULL,
+                    Subclass_of_Vect            TEXT NULL,
+                    Part_of_Vect                TEXT NULL,
+                    ExplainationTxt_Vect        TEXT NULL,
+                    AlternativeFormsOther_Vect  TEXT NULL,
+                    Synonymy_Vect               TEXT NULL,
+                    Antonymy_Vect               TEXT NULL,
+                    Hypernymy_Vect              TEXT NULL,
+                    Hyponymy_Vect               TEXT NULL,
+                    Meronymy_Vect               TEXT NULL,
+                    RelatedTerms_Vect           TEXT NULL,
+                    Coordinate_Vect             TEXT NULL,
+                    Otherwise_Vect              TEXT NULL,
+
                     LabelNamePreference    		INTEGER, 
                     Operation_Merging    		INTEGER, 
                     Operation_Pref    	    	INTEGER, 
@@ -149,6 +166,22 @@ class WiktionaryItem:
         self.Qualifier                   = []
         self.DescriptionWikipediaLinks   = []
         self.DescriptionWiktionaryLinks  = []
+
+        self.ExplainationTxt_Vect        = []
+        self.AlsoKnownAs_Vect            = []
+        self.Instance_of_Vect            = []
+        self.Subclass_of_Vect            = []
+        self.Part_of_Vect                = []
+        self.ExplainationTxt_Vect        = []
+        self.AlternativeFormsOther_Vect  = []
+        self.Synonymy_Vect               = []
+        self.Antonymy_Vect               = []
+        self.Hypernymy_Vect              = []
+        self.Hyponymy_Vect               = []
+        self.Meronymy_Vect               = []
+        self.RelatedTerms_Vect           = []
+        self.Coordinate_Vect             = []
+        self.Otherwise_Vect              = []
 
         self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
