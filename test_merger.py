@@ -13,6 +13,10 @@ if __name__ == "__main__":
     # print( score )
     # exit(1)
 
+    from merger.Scrapper_Merger_Operations import operation_pref_wikidata
+    score = operation_pref_wikidata( "en" )
+    exit(1)
+
 
     # Merge one
     import os
