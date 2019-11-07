@@ -18,6 +18,26 @@ def vectorize_properties_wikipedia():
 
         vetorized = Vectorize_database_record( wp )
 
+        DBExecute( DBWiktionary, """
+            UPDATE wiktionary 
+               SET
+                   Description_Vect = ?,
+                   AlsoKnownAs_Vect = ?,
+                   Instance_of_Vect = ?,
+                   Subclass_of_Vect = ?,
+                   Part_of_Vect = ?,
+                   Operation_Vectorizer = 1
+             WHERE PrimaryKey = ?
+             """,
+                to_json( vetorized["Description"] ),
+                to_json( vetorized["AlsoKnownAs"] ),
+                to_json( vetorized["Instance_of"] ),
+                to_json( vetorized["Subclass_of"] ),
+                to_json( vetorized["Part_of"] ),
+                wp["PrimaryKey"]
+        )
+
+
 
 def to_json( s ):
     if s is None:
@@ -62,7 +82,7 @@ def vectorize_properties_wiktionary():
                 to_json( vetorized["RelatedTerms"] ),
                 to_json( vetorized["Coordinate"] ),
                 to_json( vetorized["Otherwise"] ),
-                to_json( vetorized["PrimaryKey"] ),
+                wt["PrimaryKey"]
         )
 
 

@@ -40,10 +40,15 @@ def check_structure():
 
     # Wikipedia
     DBCheckStructure( DBWikipedia, "wikipedia", {
-        "Operation_Merging"    : "INTEGER NULL",
-        "LabelNamePreference"  : "INTEGER NULL",
-        "Operation_Pref"       : "INTEGER NULL",
-        "Operation_Vectorizer" : "INTEGER NULL",
+        "Operation_Merging"            : "INTEGER NULL",
+        "LabelNamePreference"          : "INTEGER NULL",
+        "Operation_Pref"               : "INTEGER NULL",
+        "Operation_Vectorizer"         : "INTEGER NULL",
+        "Description_Vect"             : "TEXT NULL",
+        "AlsoKnownAs_Vect"             : "TEXT NULL",
+        "Instance_of_Vect"             : "TEXT NULL",
+        "Subclass_of_Vect"             : "TEXT NULL",
+        "Part_of_Vect"                 : "TEXT NULL",
     } )
 
     # Wiktionary
