@@ -1,4 +1,12 @@
 import os
+import logging
+import logging.config
+
+from merger.Scrapper_Merger import check_structure
+from merger.Scrapper_Merger_Vectorizer import vectorize_properties
+
+logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
+
 
 if __name__ == "__main__":
     # Merge all
@@ -13,8 +21,17 @@ if __name__ == "__main__":
     # print( score )
     # exit(1)
 
-    from merger.Scrapper_Merger_Operations import operation_pref_wikidata
-    score = operation_pref_wikidata( "en" )
+    from merger.Scrapper_Merger_Operations import operation_pref_wikidata, operation_pref, operation_pref_wiktionary, \
+    operation_pref_wikipedia, operation_pref_conjugaison, calculate_they_read
+
+    check_structure()
+    # score = operation_pref( "en" )
+    # operation_pref_wiktionary( "en" )
+    # operation_pref_wikipedia( "en" )
+    # calculate_they_read()
+    # operation_pref_conjugaison( "en" )
+
+    vectorize_properties()
     exit(1)
 
 

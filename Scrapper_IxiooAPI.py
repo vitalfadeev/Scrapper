@@ -124,7 +124,8 @@ def Vectorize_database_record( database_record: dict ) -> list:
     #                     'IsVerbFutur': None,
     #                     'PopularityOfWord': None }
     data = {
-        'database_record':database_record
+        'database_record':database_record,
+
     }
 
     #
@@ -134,8 +135,7 @@ def Vectorize_database_record( database_record: dict ) -> list:
     if response.status_code == 200:
         try:
             result = json.loads( response.content, encoding='UTF-8' )
-            pairs = result[ 'result' ]
-            return pairs
+            return result # database record
 
         except json.decoder.JSONDecodeError as e:
             log.error( '  database_record: %s', database_record )

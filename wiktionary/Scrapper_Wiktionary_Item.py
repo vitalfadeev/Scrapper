@@ -74,7 +74,9 @@ class WiktionaryItem:
                     DescriptionWikipediaLinks   TEXT NULL,
                     DescriptionWiktionaryLinks  TEXT NULL,
                     LabelNamePreference    		INTEGER, 
-                    Operation_Merging    		INTEGER 
+                    Operation_Merging    		INTEGER, 
+                    Operation_Pref    	    	INTEGER, 
+                    Operation_Vectorizer    	INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wiktionary (LanguageCode);
@@ -150,6 +152,8 @@ class WiktionaryItem:
 
         self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
+        self.Operation_Pref              = 0
+        self.Operation_Vectorizer        = 0
 
 
     def dump(self, print_header=False):

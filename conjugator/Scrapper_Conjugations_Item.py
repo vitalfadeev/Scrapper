@@ -23,7 +23,8 @@ class ConjugationsItem:
                     IsVerbPast                  INTEGER NULL,
                     IsVerbPresent               INTEGER NULL,
                     IsVerbFutur                 INTEGER NULL,
-                    Operation_Merging    		INTEGER 
+                    Operation_Merging    		INTEGER, 
+                    Operation_Pref       		INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON conjugations (LanguageCode);
@@ -49,6 +50,7 @@ class ConjugationsItem:
         self.IsVerbFutur                 = bool
         self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
+        self.Operation_Pref              = 0
 
     def __repr__(self):
         return "ConjugationsItem(" + self.LabelName + ': ' + self.PK + ")"

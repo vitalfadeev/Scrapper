@@ -22,7 +22,9 @@ class WikipediaItem:
                     ExplainationExamplesRaw		TEXT,
                     ExplainationExamplesTxt		TEXT,
                     LabelNamePreference    		INTEGER, 
-                    Operation_Merging    		INTEGER 
+                    Operation_Merging    		INTEGER, 
+                    Operation_Pref       		INTEGER,
+                    Operation_Vectorizer   		INTEGER 
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wikipedia (LanguageCode);
@@ -47,6 +49,8 @@ class WikipediaItem:
 
         self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
+        self.Operation_Pref              = 0
+        self.Operation_Vectorizer        = 0
 
     def __repr__(self):
         return f"WikipediaItem({self.LabelName}: {self.PK})"

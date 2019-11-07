@@ -1,3 +1,4 @@
+import logging
 import math
 import re
 import sqlite3
@@ -5,15 +6,25 @@ from functools import lru_cache
 
 import nltk
 from Scrapper_DB import DBRead, DBExecute
+from conjugator.Scrapper_Conjugations_Item import ConjugationsItem
+from conjugator.Scrapper_Conjugator_DB import DBConjugations
 from wikidata.Scrapper_Wikidata_DB import DBWikidata
 from merger.DBWikidata import WordItem
 from merger.Scrapper_Merger_DB import DBWord
 from wikidata.Scrapper_Wikidata_Item import WikidataItem
+from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
+from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 from wiktionary.Scrapper_Wiktionary_DB import DBWiktionary
 from wiktionary.Scrapper_Wiktionary_Item import WiktionaryItem
 
-nltk.download( 'punkt' )
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
 from nltk import tokenize
+
+log = logging.getLogger(__name__)
 
 
 # https://textminingonline.com/dive-into-nltk-part-ii-sentence-tokenize-and-word-tokenize
@@ -121,10 +132,38 @@ def calculate_cat_felidae():
     return calculate_preference_wiktionary( wt )
 
 
+@lru_cache(maxsize=2)
+def calculate_they_read():
+    # 7.244997998398398
+
+    DB_THEY_READ = sqlite3.connect( "conjugations-they-read.db" )
+
+    rows = DBRead( DB_THEY_READ, sql = "SELECT * FROM conjugations WHERE PK = 'en§read§Verb_To_read_They_Indicative_Present§5'", cls=ConjugationsItem )
+
+    try:
+        c = next(rows)
+
+    except StopIteration:
+        raise Exception("No THEY READ")
+
+    DB_THEY_READ.close()
+
+    #
+    preference = \
+        math.sqrt( len( c.AlternativeFormsOther ) ) + \
+        math.sqrt( len( c.ExplainationTxt ) )
+
+    return preference  # 7.244997998398398
+
+
 def operation_pref_wikidata( lang ):
+    log.info( "Doing operation Set Property: LabelNamePreference: Wikidata" )
+
     preference_base = calculate_cat_felidae()
 
     for wd in DBRead( DBWikidata, sql=" SELECT * FROM wikidata ", cls=WikidataItem ):
+
+        log.info( "  set Property: LabelNamePreference: %s", wd )
 
         ExplainationExamplesTxt = get_sentences_with_label( lang, wd.Description, wd.LabelName )
         ExplainationTxt = wd.Description
@@ -159,15 +198,20 @@ def operation_pref_wikidata( lang ):
 
         DBExecute( DBWikidata, """
             UPDATE wikidata 
-               SET LabelNamePreference = ? 
-             WHERE PK = ?
-             """, LabelNamePreference, wd.PK )
+               SET LabelNamePreference = ?,
+                   Operation_Pref = 1 
+             WHERE PrimaryKey = ?
+             """, LabelNamePreference, wd.PrimaryKey )
 
 
 def operation_pref_wiktionary( lang ):
+    log.info( "Doing operation Set Property: LabelNamePreference: Wiktionary" )
+
     preference_base = calculate_cat_felidae()
 
-    for wt in DBRead( DBWikidata, sql=" SELECT * FROM wiktionary ", cls=WiktionaryItem ):
+    for wt in DBRead( DBWiktionary, sql=" SELECT * FROM wiktionary ", cls=WiktionaryItem ):
+
+        log.info( "  set Property: LabelNamePreference: %s", wt )
 
         preference = calculate_preference_wiktionary( wt )
         preference = preference / preference_base / 2
@@ -177,13 +221,82 @@ def operation_pref_wiktionary( lang ):
         else:
             LabelNamePreference = 1
 
-        DBExecute( DBWikidata, """
+        DBExecute( DBWiktionary, """
             UPDATE wiktionary 
-               SET LabelNamePreference = ? 
+               SET LabelNamePreference = ?, 
+                   Operation_Pref = 1 
+             WHERE PrimaryKey = ?
+             """, LabelNamePreference, wt.PrimaryKey )
+
+
+def operation_pref_wikipedia( lang ):
+    log.info( "Doing operation Set Property: LabelNamePreference: Wikipedia" )
+
+    preference_base = calculate_cat_felidae()
+
+    for wp in DBRead( DBWikipedia, sql=" SELECT * FROM wikipedia ", cls=WikipediaItem ):
+
+        log.info( "  set Property: LabelNamePreference: %s", wp )
+
+        preference = \
+            math.sqrt( len( wp.SeeAlsoWikipediaLinks ) ) + \
+            math.sqrt( len( wp.ExplainationWPTxt ) ) + \
+            math.sqrt( len( wp.ExplainationExamplesTxt  ) )
+
+        #
+        # then divide by value of ( CAT-FELIDAE ) and divide by 2
+        # If <0 then : =0 elif >1 then : =1
+
+        #
+        preference = preference / preference_base / 2
+
+        if preference <= 0:
+            LabelNamePreference = 0
+        else:
+            LabelNamePreference = 1
+
+        DBExecute( DBWikipedia, """
+            UPDATE wikipedia
+               SET LabelNamePreference = ?, 
+                   Operation_Pref = 1 
              WHERE PK = ?
-             """, LabelNamePreference, wt.PK )
+             """, LabelNamePreference, wp.PK )
 
 
+def operation_pref_conjugaison( lang ):
+    log.info( "Doing operation Set Property: LabelNamePreference: Conjugaison" )
+
+    preference_base = calculate_they_read()
+
+    for c in DBRead( DBConjugations, sql=" SELECT * FROM conjugations ", cls=ConjugationsItem ):
+
+        log.info( "  set Property: LabelNamePreference: %s", c )
+
+        preference = \
+            math.sqrt( len( c.AlternativeFormsOther ) ) + \
+            math.sqrt( len( c.ExplainationTxt ) )
+
+        #
+        preference = preference / preference_base / 2
+
+        if preference <= 0:
+            LabelNamePreference = 0
+        else:
+            LabelNamePreference = 1
+
+        DBExecute( DBConjugations, """
+            UPDATE conjugations
+               SET LabelNamePreference = ?, 
+                   Operation_Pref = 1 
+             WHERE PK = ?
+             """, LabelNamePreference, c.PK )
+
+
+
+    
 
 def operation_pref( lang ):
     operation_pref_wikidata( lang )
+    operation_pref_wiktionary( lang )
+    operation_pref_wikipedia( lang )
+    operation_pref_conjugaison( lang )

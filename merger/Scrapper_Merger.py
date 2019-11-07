@@ -33,33 +33,40 @@ def check_structure():
     #DBCheckStructure( DBWikidata, "wikidata", WikidataItem )
 
     DBCheckStructure( DBWikidata, "wikidata", {
-        "Operation_Merging": "INTEGER NULL",
-        "LabelNamePreference": "INTEGER NULL",
-        "Operation_Pref": "INTEGER NULL",
+        "Operation_Merging"   : "INTEGER NULL",
+        "LabelNamePreference" : "INTEGER NULL",
+        "Operation_Pref"      : "INTEGER NULL",
     } )
 
     # Wikipedia
     DBCheckStructure( DBWikipedia, "wikipedia", {
-        "Operation_Merging": "INTEGER NULL",
-        "LabelNamePreference": "INTEGER NULL",
+        "Operation_Merging"    : "INTEGER NULL",
+        "LabelNamePreference"  : "INTEGER NULL",
+        "Operation_Pref"       : "INTEGER NULL",
+        "Operation_Vectorizer" : "INTEGER NULL",
     } )
 
     # Wiktionary
     DBCheckStructure( DBWiktionary, "wiktionary", {
-        "Operation_Merging": "INTEGER NULL",
-        "LabelNamePreference": "INTEGER NULL",
+        "Operation_Merging"    : "INTEGER NULL",
+        "LabelNamePreference"  : "INTEGER NULL",
+        "Operation_Pref"       : "INTEGER NULL",
+        "Operation_Vectorizer" : "INTEGER NULL",
     } )
 
     # Conjugations
     DBCheckStructure( DBConjugations, "conjugations", {
-        "Operation_Merging": "INTEGER NULL",
-        "LabelNamePreference": "INTEGER NULL",
+        "Operation_Merging"   : "INTEGER NULL",
+        "LabelNamePreference" : "INTEGER NULL",
+        "Operation_Pref"      : "INTEGER NULL",
     } )
 
     # Word
     DBCheckStructure( DBWord, "words", {
+        "Operation_Pref"             : "INTEGER NULL",
         "Operation_Merging"          : "INTEGER NULL",
         "Operation_Wikipedia"        : "INTEGER NULL",
+        "Operation_Vectorizer"       : "INTEGER NULL",
         "LabelNamePreference"        : "INTEGER NULL",
         "AlsoKnownAs_Vect"           : "TEXT NULL",
         "Instance_of_Vect"           : "TEXT NULL",
@@ -109,52 +116,6 @@ def check_indexes():
     DBCheckIndex( DBWord, "words", ["Ext_Wikipedia_URL"] )
     DBCheckIndex( DBWord, "words", ["Type"] )
 
-
-
-def Set_Property_LabelNamePreference():
-    # then divide by value of ( CAT-FELIDAE ) and divide by 2
-    # If <0 then : =0 elif >1 then : =1
-
-    # Wikipedia
-    wp = WikipediaItem
-    wps = \
-        wp.SeeAlsoWikipediaLinks.count().sqrt() + \
-        wp.ExplainationWPTxt.count().sqrt() + \
-        wp.ExplainationTxt.len().sqrt()
-
-    # then divide by value of ( CAT-FELIDAE ) and divide by 2
-    # If <0 then : =0 elif >1 then : =1
-
-    # Wiktionary
-    wt = WiktionaryItem()
-    wts = \
-        0 - wt.IndexinPage * 3 + \
-        wt.AlternativeFormsOther.count().sqrt() + \
-        wt.Synonymy.count() + \
-        wt.Antonymy.count() + \
-        wt.Hypernymy.count() + \
-        wt.Hyponymy.count() + \
-        wt.Meronymy.count() + \
-        wt.Translation_EN.count() + \
-        wt.Translation_PT.count() + \
-        wt.Translation_DE.count() + \
-        wt.Translation_ES.count() + \
-        wt.Translation_FR.count() + \
-        wt.Translation_IT.count() + \
-        wt.Translation_RU.count() + \
-        wt.ExplainationExamplesTxt.count().sqrt() + \
-        wt.ExplainationTxt.len().sqrt()
-        # Check the codes in ExplainationRaw {{codes}} for special codes  (Rare=-25 , Obsolete=-25)
-
-    # then divide by value of ( CAT-FELIDAE ) and divide by 2
-    # If <0 then : =0 elif >1 then : =1
-
-    # Verb conjugaison
-    cj = ConjugationsItem()
-    # then divide by value of ( THEY READ ) and divide by 2
-    # If <0 then : =0 elif >1 then : =1
-
-    # After done, set Field Operation_Pref=1
 
 
 def test_one( lang="en", label='Cat' ):
