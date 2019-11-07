@@ -23,6 +23,7 @@ class ConjugationsItem:
                     IsVerbPast                  INTEGER NULL,
                     IsVerbPresent               INTEGER NULL,
                     IsVerbFutur                 INTEGER NULL,
+                    LabelNamePreference   		INTEGER, 
                     Operation_Merging    		INTEGER, 
                     Operation_Pref       		INTEGER 
             );

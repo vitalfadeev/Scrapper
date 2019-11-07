@@ -31,10 +31,10 @@ if __name__ == "__main__":
     #test_all( lang="fr", workers=5 )
     #test_all( lang="de", workers=10 )
     #test_all( lang="it", workers=5 )
-    #test_all( lang="es", workers=5 )
+    test_all( lang="es", workers=5 )
     #test_all( lang="pt", workers=5 )
     #test_all( lang="ru", workers=5 )
     #test_one("en", "do")
 
-    test_one("en", "read")
+    #test_one("en", "read")
 

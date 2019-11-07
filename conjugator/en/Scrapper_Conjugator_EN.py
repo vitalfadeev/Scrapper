@@ -172,7 +172,7 @@ def decode_conj_amount( tense, pronoun, verb ):
 
 def get_label_type( page, tense, infinitive, pronoun ):
     # Verb_To_do_You_Indicative Perfect
-    s = "Verb" + '_' + proper( infinitive ) + '_' + proper( pronoun ) + '_' + tense
+    s = "Verb" + '_' + proper( page.label) + '_' + proper( pronoun ) + '_' + tense
     s = s.replace( ' ', '_' )
     return s
 
