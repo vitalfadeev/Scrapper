@@ -2,8 +2,6 @@ import os
 import logging
 import logging.config
 
-# if os.path.isfile( "word.db" ): os.remove( "word.db" )
-
 # from merger.Scrapper_Merger import check_structure, check_indexes_wikidata, check_indexes, merge
 # from merger.Scrapper_Merger_Vectorizer import vectorize_properties
 
@@ -45,6 +43,7 @@ logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
 
 
 if __name__ == "__main__":
+    # if os.path.isfile( "word.db" ): os.remove( "word.db" )
     from merger.Scrapper_Merger import merge
     lang = "en"
     merge( lang )

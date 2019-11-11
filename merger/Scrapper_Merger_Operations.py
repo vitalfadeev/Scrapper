@@ -117,7 +117,7 @@ def calculate_preference_wiktionary( wt: WiktionaryItem ) -> float:
 def calculate_cat_felidae():
     # 27.517909943958315
 
-    DB_CAT = sqlite3.connect( "wiktionary-cat.db" )
+    DB_CAT = sqlite3.connect( "wiktionary-cat.sqlite3" )
 
     rows = DBRead( DB_CAT, sql = "SELECT * FROM wiktionary WHERE PrimaryKey = 'en-dictionary§Noun_Reference_Word_Alphabetical_with-1'", cls=WiktionaryItem )
 
@@ -136,7 +136,7 @@ def calculate_cat_felidae():
 def calculate_they_read():
     # 7.244997998398398
 
-    DB_THEY_READ = sqlite3.connect( "conjugations-they-read.db" )
+    DB_THEY_READ = sqlite3.connect( "conjugations-they-read.sqlite3" )
 
     rows = DBRead( DB_THEY_READ, sql = "SELECT * FROM conjugations WHERE PK = 'en§read§Verb_To_read_They_Indicative_Present§5'", cls=ConjugationsItem )
 

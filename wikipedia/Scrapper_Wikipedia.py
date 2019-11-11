@@ -13,6 +13,7 @@ import sqlite3
 import bz2
 import importlib
 import string
+from pathlib import Path
 import Scrapper_WikitextParser
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Helpers import create_storage, is_ascii, is_lang
@@ -20,10 +21,17 @@ from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
-log             = logging.getLogger(__name__)
 
+# remove old logs
+for p in Path(".").glob("wikipedia-*.log"):
+    p.unlink()
+
+# configure logget
 if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
+
+# get logger
+log             = logging.getLogger(__name__)
 
 
 def DBDeleteLangRecords( lang ):

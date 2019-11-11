@@ -1,3 +1,4 @@
+import os
 from typing import List
 import nltk
 import re
@@ -11,10 +12,19 @@ from wikipedia import Scrapper_Wikipedia
 from wikipedia import Scrapper_Wikipedia_RemoteAPI
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
-nltk.download( 'punkt' )
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
 from nltk import tokenize
 
+if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
+    logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
+
 log = logging.getLogger(__name__)
+
+
 
 see_also_titles_by_lang = {
     'en': ['see also'],
