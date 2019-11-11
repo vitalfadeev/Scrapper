@@ -19,8 +19,8 @@ except LookupError:
 
 from nltk import tokenize
 
-if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
-    logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
+# if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
+#     logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
 
 log = logging.getLogger(__name__)
 

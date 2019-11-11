@@ -23,6 +23,8 @@ Support:
 import sys
 import os
 import os.path
+import time
+
 import requests
 import urllib3
 import logging
@@ -282,3 +284,5 @@ def download( url, local_file, attempts=5 ):
 
         except urllib3.exceptions.ReadTimeoutError as e:
             pass
+
+        time.sleep(2)
