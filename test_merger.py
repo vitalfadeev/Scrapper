@@ -2,49 +2,15 @@ import os
 import logging
 import logging.config
 
-if os.path.isfile( "word.db" ): os.remove( "word.db" )
+# if os.path.isfile( "word.db" ): os.remove( "word.db" )
 
-from merger.Scrapper_Merger import check_structure, check_indexes_wikidata, check_indexes
-from merger.Scrapper_Merger_Conjugations import load_conjugations
-from merger.Scrapper_Merger_DB import DBWord
+from merger.Scrapper_Merger import check_structure, check_indexes_wikidata, check_indexes, merge
 from merger.Scrapper_Merger_Vectorizer import vectorize_properties
-from merger.Scrapper_Merger_Wikidata import load_wikidata
-from merger.Scrapper_Merger_Wikipedia import load_wikipedia
-from merger.Scrapper_Merger_Wiktionary import load_wiktionary
 
 logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
 
 
-if __name__ == "__main__":
-    from merger.Scrapper_Merger_Operations import operation_pref_wikidata, operation_pref, operation_pref_wiktionary, \
-    operation_pref_wikipedia, operation_pref_conjugaison, calculate_they_read, calculate_cat_felidae
-
-    lang = "en"
-    check_structure()
-    calculate_cat_felidae()
-    #operation_pref_wikidata( lang )
-    #operation_pref_wiktionary( lang )
-    #operation_pref_wikipedia( lang )
-    #calculate_they_read()
-    #operation_pref_conjugaison( lang )
-
-    # Merge all
-    # merge
-    # load_wikidata( DBWord )
-    # load_conjugations( DBWord )
-
-    # create indexes
-    # check_indexes_wikidata()
-    # check_indexes()
-
-    # load 2
-    # load_wikipedia( DBWord )
-    # load_wiktionary( DBWord )
-
-    vectorize_properties()
-    exit(1)
-
-
+def test_merge_one():
     # Merge one
     import os
     if os.path.isfile("word.db"): os.remove("word.db")
@@ -77,3 +43,8 @@ if __name__ == "__main__":
     from merger import Scrapper_Merger
     Scrapper_Merger.test_one( lang, label )
 
+
+if __name__ == "__main__":
+    lang = "en"
+    # merge( lang )
+    vectorize_properties( lang )

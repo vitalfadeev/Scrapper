@@ -85,7 +85,23 @@ class WordItem:
                 Meronymy_Vect               TEXT NULL,
                 RelatedTerms_Vect           TEXT NULL,
                 CoordinateTerms_Vect        TEXT NULL,
-                Otherwise_Vect              TEXT NULL
+                Otherwise_Vect              TEXT NULL,
+
+                Description_Inv             TEXT NULL,
+                ExplainationTxt_Inv         TEXT NULL,
+                AlsoKnownAs_Inv             TEXT NULL,
+                Instance_of_Inv             TEXT NULL,
+                Subclass_of_Inv             TEXT NULL,
+                Part_of_Inv                 TEXT NULL,
+                AlternativeFormsOther_Inv   TEXT NULL,
+                Synonymy_Inv                TEXT NULL,
+                Antonymy_Inv                TEXT NULL,
+                Hypernymy_Inv               TEXT NULL,
+                Hyponymy_Inv                TEXT NULL,
+                Meronymy_Inv                TEXT NULL,
+                RelatedTerms_Inv            TEXT NULL,
+                CoordinateTerms_Inv         TEXT NULL,
+                Otherwise_Inv               TEXT NULL
             )
         """
 
@@ -173,6 +189,22 @@ class WordItem:
         self.RelatedTerms_Vect           = []
         self.CoordinateTerms_Vect        = []
         self.Otherwise_Vect              = []
+
+        self.Description_Inv             = []
+        self.AlsoKnownAs_Inv             = []
+        self.Instance_of_Inv             = []
+        self.Subclass_of_Inv             = []
+        self.Part_of_Inv                 = []
+        self.ExplainationTxt_Inv         = []
+        self.AlternativeFormsOther_Inv   = []
+        self.Synonymy_Inv                = []
+        self.Antonymy_Inv                = []
+        self.Hypernymy_Inv               = []
+        self.Hyponymy_Inv                = []
+        self.Meronymy_Inv                = []
+        self.RelatedTerms_Inv            = []
+        self.CoordinateTerms_Inv         = []
+        self.Otherwise_Inv               = []
 
     def __repr__( self ):
         return f"Word({self.LabelName}: {self.PK})"

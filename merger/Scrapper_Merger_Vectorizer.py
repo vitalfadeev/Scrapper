@@ -123,14 +123,14 @@ def vectorize_properties_wikidata():
 
 
 
-def vectorize_properties_words():
+def vectorize_properties_words( lang ):
     log.info( "Vectorizing words" )
 
     for w in DBRead( DBWord, sql=" SELECT * FROM words ", cls=dict ):
 
         log.info( "  vectorize: %s", w["LabelName"] )
 
-        vetorized = Vectorize_database_record( w )
+        vetorized = Vectorize_database_record( lang, w )
 
         DBExecute( DBWord, """
             UPDATE words 
@@ -177,7 +177,7 @@ def vectorize_properties_words():
 
 
 
-def vectorize_properties():
+def vectorize_properties( lang ):
     log.info( "Vectorizing" )
-    vectorize_properties_words()
+    vectorize_properties_words( lang )
 

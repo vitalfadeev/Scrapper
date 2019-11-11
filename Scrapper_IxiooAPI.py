@@ -80,7 +80,7 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
 
 
 @retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
-def Vectorize_database_record( database_record: dict ) -> list:
+def Vectorize_database_record( langue_code:str, database_record: dict ) -> list:
     url = DOMAIN + '/Vectorize_database_record'
 
     # database_record = { 'LabelType': 'Noun-EXTENSION-LIST',
@@ -124,8 +124,8 @@ def Vectorize_database_record( database_record: dict ) -> list:
     #                     'IsVerbFutur': None,
     #                     'PopularityOfWord': None }
     data = {
-        'database_record':database_record,
-
+        "database_record": database_record,
+        "langue_code": langue_code
     }
 
     #
