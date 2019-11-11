@@ -40,3 +40,4 @@ pp(json.loads(r.text))
     It contains one key - 'result', the value is a list of PrimaryKeys (strings) of each word from given sentence (or word)
     using json.loads() you can transform it back to a dictionary
 '''
+

@@ -36,6 +36,9 @@ def merge_words( w, wp ):
     w.SeeAlso                    += wp.SeeAlsoWiktionaryLinks
     w.ExplainationExamplesTxt    += wp.ExplainationExamplesTxt
 
+    w.LabelNamePreference         = wp.LabelNamePreference
+    w.Operation_Pref              = wp.Operation_Pref
+
     w.FromWP.append( wp.PK )
 
 

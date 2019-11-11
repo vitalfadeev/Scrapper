@@ -44,11 +44,6 @@ def check_structure():
         "LabelNamePreference"          : "INTEGER NULL",
         "Operation_Pref"               : "INTEGER NULL",
         "Operation_Vectorizer"         : "INTEGER NULL",
-        "Description_Vect"             : "TEXT NULL",
-        "AlsoKnownAs_Vect"             : "TEXT NULL",
-        "Instance_of_Vect"             : "TEXT NULL",
-        "Subclass_of_Vect"             : "TEXT NULL",
-        "Part_of_Vect"                 : "TEXT NULL",
     } )
 
     # Wiktionary
@@ -56,22 +51,6 @@ def check_structure():
         "Operation_Merging"          : "INTEGER NULL",
         "LabelNamePreference"        : "INTEGER NULL",
         "Operation_Pref"             : "INTEGER NULL",
-        "Operation_Vectorizer"       : "INTEGER NULL",
-
-        "AlsoKnownAs_Vect"           : "TEXT NULL",
-        "Instance_of_Vect"           : "TEXT NULL",
-        "Subclass_of_Vect"           : "TEXT NULL",
-        "Part_of_Vect"               : "TEXT NULL",
-        "ExplainationTxt_Vect"       : "TEXT NULL",
-        "AlternativeFormsOther_Vect" : "TEXT NULL",
-        "Synonymy_Vect"              : "TEXT NULL",
-        "Antonymy_Vect"              : "TEXT NULL",
-        "Hypernymy_Vect"             : "TEXT NULL",
-        "Hyponymy_Vect"              : "TEXT NULL",
-        "Meronymy_Vect"              : "TEXT NULL",
-        "RelatedTerms_Vect"          : "TEXT NULL",
-        "Coordinate_Vect"            : "TEXT NULL",
-        "Otherwise_Vect"             : "TEXT NULL",
     } )
 
     # Conjugations
@@ -158,20 +137,19 @@ def test_one( lang="en", label='Cat' ):
 
 
 def main():
-    # check_structure()
+    check_structure()
     # #
-    # # # load 1
-    # load_wikidata( DBWord )
-    # load_conjugations( DBWord )
-    #
-    # # create indexes
-    # check_indexes_wikidata()
-    # check_indexes()
-    #
-    # # load 2
-    # load_wikipedia( DBWord )
-    # load_wiktionary( DBWord )
+    # # load 1
+    load_wikidata( DBWord )
+    load_conjugations( DBWord )
+
+    # create indexes
+    check_indexes_wikidata()
+    check_indexes()
+
+    # load 2
+    load_wikipedia( DBWord )
+    load_wiktionary( DBWord )
 
     # Vectorize
-    #vectorize_properties()
-    ...
+    # vectorize_properties()

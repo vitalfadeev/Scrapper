@@ -118,7 +118,7 @@ def DBRead( DB, table=None, where=None, sql=None, params=None, cls=None, *args, 
             o = cls()
 
             for field, value in zip( fields, row ):
-                a = getattr( o, field )
+                a = getattr( o, field, None )
 
                 if value is None:
                     pass

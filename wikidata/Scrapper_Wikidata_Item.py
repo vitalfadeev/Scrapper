@@ -35,6 +35,7 @@ class WikidataItem:
                 Translation_PT             TEXT NULL,
                 WikipediaLinkCountTotal    INTEGER,
                 EncyclopediaGreatRussianRU VARCHAR(255),
+
                 Operation_Merging    	   INTEGER, 
                 LabelNamePreference    	   INTEGER, 
                 Operation_Pref       	   INTEGER 
@@ -74,6 +75,7 @@ class WikidataItem:
         self.Translation_PT                     = [ ]
         self.WikipediaLinkCountTotal            = 0
         self.EncyclopediaGreatRussianRU         = ""
+
         self.Operation_Merging                  = 0
         self.LabelNamePreference                = 0
         self.Operation_Pref                     = 0

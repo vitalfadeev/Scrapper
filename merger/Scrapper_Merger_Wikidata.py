@@ -38,6 +38,9 @@ def load_wikidata( db_words_connection ):
                 Part_of,
                 WikipediaLinkCountTotal,
 
+                LabelNamePreference, 
+                Operation_Pref, 
+
                 FromWD
             ) 
             SELECT 
@@ -64,6 +67,9 @@ def load_wikidata( db_words_connection ):
                 Subclass_of,
                 Part_of,
                 WikipediaLinkCountTotal,
+
+                LabelNamePreference, 
+                Operation_Pref, 
 
                 '["' || PrimaryKey || '"]' as FromWD                                                    
             FROM db_wikidata.wikidata;
@@ -102,6 +108,8 @@ def load_wikidata_one( db_words_connection, lang, label ):
                 Translation_RU,    
                 Translation_PT,    
                 CountTotalOfWikipediaUrl,
+                LabelNamePreference, 
+                Operation_Pref, 
                 FromWD
             ) 
             SELECT 
@@ -123,6 +131,8 @@ def load_wikidata_one( db_words_connection, lang, label ):
                 Translation_RU,                                                    
                 Translation_PT,
                 WikipediaLinkCountTotal,
+                LabelNamePreference, 
+                Operation_Pref, 
 
                 '["' || PrimaryKey || '"]' as FromWD                                                    
             FROM db_wikidata.wikidata

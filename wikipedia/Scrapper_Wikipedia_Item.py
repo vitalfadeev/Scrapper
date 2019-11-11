@@ -22,16 +22,9 @@ class WikipediaItem:
                     ExplainationExamplesRaw		TEXT NULL,
                     ExplainationExamplesTxt		TEXT NULL,
                     
-                    Description_Vect		    TEXT NULL,
-                    AlsoKnownAs_Vect		    TEXT NULL,
-                    Instance_of_Vect		    TEXT NULL,
-                    Subclass_of_Vect		    TEXT NULL,
-                    Part_of_Vect    		    TEXT NULL,
-                    
                     LabelNamePreference    		INTEGER, 
                     Operation_Merging    		INTEGER, 
-                    Operation_Pref       		INTEGER,
-                    Operation_Vectorizer   		INTEGER 
+                    Operation_Pref       		INTEGER
             );
             
             -- CREATE INDEX IF NOT EXISTS  LanguageCode ON wikipedia (LanguageCode);
@@ -54,16 +47,9 @@ class WikipediaItem:
         self.ExplainationExamplesRaw	 = []
         self.ExplainationExamplesTxt	 = []
 
-        self.Description_Vect		     = []
-        self.AlsoKnownAs_Vect		     = []
-        self.Instance_of_Vect		     = []
-        self.Subclass_of_Vect		     = []
-        self.Part_of_Vect    		     = []
-        
         self.LabelNamePreference         = 0
         self.Operation_Merging           = 0
         self.Operation_Pref              = 0
-        self.Operation_Vectorizer        = 0
 
     def __repr__(self):
         return f"WikipediaItem({self.LabelName}: {self.PK})"

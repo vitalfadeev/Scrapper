@@ -30,6 +30,8 @@ def load_conjugations( db_words_connection ):
                 IsVerbPast,
                 IsVerbPresent,
                 IsVerbFutur,
+                LabelNamePreference, 
+                Operation_Pref, 
                 FromCJ
             ) 
             SELECT 
@@ -50,6 +52,8 @@ def load_conjugations( db_words_connection ):
                 IsVerbPast,
                 IsVerbPresent,
                 IsVerbFutur,
+                LabelNamePreference, 
+                Operation_Pref, 
 
                 '["' || PK || '"]' as FromCJ 
             FROM db_conjugations.conjugations;
@@ -87,6 +91,8 @@ def load_conjugations_one( db_words_connection, lang, label ):
                 IsVerbPast,
                 IsVerbPresent,
                 IsVerbFutur,
+                LabelNamePreference, 
+                Operation_Pref, 
                 FromCJ
             ) 
             SELECT 
@@ -107,6 +113,8 @@ def load_conjugations_one( db_words_connection, lang, label ):
                 IsVerbPast,
                 IsVerbPresent,
                 IsVerbFutur,
+                LabelNamePreference, 
+                Operation_Pref, 
                 '["' || PK || '"]' as FromCJ 
             FROM db_conjugations.conjugations
            WHERE 

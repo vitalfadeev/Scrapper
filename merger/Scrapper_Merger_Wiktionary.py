@@ -72,6 +72,9 @@ def merge_words( w, wt ):
     w.SeeAlso                  += wt.SeeAlsoWiktionaryLinks
     w.SeeAlso                  += wt.SeeAlsoWikipediaLinks
 
+    w.LabelNamePreference        = wt.LabelNamePreference
+    w.Operation_Pref             = wt.Operation_Pref
+
     w.FromWT.append( wt.PrimaryKey )
 
 
