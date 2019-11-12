@@ -3,7 +3,7 @@ from wikipedia.Scrapper_Wikipedia_RemoteAPI import get_wikitext
 
 if __name__ == "__main__":
     # Scrap all pages
-    Scrapper_Wikipedia.scrap( lang="en", workers=5 )
+    Scrapper_Wikipedia.scrap( lang="pt", workers=5 )
 
     # # Single page test
     # from Scrapper_DB import DBExecute, DBWrite
@@ -18,3 +18,4 @@ if __name__ == "__main__":
     #
     # for item in result:
     #     DBWrite( DBWikipedia, item )
+

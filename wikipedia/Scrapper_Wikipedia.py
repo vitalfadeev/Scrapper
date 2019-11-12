@@ -22,10 +22,6 @@ from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
 
-# remove old logs
-for p in Path(".").glob("wikipedia-*.log"):
-    p.unlink()
-
 # configure logget
 if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'wikipedia', 'logging.ini' ) )
@@ -330,6 +326,14 @@ def scrap( lang: str ="en", workers: int = 1 ):
     :param workers:     int     Number of workers in multiprocessing. If workers=1, then run in single process.
                                 Recommendation: workers = 10 (for parallel network requests)
     """
+    # remove old logs
+    pid = os.getpid()
+    self_log = f"wikipedia-{pid}.log"
+    for p in Path(".").glob("wikipedia-*.log"):
+        if str(p) != self_log:
+            p.unlink()
+
+    #
     result = DBDeleteLangRecords( lang )
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
