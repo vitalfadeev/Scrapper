@@ -6,18 +6,19 @@ then clean: remove [1], [2]
 """
 
 import json
-import os
 import logging
 import logging.config
-import sqlite3
+import os
+# import logging
+# import logging.config
 import bz2
 import importlib
-import string
+import multiprocessing
+import itertools
 from pathlib import Path
 import Scrapper_WikitextParser
 from Scrapper_DB import DBExecute, DBExecuteScript, DBWrite
 from Scrapper_Helpers import create_storage, is_ascii, is_lang
-from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
 from wikipedia.Scrapper_Wikipedia_Item import WikipediaItem
 
 CACHE_FOLDER    = "cached"  # folder where stored downloadad dumps
@@ -30,7 +31,7 @@ if os.path.isfile( os.path.join( 'wikipedia', 'logging.ini' ) ):
 log             = logging.getLogger(__name__)
 
 
-def DBDeleteLangRecords( lang ):
+def DBDeleteLangRecords( lang, DBWikipedia ):
     """
     Remove old lang data
 
@@ -272,8 +273,6 @@ def XmlStreamReader( lang, infile ):
             elem.clear()
 
 
-
-
 def scrap_one( lang: str, page: Page ):
     """
     Scrap one page.
@@ -326,6 +325,8 @@ def scrap( lang: str ="en", workers: int = 1 ):
     :param workers:     int     Number of workers in multiprocessing. If workers=1, then run in single process.
                                 Recommendation: workers = 10 (for parallel network requests)
     """
+    from wikipedia.Scrapper_Wikipedia_DB import DBWikipedia
+
     # remove old logs
     pid = os.getpid()
     self_log = f"wikipedia-{pid}.log"
@@ -334,36 +335,20 @@ def scrap( lang: str ="en", workers: int = 1 ):
             p.unlink()
 
     #
-    result = DBDeleteLangRecords( lang )
+    result = DBDeleteLangRecords( lang, DBWikipedia )
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
-    if workers > 1:
-        import multiprocessing
-        import itertools
+    pool = multiprocessing.Pool( workers )
 
-        pool = multiprocessing.Pool( workers )
-
-        # scrap in `workers` processes
-        for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
-            item: WikipediaItem
-            for item in result:
-                if item is not None:
-                    # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
-                    if len( item.ExplainationWPTxt ) > 15:
-                        DBWrite( DBWikipedia, item )
-                    else:
-                        log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", item.LabelName )
-
-    else: # single process
-        for page in reader:
-            log.warning( page )
-            result = scrap_one( lang, page )
-
-            item: WikipediaItem
-            for item in result:
+    # scrap in `workers` processes
+    for result in pool.imap_unordered( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
+        item: WikipediaItem
+        for item in result:
+            if item is not None:
                 # if word do not have sections ==XX== OR if word do not have len(descriptiontxt)>15 then we can skip
                 if len( item.ExplainationWPTxt ) > 15:
+                    log.debug( "writing %s", item )
                     DBWrite( DBWikipedia, item )
+                    log.debug( "writen %s", item )
                 else:
                     log.warning( "   '%s': len( ExplainationWPTxt ) < 15... [SKIP]", item.LabelName )
-
