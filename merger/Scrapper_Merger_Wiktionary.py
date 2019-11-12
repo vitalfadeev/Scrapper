@@ -40,6 +40,7 @@ def merge_words( w, wt ):
     w.RelatedTerms             += wt.Coordinate
     w.RelatedTerms             += wt.Otherwise
     w.AlsoKnownAs              += wt.AlternativeFormsOther
+    w.Coordinate               += wt.Coordinate
     # wt.DerivedTerms
     w.Translation_EN           += wt.Translation_EN
     w.Translation_FR           += wt.Translation_FR

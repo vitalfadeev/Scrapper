@@ -22,6 +22,7 @@ class WordItem:
                 Holonymy                    TEXT NULL,
                 Troponymy                   TEXT NULL,
                 Meronymy                    TEXT NULL,
+                Coordinate                  TEXT NULL,
                 SeeAlso                     TEXT NULL,
                 SeeAlsoWikipediaLinks       TEXT NULL,
                 RelatedTerms                TEXT NULL,
@@ -84,7 +85,7 @@ class WordItem:
                 Hyponymy_Vect               TEXT NULL,
                 Meronymy_Vect               TEXT NULL,
                 RelatedTerms_Vect           TEXT NULL,
-                CoordinateTerms_Vect        TEXT NULL,
+                Coordinate_Vect             TEXT NULL,
                 Otherwise_Vect              TEXT NULL,
 
                 Description_Inv             TEXT NULL,
@@ -100,7 +101,7 @@ class WordItem:
                 Hyponymy_Inv                TEXT NULL,
                 Meronymy_Inv                TEXT NULL,
                 RelatedTerms_Inv            TEXT NULL,
-                CoordinateTerms_Inv         TEXT NULL,
+                Coordinate_Inv              TEXT NULL,
                 Otherwise_Inv               TEXT NULL
             )
         """
@@ -125,6 +126,7 @@ class WordItem:
         self.Holonymy                    = []
         self.Troponymy                   = []
         self.Meronymy                    = []
+        self.Coordinate                  = []
         self.SeeAlso                     = []
         self.SeeAlsoWikipediaLinks       = []
         self.RelatedTerms                = []
@@ -187,7 +189,7 @@ class WordItem:
         self.Hyponymy_Vect               = []
         self.Meronymy_Vect               = []
         self.RelatedTerms_Vect           = []
-        self.CoordinateTerms_Vect        = []
+        self.Coordinate_Vect             = []
         self.Otherwise_Vect              = []
 
         self.Description_Inv             = []
@@ -203,7 +205,7 @@ class WordItem:
         self.Hyponymy_Inv                = []
         self.Meronymy_Inv                = []
         self.RelatedTerms_Inv            = []
-        self.CoordinateTerms_Inv         = []
+        self.Coordinate_Inv              = []
         self.Otherwise_Inv               = []
 
     def __repr__( self ):

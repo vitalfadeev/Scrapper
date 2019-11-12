@@ -22,7 +22,7 @@ from merger.Scrapper_Merger_Operations import operation_pref_wikidata, operation
 if os.path.isfile( os.path.join( 'merger', 'logging.ini' ) ):
     logging.config.fileConfig( os.path.join( 'merger', 'logging.ini' ) )
 
-log    = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def check_structure():
@@ -80,7 +80,7 @@ def check_structure():
         "Hyponymy_Vect"              : "TEXT NULL",
         "Meronymy_Vect"              : "TEXT NULL",
         "RelatedTerms_Vect"          : "TEXT NULL",
-        "CoordinateTerms_Vect"       : "TEXT NULL",
+        "Coordinate_Vect"            : "TEXT NULL",
         "Otherwise_Vect"             : "TEXT NULL",
 
         "Description_Inv"            : "TEXT NULL",
@@ -96,7 +96,7 @@ def check_structure():
         "Hyponymy_Inv"               : "TEXT NULL",
         "Meronymy_Inv"               : "TEXT NULL",
         "RelatedTerms_Inv"           : "TEXT NULL",
-        "CoordinateTerms_Inv"        : "TEXT NULL",
+        "Coordinate_Inv"             : "TEXT NULL",
         "Otherwise_Inv"              : "TEXT NULL",
     } )
 
@@ -165,11 +165,11 @@ def merge( lang ):
     # merge
     load_wikidata( DBWord )
     load_conjugations( DBWord )
-
+    #
     # create indexes
     check_indexes_wikidata()
     check_indexes()
-
+    #
     # load 2
     load_wikipedia( DBWord )
     load_wiktionary( DBWord )

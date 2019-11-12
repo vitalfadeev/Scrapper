@@ -247,6 +247,7 @@ def DBAddColumn( DB, table, column, t ):
         pass
 
     else:
+        log.debug( "  adding column: %s.%s %s", table, column, t )
         sql = f""" 
             ALTER TABLE {table} 
                     ADD {column} {t} 

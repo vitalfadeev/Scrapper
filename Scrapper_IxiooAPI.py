@@ -80,7 +80,7 @@ def Match_List_PKS_With_Lists_Of_PKS(explanations: tuple, translation_sentences:
 
 
 @retry((requests.exceptions.Timeout, requests.exceptions.ConnectTimeout, requests.exceptions.HTTPError), tries=5, delay=1)
-def Vectorize_database_record( langue_code:str, database_record: dict ) -> list:
+def Vectorize_database_record( language_code: str, database_record: dict ) -> list:
     url = DOMAIN + '/Vectorize_database_record'
 
     # database_record = { 'LabelType': 'Noun-EXTENSION-LIST',
@@ -125,7 +125,7 @@ def Vectorize_database_record( langue_code:str, database_record: dict ) -> list:
     #                     'PopularityOfWord': None }
     data = {
         "database_record": database_record,
-        "langue_code": langue_code
+#        "language_code": language_code,
     }
 
     #
@@ -133,14 +133,21 @@ def Vectorize_database_record( langue_code:str, database_record: dict ) -> list:
     response = requests.post(url, json=data, timeout=(11, 33))
 
     if response.status_code == 200:
+        # check hard error
         try:
             result = json.loads( response.content, encoding='UTF-8' )
-            return result # database record
 
         except json.decoder.JSONDecodeError as e:
             log.error( '  database_record: %s', database_record )
             log.error( '  response.text: %s', response.text )
             raise e
+
+        # check soft error
+        if "ERROR" in result:
+            log.error( result["ERROR"] )
+            raise Exception( result["ERROR"] )
+
+        return result  # database record
 
     else:
         log.error( "  %s", response.status_code )
