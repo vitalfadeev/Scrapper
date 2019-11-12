@@ -41,4 +41,3 @@ if __name__ == "__main__":
     from merger.Scrapper_Merger import merge
     lang = "en"
     merge( lang )
-    # vectorize_properties( lang )
