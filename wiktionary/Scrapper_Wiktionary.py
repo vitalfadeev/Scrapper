@@ -390,7 +390,7 @@ def scrap( lang: str ="en", workers: int = 1 ):
         import itertools
 
         pool = multiprocessing.Pool( workers )
-        for result in pool.imap( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
+        for result in pool.imap_unordered( scrap_one_wrapper, zip( itertools.repeat( lang ), reader ) ):
             if result is not None:
                 for item in result:
                     item.dump()

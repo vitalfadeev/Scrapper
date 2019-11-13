@@ -1193,7 +1193,13 @@ def read_html(text, spos):
                                 epos = epos2 + len("</pre>")
                                 is_self_closed = True
                             else:
-                                assert 0, "<pre> without </pre>" 
+                                assert 0, "<pre> without </pre>"
+
+                        # <p> <p> <p> without </p> fix. # example: https://es.wikipedia.org/wiki/Edad_Antigua
+                        if not is_self_closed and len(opened) > 0 and opened[-1] == tag:
+                            # remove previous <p>
+                            opened.pop()
+                            current.parent.parent.add_child( current ) # remove from <p>, put to parent
 
                         # self closed check
                         if is_self_closed:
@@ -1255,6 +1261,23 @@ def read_html(text, spos):
                     current.add_child( link )
                     i = epos
                     
+                # elif text.startswith("\n|}", i):
+                #     # close table. close all opened tags
+                #     log.debug("read_html(): close table")
+                #     if len( opened ) > 0 and opened[ -1 ] == "p":
+                #         # remove previous <p>
+                #         opened.pop()
+                #         opened = []
+                #
+                #     current = current.parent
+                #
+                #     if len( opened ) == 0:
+                #         epos = i
+                #         htmlobj.epos = epos
+                #         return (epos, htmlobj.childs[ 0 ])  # OK
+                #
+                #     i += len( "\n|}" )
+
                 else:
                     # character data
                     current.add_cdata(c)

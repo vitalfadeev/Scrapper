@@ -1316,7 +1316,7 @@ def scrap( page: Scrapper_Wiktionary.Page ) -> List[WiktionaryItem ]:
 
         # PrimaryKey
         label_type = item.LabelType if item.LabelType else ""
-        item.PrimaryKey = item.LanguageCode + "-" + item.LabelName + "§" + label_type + "-" + str( item.IndexinPage )
+        item.PrimaryKey = item.LanguageCode + "§" + item.LabelName + "§" + label_type + "§" + str( item.IndexinPage )
 
         # PopularityOfWord 
         update_popularity_of_word( item )

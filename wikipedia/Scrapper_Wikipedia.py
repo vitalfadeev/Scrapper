@@ -338,6 +338,16 @@ def scrap( lang: str ="en", workers: int = 1 ):
     result = DBDeleteLangRecords( lang, DBWikipedia )
     reader = filter( filterPageProblems, Dump(lang).download().getReader() )
 
+    # for page in reader:
+    #     if page.label == 'Hercio':
+    #         break
+    #
+    # # Edad Antigua
+    # for page in reader:
+    #     log.debug( "%s", page )
+    #     scrap_one( lang, page )
+    # exit(1)
+
     pool = multiprocessing.Pool( workers )
 
     # scrap in `workers` processes

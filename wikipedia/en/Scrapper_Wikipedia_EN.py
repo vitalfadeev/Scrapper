@@ -6,7 +6,7 @@ import string
 import logging
 from urllib.parse import unquote
 from bs4 import BeautifulSoup
-from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word, is_ascii, unique
+from Scrapper_Helpers import deduplicate, convert_to_alnum, proper, get_lognest_word, is_ascii, unique, put_contents
 from Scrapper_WikitextParser import Header, Link, Template, parse, String, Li, Dl, Container
 from wikipedia import Scrapper_Wikipedia
 from wikipedia import Scrapper_Wikipedia_RemoteAPI
@@ -557,6 +557,7 @@ def get_explanatoin_lexems( page ):
     blocks = []
 
     # parse raw
+    put_contents("/tmp/1.txt", raw)
     lexemes = parse( raw )
 
     # find text blocks before Header
