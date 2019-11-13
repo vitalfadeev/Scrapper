@@ -1261,22 +1261,31 @@ def read_html(text, spos):
                     current.add_child( link )
                     i = epos
                     
-                # elif text.startswith("\n|}", i):
-                #     # close table. close all opened tags
-                #     log.debug("read_html(): close table")
-                #     if len( opened ) > 0 and opened[ -1 ] == "p":
-                #         # remove previous <p>
-                #         opened.pop()
-                #         opened = []
-                #
-                #     current = current.parent
-                #
-                #     if len( opened ) == 0:
-                #         epos = i
-                #         htmlobj.epos = epos
-                #         return (epos, htmlobj.childs[ 0 ])  # OK
-                #
-                #     i += len( "\n|}" )
+                elif text.startswith("\n|-", i):
+                    # table row.
+                    # need close all  opened tags
+                    # return html
+                    log.debug("read_html(): close table row")
+                    opened = []
+
+                    current = current.parent
+
+                    epos = i
+                    htmlobj.epos = epos
+                    return (epos, htmlobj.childs[ 0 ])  # OK
+
+                elif text.startswith("\n|}", i):
+                    # close table
+                    # need close all  opened tags
+                    # return html
+                    log.debug("read_html(): close table")
+                    opened = []
+
+                    current = current.parent
+
+                    epos = i
+                    htmlobj.epos = epos
+                    return (epos, htmlobj.childs[ 0 ])  # OK
 
                 else:
                     # character data
